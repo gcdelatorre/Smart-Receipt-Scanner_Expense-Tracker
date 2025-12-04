@@ -28,21 +28,27 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Upload route
-app.post("/api/expenses/upload", upload.single("image"), (req, res) => {
+
+import { extractTextFromImage, categorizeExpense } from "./services/gemini.js";
+
+app.post("/api/expenses/upload", upload.single("image"), async (req, res) => {
     try {
-        const imageUrl = `/uploads/${req.file.filename}`;
-        res.json({ success: true, imageUrl });
+        const filePath = req.file.path;
+
+        const text = await extractTextFromImage(filePath);
+        const structured = await categorizeExpense(text);
+
+        return res.json({
+            success: true,
+            receiptText: text,
+            extracted: structured,
+            imageUrl: `/uploads/${req.file.filename}`
+        });
+
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
-
-
-
-
-
-
 
 
 const startServer = async () => {
