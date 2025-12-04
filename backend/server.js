@@ -7,52 +7,52 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import Expense from './models/expense.model.js';
+import router from './routes/expenseRoutes.js';
+const PORT = process.env.PORT || 5000;
+const app = express();
+
+app.use(express.json());
+
+app.use("/api/expenses", router)
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
-const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname)
+    destination: (req, file, cb) => cb(null, "uploads/"),
+    filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname)
 });
 
 const upload = multer({ storage });
 
 // Upload route
-app.post("/upload", upload.single("image"), (req, res) => {
-  try {
-    const imageUrl = `/uploads/${req.file.filename}`;
-    res.json({ success: true, imageUrl });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
+app.post("/api/expenses/upload", upload.single("image"), (req, res) => {
+    try {
+        const imageUrl = `/uploads/${req.file.filename}`;
+        res.json({ success: true, imageUrl });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 
-// Create expense route
-app.post("/", async (req, res) => {
-  const { store, amount, category, items, date, userId, imageUrl } = req.body;
-  try {
-    const newExpense = await Expense.create({
-      store, amount, category, items, date, userId, imageUrl
-    });
-    res.status(200).json({
-      success: true,
-      data: newExpense,
-      message: "Expense Created Successfully"
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
 
-app.listen(PORT, () => {
-  connectDB();
-  console.log(`Server Connected to Port ${PORT}`);
-});
+
+
+
+
+
+
+const startServer = async () => {
+    try {
+        await connectDB();
+        console.log("DB Connected");
+    } catch (err) {
+        console.error("DB connection failed", err.message);
+    } finally {
+        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    }
+};
+startServer();
