@@ -1,11 +1,9 @@
-import Expense from "../models/expense.model.js"
+import { createExpense } from "../services/createExpense.js";
+import { getAllExpense } from "../services/getAllExpense.js";
 
 export const addExpense = async (req, res) => {
-    const { store, amount, category, items, date, userId, imageUrl } = req.body;
     try {
-        const newExpense = await Expense.create({
-            store, amount, category, items, date, userId, imageUrl
-        });
+        const newExpense = await createExpense({ ...req.body, userId: req.user.id });
         res.status(200).json({
             success: true,
             data: newExpense,
@@ -16,8 +14,8 @@ export const addExpense = async (req, res) => {
     }
 };
 
-export const getAllExpense = async (req, res) => {
-    const expenses = await Expense.find({})
+export const getAll = async (req, res) => {
+    const expenses = getAllExpense()
 
     try {
         res.status(200).json({

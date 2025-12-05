@@ -20,6 +20,7 @@ export const uploadExpense = async (req, res) => {
         const text = await extractTextFromImage(filePath);
         const structured = await categorizeExpense(text);
 
+
         return res.json({
             success: true,
             receiptText: text,
