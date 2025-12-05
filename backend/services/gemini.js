@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// FIXED: pass API key directly
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function extractTextFromImage(imagePath) {
@@ -46,7 +45,6 @@ ${text}
     const result = await model.generateContent(prompt);
     let output = result.response.text();
 
-    // Remove markdown code blocks if they exist
     output = output.replace(/```json|```/g, "").trim();
 
     return JSON.parse(output);
