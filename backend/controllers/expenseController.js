@@ -3,7 +3,7 @@ import { getAllExpense } from "../services/getAllExpense.js";
 
 export const addExpense = async (req, res) => {
     try {
-        const newExpense = await createExpense({ ...req.body, userId: req.user.id });
+        const newExpense = await createExpense({ ...req.body, userId: "64c1f0f9a4f12b3a5e123456" });
         res.status(200).json({
             success: true,
             data: newExpense,
@@ -15,7 +15,7 @@ export const addExpense = async (req, res) => {
 };
 
 export const getAll = async (req, res) => {
-    const expenses = getAllExpense()
+    const expenses = await getAllExpense({})
 
     try {
         res.status(200).json({
