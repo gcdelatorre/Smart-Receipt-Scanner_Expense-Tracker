@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { extractTextFromImage, categorizeExpense } from "../services/gemini.js";
-import { createExpense } from '../services/createExpense.js';
+import { createExpense } from '../services/expenseService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

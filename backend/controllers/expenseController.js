@@ -1,5 +1,4 @@
-import { createExpense } from "../services/createExpense.js";
-import { getAllExpense } from "../services/getAllExpense.js";
+import { getAll, findExpenseById, createExpense } from "../services/expenseService.js";
 
 export const addExpense = async (req, res) => {
     try {
@@ -14,8 +13,26 @@ export const addExpense = async (req, res) => {
     }
 };
 
-export const getAll = async (req, res) => {
-    const expenses = await getAllExpense({})
+export const getSingleExpenseById = async (req, res) => {
+    const expense = await findExpenseById(req.params.id);
+
+    if (!expense) {
+        return res.status(404).json({ success: false, message: "Expense Not Found" });
+    }
+
+    try {
+        res.status(200).json({
+            success: true,
+            data: expense,
+            message: "Expense Retrieved Successfully"
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+export const getAllExpense = async (req, res) => {
+    const expenses = await getAll({})
 
     try {
         res.status(200).json({
@@ -25,5 +42,41 @@ export const getAll = async (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message })
+    }
+}
+
+export const updateExpenseById = async (req, res) => {
+    const expense = await findExpenseById(req.params.id);
+
+    if (!expense) {
+        return res.status(404).json({ success: false, message: "Expense Not Found" });
+    }
+
+    try {
+        Object.assign(expense, req.body);
+        const updatedExpense = await expense.save();
+        res.status(200).json({
+            success: true,
+            data: updatedExpense,
+            message: "Expense Updated Successfully"
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+}
+
+export const deleteExpenseById = async (req, res) => {
+    const expense = await findExpenseById(req.params.id);
+    if (!expense) {
+        return res.status(404).json({ success: false, message: "Expense Not Found" });
+    }
+    try {
+        await expense.remove();
+        res.status(200).json({
+            success: true,
+            message: "Expense Deleted Successfully"
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
     }
 }
