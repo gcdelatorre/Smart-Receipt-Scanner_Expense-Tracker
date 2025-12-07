@@ -14,18 +14,18 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-export const createExpenseWithUpload = async (req, res) => {
+export const createExpenseFromReceipt = async (req, res) => {
     try {
         const filePath = req.file.path;
 
         const text = await extractTextFromImage(filePath);
         const structured = await categorizeExpense(text);
 
-        const newExpense = await createExpense({ ...structured, imageUrl: `/uploads/${req.file.filename}`, userId: "64c1f0f9a4f12b3a5e123456"}) 
-                                                                                                            // hardcoded userId for now
-                                                                                                            // will add userId after i added user models or user accounts
-                                                                                                            // and with authentication to input valid id
-                                                                                                            // so that it can determine whose this expense if its theirs
+        const newExpense = await createExpense({ ...structured, imageUrl: `/uploads/${req.file.filename}`, userId: "64c1f0f9a4f12b3a5e123456" })
+        // hardcoded userId for now
+        // will add userId after i added user models or user accounts
+        // and with authentication to input valid id
+        // so that it can determine whose this expense if its theirs
         return res.json({
             success: true,
             data: newExpense
