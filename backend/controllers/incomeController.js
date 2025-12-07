@@ -63,3 +63,19 @@ export const updateIncomeById = async (req, res) => {
     }
 };
 
+//delete income by id
+export const deleteIncomeById = async (req, res) => {
+    const income = await findIncomeById(req.params.id);
+    if (!income) {
+        return res.status(404).json({ success: false, message: "Income Not Found" });
+    }
+    try {
+        await income.remove();
+        res.status(200).json({
+            success: true,
+            message: "Income Deleted Successfully"
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
