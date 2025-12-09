@@ -11,11 +11,14 @@ import StatsGrid from "./components/dashboard/StatsGrid";
 import BudgetsCard from "./components/dashboard/BudgetsCard";
 import SpendingChart from "./components/dashboard/SpendingChart";
 import { navItems } from "./components/utils/navItems";
-import { stats } from "./components/utils/stats";
+import { useStats } from "./components/utils/useStats";
 import { budgets } from "./components/utils/budget";
 import { chartPoints } from "./components/utils/chartPoints";
 
 export default function App() {
+
+  const stats = useStats(); 
+
   const [showAdd, setShowAdd] = useState(false);
   const location = useLocation();
   const pathname = location.pathname;
