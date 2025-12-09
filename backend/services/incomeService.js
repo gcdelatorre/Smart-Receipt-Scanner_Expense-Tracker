@@ -1,4 +1,4 @@
-import Income from '../models/expense.model.js'
+import Income from '../models/income.model.js'
 
 // create a new expense
 export const createIncome = async (incomeData) => {
