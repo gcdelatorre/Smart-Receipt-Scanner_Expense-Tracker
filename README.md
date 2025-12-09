@@ -1,5 +1,6 @@
 # Smart Receipt Scanner + Expense Tracker
 
+<img width="1919" height="868" alt="image" src="https://github.com/user-attachments/assets/2db148cb-a741-415b-80b4-9bc73436a0df" />
 Track your expenses automatically by uploading receipts. The app extracts text from receipts and categorizes expenses using AI.
 
 Manual expense tracking is tedious. Receipts get lost, and budgets are easily forgotten. This project simplifies the process by allowing users to upload photos of receipts and automatically extracting structured expense data. 
