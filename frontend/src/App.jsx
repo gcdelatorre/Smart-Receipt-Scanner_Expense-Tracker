@@ -11,64 +11,10 @@ import MobileNav from "./components/layout/MobileNav";
 import StatsGrid from "./components/dashboard/StatsGrid";
 import BudgetsCard from "./components/dashboard/BudgetsCard";
 import SpendingChart from "./components/dashboard/SpendingChart";
-
-const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { label: "Transactions", icon: Receipt, path: "/transactions" },
-  { label: "Analytics", icon: BarChart3, path: "/analytics" },
-];
-
-const stats = [
-  {
-    title: "Total Balance",
-    value: "$0.00",
-    changeLabel: "+2.5% from last month",
-    changeVariant: "success",
-    changeIcon: ArrowUpRight,
-    icon: PiggyBank,
-    accent: "bg-indigo-50 text-indigo-700",
-    progress: 62,
-    progressColor: "bg-indigo-500",
-  },
-  {
-    title: "Monthly Income",
-    value: "$0.00",
-    changeLabel: "On track",
-    changeVariant: "default",
-    changeIcon: ArrowUpRight,
-    icon: TrendingUp,
-    accent: "bg-green-50 text-green-700",
-    progress: 82,
-    progressColor: "bg-green-500",
-  },
-  {
-    title: "Monthly Expenses",
-    value: "$0.00",
-    changeLabel: "-$0 vs budget",
-    changeVariant: "destructive",
-    changeIcon: ArrowDownRight,
-    icon: Wallet,
-    accent: "bg-rose-50 text-rose-700",
-    progress: 46,
-    progressColor: "bg-rose-500",
-  },
-];
-
-const budgets = [
-  { label: "Groceries", used: 350, total: 500, color: "bg-indigo-500" },
-  { label: "Entertainment", used: 190, total: 200, color: "bg-amber-500" },
-  { label: "Transportation", used: 50, total: 150, color: "bg-green-500" },
-];
-
-const chartPoints = [
-  { day: "Mon", value: 1100 },
-  { day: "Tue", value: 1650 },
-  { day: "Wed", value: 1500 },
-  { day: "Thu", value: 2450 },
-  { day: "Fri", value: 1800 },
-  { day: "Sat", value: 3200 },
-  { day: "Sun", value: 2700 },
-];
+import { navItems } from "./components/utils/navItems";
+import { stats } from "./components/utils/stats";
+import { budgets } from "./components/utils/budget";
+import { chartPoints } from "./components/utils/chartPoints";
 
 export default function App() {
   const [showAdd, setShowAdd] = useState(false);
