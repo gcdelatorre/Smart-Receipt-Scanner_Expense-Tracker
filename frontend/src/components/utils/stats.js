@@ -1,3 +1,5 @@
+import { ArrowUpRight, ArrowDownRight, PiggyBank, TrendingUp, Wallet } from "lucide-react";
+
 export const stats = [
     {
         title: "Total Balance",

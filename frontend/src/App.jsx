@@ -1,4 +1,3 @@
-import { ArrowDownRight, ArrowUpRight, BarChart3, LayoutDashboard, PiggyBank, Receipt, TrendingUp, Wallet } from "lucide-react";
 import { useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import AddEntryModal from "./components/AddEntryModal";
