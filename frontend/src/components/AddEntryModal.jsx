@@ -13,25 +13,29 @@ const typeConfigs = {
     label: "Expense",
     color: "bg-rose-50 text-rose-700 border-rose-100",
     pill: "bg-rose-100 text-rose-800",
-    submit: "bg-green-600 hover:bg-green-700",
+    submit: "bg-rose-600 hover:bg-rose-700",
   },
 };
 
 export default function AddEntryModal({ open, onClose }) {
   const [selectedType, setSelectedType] = useState(null);
+
   const [form, setForm] = useState({
     amount: "",
     category: "",
-    note: "",
+    store: "",
+    items: [],
+    description: "",
     date: "",
   });
+
   const [receiptFile, setReceiptFile] = useState(null);
   const [uploadState, setUploadState] = useState({ status: "idle", message: "" });
 
   useEffect(() => {
     if (!open) {
       setSelectedType(null);
-      setForm({ amount: "", category: "", note: "", date: "" });
+      setForm({ amount: "", category: "", store: "", items: [], description: "", date: "" });
       setReceiptFile(null);
       setUploadState({ status: "idle", message: "" });
     }
@@ -42,11 +46,49 @@ export default function AddEntryModal({ open, onClose }) {
   const cfg = selectedType ? typeConfigs[selectedType] : null;
   const canSubmit = selectedType && form.amount && form.date;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Placeholder: integrate with backend later
-    console.log("Submitted", { type: selectedType, ...form });
-    onClose();
+
+    try {
+      const payload =
+        selectedType === "income"
+          ? {
+            amount: form.amount,
+            category: form.category,
+            date: form.date,
+            description: form.description,
+            items: form.items,
+          }
+          : {
+            amount: form.amount,
+            category: form.category,
+            date: form.date,
+            store: form.store,
+            description: form.description,
+          };
+
+      const endpoint =
+        selectedType === "income" ? "/api/income" : "/api/expenses";
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Error submitting data");
+      }
+
+      const data = await res.json();
+      console.log("Saved:", data);
+
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save entry: " + err.message);
+    }
   };
 
   const handleUploadReceipt = async () => {
@@ -83,6 +125,8 @@ export default function AddEntryModal({ open, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 py-6 overflow-y-auto">
       <div className="mt-6 w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-300">
+
+        {/* HEADER */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 sticky top-0 bg-white z-10">
           <div className="space-y-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -97,9 +141,10 @@ export default function AddEntryModal({ open, onClose }) {
           </Button>
         </div>
 
+        {/* TYPE SELECT */}
         {!selectedType ? (
           <div className="grid gap-4 bg-slate-50 px-6 py-6 sm:grid-cols-2">
-            {(["income", "expense"]).map((type) => {
+            {["income", "expense"].map((type) => {
               const conf = typeConfigs[type];
               return (
                 <button
@@ -110,18 +155,23 @@ export default function AddEntryModal({ open, onClose }) {
                   <span className={`rounded-full px-3 py-1 text-xs font-semibold ${conf.pill}`}>
                     {conf.label}
                   </span>
-                  <p className="text-sm text-slate-700">Track a new {conf.label.toLowerCase()}.</p>
+                  <p className="text-sm text-slate-700">
+                    Track a new {conf.label.toLowerCase()}.
+                  </p>
                 </button>
               );
             })}
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6 max-h-[80vh] overflow-y-auto">
+
+            {/* TYPE TAG */}
             <div className="flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-semibold text-slate-800">
               <span>Type</span>
               <span className={`rounded-full px-3 py-1 text-xs ${cfg.pill}`}>{cfg.label}</span>
             </div>
 
+            {/* AMOUNT */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">Amount</label>
               <Input
@@ -134,15 +184,29 @@ export default function AddEntryModal({ open, onClose }) {
               />
             </div>
 
+            {/* CATEGORY */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">Category</label>
               <Input
-                placeholder="e.g. Salary"
+                placeholder="e.g. Food"
                 value={form.category}
                 onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
               />
             </div>
 
+            {/* STORE — ONLY FOR EXPENSE */}
+            {selectedType === "expense" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Store</label>
+                <Input
+                  placeholder="e.g. SM Supermarket"
+                  value={form.store}
+                  onChange={(e) => setForm((f) => ({ ...f, store: e.target.value }))}
+                />
+              </div>
+            )}
+
+            {/* DATE */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">Date</label>
               <Input
@@ -152,6 +216,7 @@ export default function AddEntryModal({ open, onClose }) {
               />
             </div>
 
+            {/* NOTE / DESCRIPTION */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">Note</label>
               <Input
@@ -161,6 +226,7 @@ export default function AddEntryModal({ open, onClose }) {
               />
             </div>
 
+            {/* RECEIPT UPLOAD — ONLY FOR EXPENSE */}
             {selectedType === "expense" && (
               <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-4 space-y-3">
                 <div className="flex items-center justify-between">
@@ -172,16 +238,21 @@ export default function AddEntryModal({ open, onClose }) {
                     Optional
                   </span>
                 </div>
+
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700
+                    file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 
+                    file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100"
                 />
+
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-xs text-slate-500">
                     {receiptFile ? `Selected: ${receiptFile.name}` : "Choose a receipt image (jpg, png)"}
                   </div>
+
                   <Button
                     type="button"
                     onClick={handleUploadReceipt}
@@ -191,15 +262,15 @@ export default function AddEntryModal({ open, onClose }) {
                     {uploadState.status === "uploading" ? "Uploading..." : "Upload receipt"}
                   </Button>
                 </div>
+
                 {uploadState.message && (
                   <div
-                    className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium ${
-                      uploadState.status === "error"
+                    className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium ${uploadState.status === "error"
                         ? "bg-rose-50 text-rose-700"
                         : uploadState.status === "success"
-                        ? "bg-green-50 text-green-700"
-                        : "bg-slate-50 text-slate-600"
-                    }`}
+                          ? "bg-green-50 text-green-700"
+                          : "bg-slate-50 text-slate-600"
+                      }`}
                   >
                     {uploadState.message}
                   </div>
@@ -207,15 +278,12 @@ export default function AddEntryModal({ open, onClose }) {
               </div>
             )}
 
+            {/* SUBMIT BUTTONS */}
             <div className="flex items-center justify-between pt-2">
               <Button variant="ghost" type="button" onClick={() => setSelectedType(null)}>
                 Back
               </Button>
-              <Button
-                type="submit"
-                className={`rounded-xl px-5 ${cfg.submit}`}
-                disabled={!canSubmit}
-              >
+              <Button type="submit" className={`rounded-xl px-5 ${cfg.submit}`} disabled={!canSubmit}>
                 Save {cfg.label}
               </Button>
             </div>
@@ -225,4 +293,3 @@ export default function AddEntryModal({ open, onClose }) {
     </div>
   );
 }
-
