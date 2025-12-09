@@ -4,16 +4,15 @@ import { BarChart3 } from "lucide-react";
 
 export default function AnalyticsPage() {
     return (
-        <div className="grid gap-4">
-            <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Overview
-                    </p>
-                    <h2 className="text-2xl font-semibold text-slate-900">Analytics</h2>
-                    <p className="text-sm text-slate-500">Insights and trends coming soon.</p>
-                </div>
-                <Badge className="bg-indigo-50 text-indigo-700">Coming soon</Badge>
+        <div className="grid gap-5">
+            <div className="space-y-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+                    Overview
+                </p>
+                <h1 className="text-2xl font-semibold text-slate-900 leading-snug">Analytics</h1>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                    Insights and trends coming soon.
+                </p>
             </div>
 
             <Card className="border-dashed border-slate-200 bg-slate-50">
