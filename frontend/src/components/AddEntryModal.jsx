@@ -188,7 +188,7 @@ export default function AddEntryModal({ open, onClose }) {
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">Category</label>
               <Input
-                placeholder="e.g. Food"
+                placeholder={selectedType === "income" ? "e.g. Salary" : "e.g. Food"}
                 value={form.category}
                 onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
               />
