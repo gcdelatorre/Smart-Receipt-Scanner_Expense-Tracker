@@ -13,7 +13,7 @@ const typeConfigs = {
     label: "Expense",
     color: "bg-rose-50 text-rose-700 border-rose-100",
     pill: "bg-rose-100 text-rose-800",
-    submit: "bg-rose-600 hover:bg-rose-700",
+    submit: "bg-green-600 hover:bg-green-700",
   },
 };
 
@@ -25,17 +25,22 @@ export default function AddEntryModal({ open, onClose }) {
     note: "",
     date: "",
   });
+  const [receiptFile, setReceiptFile] = useState(null);
+  const [uploadState, setUploadState] = useState({ status: "idle", message: "" });
 
   useEffect(() => {
     if (!open) {
       setSelectedType(null);
       setForm({ amount: "", category: "", note: "", date: "" });
+      setReceiptFile(null);
+      setUploadState({ status: "idle", message: "" });
     }
   }, [open]);
 
   if (!open) return null;
 
   const cfg = selectedType ? typeConfigs[selectedType] : null;
+  const canSubmit = selectedType && form.amount && form.date;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -44,10 +49,41 @@ export default function AddEntryModal({ open, onClose }) {
     onClose();
   };
 
+  const handleUploadReceipt = async () => {
+    if (!receiptFile) {
+      setUploadState({ status: "error", message: "Please choose a receipt image first." });
+      return;
+    }
+    try {
+      setUploadState({ status: "uploading", message: "Uploading receipt..." });
+      const fd = new FormData();
+      fd.append("image", receiptFile);
+
+      const res = await fetch("/api/expenses/upload", {
+        method: "POST",
+        body: fd,
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Upload failed");
+      }
+
+      const data = await res.json();
+      setUploadState({ status: "success", message: "Receipt uploaded and processed." });
+      console.log("Upload response", data);
+    } catch (err) {
+      setUploadState({
+        status: "error",
+        message: err?.message || "Something went wrong uploading the receipt.",
+      });
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-300">
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 py-6 overflow-y-auto">
+      <div className="mt-6 w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-300">
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 sticky top-0 bg-white z-10">
           <div className="space-y-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               Add new
@@ -80,7 +116,7 @@ export default function AddEntryModal({ open, onClose }) {
             })}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6">
+          <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-semibold text-slate-800">
               <span>Type</span>
               <span className={`rounded-full px-3 py-1 text-xs ${cfg.pill}`}>{cfg.label}</span>
@@ -125,6 +161,52 @@ export default function AddEntryModal({ open, onClose }) {
               />
             </div>
 
+            {selectedType === "expense" && (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Upload receipt</p>
+                    <p className="text-xs text-slate-500">Submit a photo to auto-create an expense.</p>
+                  </div>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-indigo-600">
+                    Optional
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100"
+                />
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-xs text-slate-500">
+                    {receiptFile ? `Selected: ${receiptFile.name}` : "Choose a receipt image (jpg, png)"}
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleUploadReceipt}
+                    className="rounded-xl px-4"
+                    disabled={uploadState.status === "uploading" || !receiptFile}
+                  >
+                    {uploadState.status === "uploading" ? "Uploading..." : "Upload receipt"}
+                  </Button>
+                </div>
+                {uploadState.message && (
+                  <div
+                    className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium ${
+                      uploadState.status === "error"
+                        ? "bg-rose-50 text-rose-700"
+                        : uploadState.status === "success"
+                        ? "bg-green-50 text-green-700"
+                        : "bg-slate-50 text-slate-600"
+                    }`}
+                  >
+                    {uploadState.message}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex items-center justify-between pt-2">
               <Button variant="ghost" type="button" onClick={() => setSelectedType(null)}>
                 Back
@@ -132,6 +214,7 @@ export default function AddEntryModal({ open, onClose }) {
               <Button
                 type="submit"
                 className={`rounded-xl px-5 ${cfg.submit}`}
+                disabled={!canSubmit}
               >
                 Save {cfg.label}
               </Button>
