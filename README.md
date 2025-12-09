@@ -8,11 +8,12 @@ Manual expense tracking is tedious. Receipts get lost, and budgets are easily fo
 
 ## Features
 
-- Upload receipt images
-- Extract text using OCR (Tesseract.js or Gemini API)
+- Automatic Receipt Scanner
 - AI categorizes expenses (food, transport, bills)
-- Store structured data in MongoDB
+- View Transaction History
 - View monthly expense charts
+- User can view Analytics
+- 
 
 ---
 
@@ -22,7 +23,7 @@ Manual expense tracking is tedious. Receipts get lost, and budgets are easily fo
 - Backend: Node.js + Express  
 - Database: MongoDB  
 - OCR & AI: Tesseract.js / Gemini Free API  
-- Charts: Chart.js  
+- Tools: Tailwind + ShadCN + Lucide
 
 ---
 
