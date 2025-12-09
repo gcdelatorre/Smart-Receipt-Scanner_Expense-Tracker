@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownRight, PiggyBank, TrendingUp, Wallet } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, PiggyBank, TrendingUp, Wallet, ArrowDown } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function useStats() {
@@ -33,21 +33,33 @@ export function useStats() {
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0); // last day of last month
 
-    const totalThisMonth = expenseStats
+    // total expense this month
+    const totalExpenseThisMonth = expenseStats
         .filter(exp => new Date(exp.date) >= startOfThisMonth && new Date(exp.date) <= endOfThisMonth)
         .reduce((acc, exp) => acc + exp.amount, 0);
 
-    const totalLastMonth = expenseStats
+    // total expense last month
+    const totalExpenseLastMonth = expenseStats
         .filter(exp => new Date(exp.date) >= startOfLastMonth && new Date(exp.date) <= endOfLastMonth)
         .reduce((acc, exp) => acc + exp.amount, 0);
 
-    const change = totalLastMonth === 0
-        ? 100 // or just show "new" 
-        : ((totalThisMonth - totalLastMonth) / totalLastMonth) * 100;
+    // compare
+    const change = totalExpenseLastMonth === 0
+        ? 100
+        : ((totalExpenseThisMonth - totalExpenseLastMonth) / totalExpenseLastMonth) * 100;
 
+    // declare label
     const changeLabel = `${change >= 0 ? "+" : ""}${change.toFixed(1)}% from last month`;
 
 
+    // total income this month
+    const totalIncomeThisMonth = incomeStats
+        .filter(inc => new Date(inc.date) >= startOfThisMonth && new Date(inc.date) < endOfThisMonth)
+        .reduce((acc, inc) => acc + inc.amount, 0);
+
+    const incomeProgress = totalIncomeThisMonth
+        ? Math.max(((totalIncomeThisMonth - totalExpenseThisMonth) / totalIncomeThisMonth) * 100, 0)
+        : 0;
 
     const stats = [
         {
@@ -63,19 +75,19 @@ export function useStats() {
         },
         {
             title: "Monthly Income",
-            value: "$0.00",
-            changeLabel: "On track",
-            changeVariant: "default",
-            changeIcon: ArrowUpRight,
+            value: `$${totalIncomeThisMonth.toFixed(2)}`,
+            changeLabel: incomeProgress >= 30 ? "On track" : "Income nearly used",
+            changeVariant: incomeProgress >= 30 ? "default" : "destructive",
+            changeIcon: incomeProgress >= 30 ? ArrowUpRight : ArrowDownRight,
             icon: TrendingUp,
             accent: "bg-green-50 text-green-700",
-            progress: 82,
-            progressColor: "bg-green-500",
+            progress: incomeProgress,
+            progressColor: incomeProgress >= 30 ? "bg-green-500" : "bg-rose-500",
         },
         {
             title: "Monthly Expenses",
-            value: "$0.00",
-            changeLabel: "-$0 vs budget",
+            value: `$${totalExpenseThisMonth.toFixed(2)}`,
+            changeLabel: `${totalExpenseThisMonth} vs budget`,
             changeVariant: "destructive",
             changeIcon: ArrowDownRight,
             icon: Wallet,
