@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { typeConfigs } from "./utils/typeConfigs";
+import { useStats } from "./utils/useStats";
 
 export default function AddEntryModal({ open, onClose }) {
   const [selectedType, setSelectedType] = useState(null);
@@ -17,6 +18,8 @@ export default function AddEntryModal({ open, onClose }) {
 
   const [receiptFile, setReceiptFile] = useState(null);
   const [uploadState, setUploadState] = useState({ status: "idle", message: "" });
+
+  const { refresh } = useStats()
 
   useEffect(() => {
     if (!open) {
@@ -67,8 +70,7 @@ export default function AddEntryModal({ open, onClose }) {
         throw new Error(errorText || "Error submitting data");
       }
 
-      const data = await res.json();
-      console.log("Saved:", data);
+      refresh()
 
       onClose();
     } catch (err) {
@@ -252,10 +254,10 @@ export default function AddEntryModal({ open, onClose }) {
                 {uploadState.message && (
                   <div
                     className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium ${uploadState.status === "error"
-                        ? "bg-rose-50 text-rose-700"
-                        : uploadState.status === "success"
-                          ? "bg-green-50 text-green-700"
-                          : "bg-slate-50 text-slate-600"
+                      ? "bg-rose-50 text-rose-700"
+                      : uploadState.status === "success"
+                        ? "bg-green-50 text-green-700"
+                        : "bg-slate-50 text-slate-600"
                       }`}
                   >
                     {uploadState.message}

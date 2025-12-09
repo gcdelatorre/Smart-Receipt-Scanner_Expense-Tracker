@@ -5,12 +5,19 @@ export function useStats() {
     const [incomeStats, setIncomeStats] = useState([]);
     const [expenseStats, setExpenseStats] = useState([]);
 
-    useEffect(() => {
-        fetch("/api/income").then(res => res.json()).then(data => setIncomeStats(data.data));
-        fetch("/api/expenses").then(res => res.json()).then(data => setExpenseStats(data.data));
-    }, []);
+    const refresh = async () => {
+        const res1 = await fetch("/api/income").then(r => r.json());
+        const res2 = await fetch("/api/expenses").then(r => r.json());
 
-    // process value
+        setIncomeStats(res1.data);
+        setExpenseStats(res2.data);
+    };
+
+    useEffect(() => {
+        refresh();
+    }, [refresh]);
+
+    // process value    
     const totalExpense = expenseStats.reduce((acc, expense) => acc + expense.amount, 0);
     const totalIncome = incomeStats.reduce((acc, income) => acc + income.amount, 0)
     const totalBalance = totalIncome - totalExpense;
@@ -42,15 +49,12 @@ export function useStats() {
 
 
 
-
-
-
     const stats = [
         {
             title: "Total Balance",
             value: `$${totalBalance.toFixed(2)}`,
             changeLabel: changeLabel,
-            changeVariant: change >= 0 ? "success" : "destructive" ,
+            changeVariant: change >= 0 ? "success" : "destructive",
             changeIcon: change >= 0 ? ArrowUpRight : ArrowDownRight,
             icon: PiggyBank,
             accent: "bg-indigo-50 text-indigo-700",
@@ -81,6 +85,6 @@ export function useStats() {
         },
     ];
 
-    return stats
+    return { stats, refresh }
 }
 

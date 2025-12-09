@@ -17,7 +17,7 @@ import { chartPoints } from "./components/utils/chartPoints";
 
 export default function App() {
 
-  const stats = useStats(); 
+  const { stats } = useStats();
 
   const [showAdd, setShowAdd] = useState(false);
   const location = useLocation();
