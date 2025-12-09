@@ -10,20 +10,51 @@ export function useStats() {
         fetch("/api/expenses").then(res => res.json()).then(data => setExpenseStats(data.data));
     }, []);
 
+    // process value
     const totalExpense = expenseStats.reduce((acc, expense) => acc + expense.amount, 0);
     const totalIncome = incomeStats.reduce((acc, income) => acc + income.amount, 0)
     const totalBalance = totalIncome - totalExpense;
+
+    // process for labels
+    const now = new Date();
+
+    // Current month range
+    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfThisMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // last day of this month
+
+    // Last month range
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0); // last day of last month
+
+    const totalThisMonth = expenseStats
+        .filter(exp => new Date(exp.date) >= startOfThisMonth && new Date(exp.date) <= endOfThisMonth)
+        .reduce((acc, exp) => acc + exp.amount, 0);
+
+    const totalLastMonth = expenseStats
+        .filter(exp => new Date(exp.date) >= startOfLastMonth && new Date(exp.date) <= endOfLastMonth)
+        .reduce((acc, exp) => acc + exp.amount, 0);
+
+    const change = totalLastMonth === 0
+        ? 100 // or just show "new" 
+        : ((totalThisMonth - totalLastMonth) / totalLastMonth) * 100;
+
+    const changeLabel = `${change >= 0 ? "+" : ""}${change.toFixed(1)}% from last month`;
+
+
+
+
+
 
     const stats = [
         {
             title: "Total Balance",
             value: `$${totalBalance.toFixed(2)}`,
-            changeLabel: "+2.5% from last month",
-            changeVariant: "success",
-            changeIcon: ArrowUpRight,
+            changeLabel: changeLabel,
+            changeVariant: change >= 0 ? "success" : "destructive" ,
+            changeIcon: change >= 0 ? ArrowUpRight : ArrowDownRight,
             icon: PiggyBank,
             accent: "bg-indigo-50 text-indigo-700",
-            progress: 62,
+            progress: change,
             progressColor: "bg-indigo-500",
         },
         {
