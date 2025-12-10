@@ -17,7 +17,7 @@ export function CardHeader({ className, ...props }) {
 }
 
 export function CardContent({ className, ...props }) {
-  return <div className={cn("px-6 pb-6 pt-2", className)} {...props} />;
+  return <div className={cn("px-6 pb-6 pt-2 ", className)} {...props} />;
 }
 
 export function CardTitle({ className, ...props }) {
@@ -26,5 +26,9 @@ export function CardTitle({ className, ...props }) {
 
 export function CardDescription({ className, ...props }) {
   return <p className={cn("text-sm text-slate-500", className)} {...props} />;
+}
+
+export function CardTransactionHistory({ className, ...props }) {
+  return <div className={cn("pt-2 pb-4 pr-4 pl-4", className)} {...props} />;
 }
 
