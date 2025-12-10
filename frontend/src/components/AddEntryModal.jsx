@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { typeConfigs } from "./utils/typeConfigs";
-import { useStats } from "./utils/useStats";
 
-export default function AddEntryModal({ open, onClose }) {
+export default function AddEntryModal({ open, onClose, refreshTransaction }) {
   const [selectedType, setSelectedType] = useState(null);
 
   const [form, setForm] = useState({
@@ -18,8 +17,6 @@ export default function AddEntryModal({ open, onClose }) {
 
   const [receiptFile, setReceiptFile] = useState(null);
   const [uploadState, setUploadState] = useState({ status: "idle", message: "" });
-
-  const { refresh } = useStats()
 
   useEffect(() => {
     if (!open) {
@@ -70,7 +67,9 @@ export default function AddEntryModal({ open, onClose }) {
         throw new Error(errorText || "Error submitting data");
       }
 
-      refresh()
+      if (refreshTransaction) {
+        refreshTransaction();
+      }
 
       onClose();
     } catch (err) {
@@ -100,7 +99,9 @@ export default function AddEntryModal({ open, onClose }) {
       }
 
       setUploadState({ status: "success", message: "Receipt uploaded and processed." });
-      refresh()
+      if (refreshTransaction) {
+        refreshTransaction();
+      }
 
     } catch (err) {
       setUploadState({

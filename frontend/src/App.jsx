@@ -20,6 +20,7 @@ export default function App() {
   const { stats } = useStats();
 
   const [showAdd, setShowAdd] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const location = useLocation();
   const pathname = location.pathname;
   const isActive = (path) => (path === "/" ? pathname === "/" : pathname.startsWith(path));
@@ -29,6 +30,10 @@ export default function App() {
       : pathname === "/analytics"
         ? "Analytics"
         : "Dashboard";
+
+  const triggerRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
 
   return (
     <div className="min-h-screen bg-[hsl(var(--background))] text-slate-900">
@@ -57,13 +62,13 @@ export default function App() {
                 </>
               }
             />
-            <Route path="/transactions" element={<TransactionsPage />} />
+            <Route path="/transactions" element={<TransactionsPage key={refreshKey} onRefresh={triggerRefresh} />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>
-      <AddEntryModal open={showAdd} onClose={() => setShowAdd(false)} />
+      <AddEntryModal open={showAdd} onClose={() => setShowAdd(false)} refreshTransaction={triggerRefresh} />
       <MobileNav navItems={navItems} isActive={isActive} />
     </div>
   );

@@ -1,5 +1,6 @@
 import { ArrowUpRight, ArrowDownRight, PiggyBank, TrendingUp, Wallet, ArrowDown, CircleSlash, Circle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { fetchTransactions } from "./fetchTransaction";
 
 export function useStats() {
     const [incomeStats, setIncomeStats] = useState([]);
@@ -15,6 +16,7 @@ export function useStats() {
 
     useEffect(() => {
         refresh();
+        fetchTransactions()
     }, [refresh]);
 
     // process value    
