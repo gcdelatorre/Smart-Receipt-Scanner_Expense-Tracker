@@ -99,9 +99,9 @@ export default function AddEntryModal({ open, onClose }) {
         throw new Error(errorText || "Upload failed");
       }
 
-      const data = await res.json();
       setUploadState({ status: "success", message: "Receipt uploaded and processed." });
-      console.log("Upload response", data);
+      refresh()
+
     } catch (err) {
       setUploadState({
         status: "error",

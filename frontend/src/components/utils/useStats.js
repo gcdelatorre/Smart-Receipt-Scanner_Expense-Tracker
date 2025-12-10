@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownRight, PiggyBank, TrendingUp, Wallet, ArrowDown } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, PiggyBank, TrendingUp, Wallet, ArrowDown, CircleSlash, Circle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function useStats() {
@@ -61,28 +61,37 @@ export function useStats() {
         ? Math.max(((totalIncomeThisMonth - totalExpenseThisMonth) / totalIncomeThisMonth) * 100, 0)
         : 0;
 
+    // determine if it has data
+    const hasExpense = totalExpenseThisMonth > 0
+    const hasIncome = totalIncomeThisMonth > 0
+    const hasData = hasExpense || hasIncome
+
+    const defaultLabel = "No data yet"
+    const defaultVariant = "secondary"
+    const defaultProgressColor = "bg-gray-300"
+
     const stats = [
         {
             title: "Total Balance",
             value: `$${totalBalance.toFixed(2)}`,
-            changeLabel: changeLabel,
-            changeVariant: change >= 0 ? "success" : "destructive",
-            changeIcon: change >= 0 ? ArrowUpRight : ArrowDownRight,
+            changeLabel: hasData ? changeLabel : defaultLabel,
+            changeVariant: hasData ? (change >= 0 ? "success" : "destructive") : defaultVariant,
+            changeIcon: hasData ? (change >= 0 ? ArrowUpRight : ArrowDownRight) : CircleSlash,
             icon: PiggyBank,
             accent: "bg-indigo-50 text-indigo-700",
             progress: change,
-            progressColor: "bg-indigo-500",
+            progressColor: hasData ? (change >= 30 ? "bg-indigo-500" : "bg-rose-500") : defaultProgressColor,
         },
         {
             title: "Monthly Income",
             value: `$${totalIncomeThisMonth.toFixed(2)}`,
-            changeLabel: incomeProgress >= 30 ? "On track" : "Income nearly used",
-            changeVariant: incomeProgress >= 30 ? "default" : "destructive",
-            changeIcon: incomeProgress >= 30 ? ArrowUpRight : ArrowDownRight,
+            changeLabel: hasIncome ? (incomeProgress >= 30 ? "On track" : "Income nearly used") : defaultLabel,
+            changeVariant: hasIncome ? (incomeProgress >= 30 ? "default" : "destructive") : defaultVariant,
+            changeIcon: hasIncome ? (incomeProgress >= 30 ? ArrowUpRight : ArrowDownRight) : CircleSlash,
             icon: TrendingUp,
             accent: "bg-green-50 text-green-700",
             progress: incomeProgress,
-            progressColor: incomeProgress >= 30 ? "bg-green-500" : "bg-rose-500",
+            progressColor: hasIncome ? (incomeProgress >= 30 ? "bg-green-500" : "bg-rose-500") : defaultProgressColor,
         },
         {
             title: "Monthly Expenses",
