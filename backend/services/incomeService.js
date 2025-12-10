@@ -2,10 +2,10 @@ import Income from '../models/income.model.js'
 
 // create a new expense
 export const createIncome = async (incomeData) => {
-    const { amount, category, description, date, userId } = incomeData;
+    const { amount, category, description, transactionType, date, userId } = incomeData;
 
     const newIncome = await Income.create({
-        amount, category, description, date, userId
+        amount, category, description, transactionType, date, userId
     });
 
     return newIncome;
