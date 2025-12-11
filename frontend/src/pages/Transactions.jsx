@@ -4,7 +4,7 @@ import { Receipt, PlusCircle, ArrowUpRight, ArrowDownRight, ChevronRight } from 
 import { useEffect, useState } from "react";
 import { fetchTransactions } from "../components/utils/fetchTransaction";
 
-export default function TransactionsPage({ onRefresh }) {
+export default function TransactionsPage({ onRefresh, refreshTrigger }) {
     const [transactionData, setTransactionData] = useState([]);
 
     const fetchTransactionData = async () => {
@@ -14,7 +14,7 @@ export default function TransactionsPage({ onRefresh }) {
 
     useEffect(() => {
         fetchTransactionData();
-    }, []);
+    }, [refreshTrigger]);
 
     const sortedTransactions = [...transactionData].sort(
         (a, b) => new Date(b.date) - new Date(a.date)

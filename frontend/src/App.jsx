@@ -17,10 +17,9 @@ import { chartPoints } from "./components/utils/chartPoints";
 
 export default function App() {
 
-  const { stats } = useStats();
-
   const [showAdd, setShowAdd] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { stats } = useStats(refreshKey);
   const location = useLocation();
   const pathname = location.pathname;
   const isActive = (path) => (path === "/" ? pathname === "/" : pathname.startsWith(path));
@@ -62,7 +61,7 @@ export default function App() {
                 </>
               }
             />
-            <Route path="/transactions" element={<TransactionsPage key={refreshKey} onRefresh={triggerRefresh} />} />
+            <Route path="/transactions" element={<TransactionsPage key={refreshKey} refreshTrigger={refreshKey} onRefresh={triggerRefresh} />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
