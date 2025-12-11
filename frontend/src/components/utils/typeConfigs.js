@@ -11,4 +11,11 @@ export const typeConfigs = {
         pill: "bg-rose-100 text-rose-800",
         submit: "bg-rose-600 hover:bg-rose-700",
     },
+    budget: {
+        label: "Budget",
+        color: "border-indigo-50 text-indigo-700 border-indigo-100",
+        pill: "bg-indigo-100 text-indigo-800",
+        submit: "bg-indigo-600 hover:bg-indigo-700"
+    }
 };
+
