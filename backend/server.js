@@ -6,7 +6,7 @@ import { connectDB } from './config/db.js';
 
 import ExpenseRouter from './routes/expenseRoutes.js';
 import IncomeRouter from './routes/incomeRoutes.js';
-import UserRouter from './routes/user.route.js'
+import UserRouter from './routes/userRoutes.js'
 
 const PORT = process.env.PORT || 5000;
 const app = express();
