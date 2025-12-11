@@ -1,23 +1,31 @@
 import { ArrowUpRight, ArrowDownRight, PiggyBank, TrendingUp, Wallet, ArrowDown, CircleSlash, Circle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { fetchTransactions } from "./fetchTransaction";
+import { fetchUserBudget } from "./fetchUser";
 
 export function useStats() {
     const [incomeStats, setIncomeStats] = useState([]);
     const [expenseStats, setExpenseStats] = useState([]);
+    const [userBudget, setUserBudget] = useState([])
 
-    const refresh = async () => {
+    const refresh = useCallback(async () => {
         const res1 = await fetch("/api/income").then(r => r.json());
         const res2 = await fetch("/api/expenses").then(r => r.json());
 
         setIncomeStats(res1.data);
         setExpenseStats(res2.data);
-    };
+    }, []);
 
     useEffect(() => {
-        refresh();
-        fetchTransactions()
-    }, [refresh]);
+        const fetchData = async () => {
+            await refresh();
+            const budget = await fetchUserBudget();
+            setUserBudget(budget);
+            await fetchTransactions();
+        };
+
+        fetchData();
+    }, []);
 
     // process value    
     const totalExpense = expenseStats.reduce((acc, expense) => acc + expense.amount, 0);
