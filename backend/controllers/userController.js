@@ -24,3 +24,23 @@ export const getUser = async (req, res) => {
     }
 }
 
+// update user
+export const updateUser = async (req, res) => {
+    const user = await findUserById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
+
+    try {
+        user.overallBudget = req.body.overallBudget; // overwrite overall budget
+        user.categoryBudgets.push(...req.body.categoryBudgets.map(c => ({ ...c, amount: Number(c.amount) })));
+
+        const updatedUser = await user.save();
+
+        res.status(200).json({
+            success: true,
+            data: updatedUser,
+            message: "User Updated Successfully"
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message })
+    }
+}
