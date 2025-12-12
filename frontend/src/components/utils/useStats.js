@@ -19,8 +19,8 @@ export function useStats(refreshTrigger) {
     useEffect(() => {
         const fetchData = async () => {
             await refresh();
-            const budget = await fetchUserBudget();
-            setOverallBudget(budget);
+            const { overallBudget } = await fetchUserBudget();
+            setOverallBudget(overallBudget);
             await fetchTransactions();
         };
 
@@ -116,7 +116,7 @@ export function useStats(refreshTrigger) {
         {
             title: "Monthly Expenses",
             value: `$${totalExpenseThisMonth.toFixed(2)}`,
-            changeLabel: hasExpense ? (`${expensePercentage.toFixed(1)}% of budget used`) : defaultLabel,
+            changeLabel: hasExpense ? (`${(expensePercentage).toFixed(1)}% of budget used`) : defaultLabel,
             changeVariant: "destructive",
             changeIcon: hasExpense ? ArrowDownRight : CircleSlash,
             icon: Wallet,
