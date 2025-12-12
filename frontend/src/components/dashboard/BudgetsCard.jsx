@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
-import { Info } from "lucide-react";
+import { BanknoteX, Info, PlusCircle, Receipt } from "lucide-react";
 import { fetchUserBudget } from '../utils/fetchUser'
 import { useEffect, useState } from "react";
 
@@ -24,7 +24,7 @@ export default function BudgetsCard({ refreshTrigger }) {
       <div className="flex items-center justify-between text-sm font-medium text-slate-700">
         <span>{budget.category}</span>
         <span className="text-slate-500">
-          ${budget.used} / ${budget.amount}
+          ${budget.usedAmount} / ${budget.amount}
         </span>
       </div>
       <Progress value={(budget.amount / budget.amount) * 100} />
@@ -32,28 +32,47 @@ export default function BudgetsCard({ refreshTrigger }) {
   ))
 
   return (
-    <Card className="lg:col-span-4">
-      <CardHeader>
-        <CardTitle className="text-sm font-medium text-slate-500">Budgets</CardTitle>
-        <div className="mt-3 flex items-center gap-2 text-2xl font-semibold text-slate-900">
-          {overallBudget ? `$${overallBudget.toFixed(2)}` : `Loading...`}
-        </div>
-        <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
-          Edit
-        </button>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        {categoryBudgetElements}
-        {/* <div className="rounded-2xl bg-indigo-50 px-4 py-4 text-sm text-indigo-800">
+    <>
+      {categoryBudgets.length > 0 ?
+        (<Card className="lg:col-span-4">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-slate-500">Budget</CardTitle>
+            <div className="mt-3 flex items-center gap-2 text-2xl font-semibold text-slate-900">
+              {overallBudget ? `$${overallBudget.toFixed(2)}` : `Loading...`}
+            </div>
+            <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+              Edit
+            </button>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            {categoryBudgetElements}
+            {/* <div className="rounded-2xl bg-indigo-50 px-4 py-4 text-sm text-indigo-800">
           <div className="flex items-start gap-2">
-            <span className="mt-0.5">
-              <Info className="h-4 w-4" />
-            </span>
-            <span>You're close to hitting your limit on Entertainment!</span>
+          <span className="mt-0.5">
+          <Info className="h-4 w-4" />
+          </span>
+          <span>You're close to hitting your limit on Entertainment!</span>
           </div>
-        </div> */}
-      </CardContent>
-    </Card>
+          </div> */}
+          </CardContent>
+        </Card>) : (
+          <Card className="border-dashed border-slate-200 bg-slate-50">
+            <CardContent className="flex flex-col items-center gap-3 text-sm text-slate-600 py-6">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 mb-2">
+                <BanknoteX className="h-6 w-6" />
+              </div>
+              <p className="text-lg font-semibold text-slate-800 text-center">
+                No Category Budgets Added
+              </p>
+              <p className="text-center max-w-md">
+                You haven’t added any Category Budget yet. Add a new entry to
+                start tracking.
+              </p>
+            </CardContent>
+          </Card>
+        )
+      }
+    </>
   );
 }
 
