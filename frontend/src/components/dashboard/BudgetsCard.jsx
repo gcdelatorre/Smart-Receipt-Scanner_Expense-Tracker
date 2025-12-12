@@ -4,7 +4,7 @@ import { Info } from "lucide-react";
 import { fetchUserBudget } from '../utils/fetchUser'
 import { useEffect, useState } from "react";
 
-export default function BudgetsCard() {
+export default function BudgetsCard({ refreshTrigger }) {
 
   const [overallBudget, setOverallBudget] = useState(0)
   const [categoryBudgets, setCategoryBudgets] = useState([])
@@ -17,7 +17,7 @@ export default function BudgetsCard() {
       setCategoryBudgets(categoryBudgets)
     }
     fetchBudgets()
-  }, []);
+  }, [refreshTrigger]);
 
   const categoryBudgetElements = categoryBudgets.map((budget) => (
     <div key={budget.category} className="space-y-2">
@@ -27,7 +27,7 @@ export default function BudgetsCard() {
           ${budget.used} / ${budget.amount}
         </span>
       </div>
-      <Progress value={(budget.used / budget.amount) * 100} />
+      <Progress value={(budget.amount / budget.amount) * 100} />
     </div>
   ))
 
@@ -44,14 +44,14 @@ export default function BudgetsCard() {
       </CardHeader>
       <CardContent className="space-y-5">
         {categoryBudgetElements}
-        <div className="rounded-2xl bg-indigo-50 px-4 py-4 text-sm text-indigo-800">
+        {/* <div className="rounded-2xl bg-indigo-50 px-4 py-4 text-sm text-indigo-800">
           <div className="flex items-start gap-2">
             <span className="mt-0.5">
               <Info className="h-4 w-4" />
             </span>
             <span>You're close to hitting your limit on Entertainment!</span>
           </div>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );
