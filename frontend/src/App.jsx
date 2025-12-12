@@ -12,9 +12,7 @@ import BudgetsCard from "./components/dashboard/BudgetsCard";
 import SpendingChart from "./components/dashboard/SpendingChart";
 import { navItems } from "./components/utils/navItems";
 import { useStats } from "./components/utils/useStats";
-import { budgets } from "./components/utils/budget";
 import { chartPoints } from "./components/utils/chartPoints";
-import AddNewButton from "./components/ui/AddNewButton";
 
 export default function App() {
 
@@ -58,7 +56,7 @@ export default function App() {
                       </CardContent>
                     </Card>
 
-                    <BudgetsCard />
+                    <BudgetsCard refreshTrigger={refreshKey} />
                   </div>
                 </>
               }
