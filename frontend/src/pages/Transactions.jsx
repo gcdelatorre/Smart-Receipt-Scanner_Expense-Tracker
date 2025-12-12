@@ -1,8 +1,9 @@
 import { Card, CardContent, CardTransactionHistory } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Receipt, PlusCircle, ArrowUpRight, ArrowDownRight, ChevronRight } from "lucide-react";
+import { Receipt, PlusCircle, ArrowUpRight, ArrowDownRight, ChevronRight, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { fetchTransactions } from "../components/utils/fetchTransaction";
+import SearchTransaction from "../components/ui/SearchTransaction";
 
 export default function TransactionsPage({ onRefresh, refreshTrigger }) {
     const [transactionData, setTransactionData] = useState([]);
@@ -71,43 +72,46 @@ export default function TransactionsPage({ onRefresh, refreshTrigger }) {
     });
 
     return (
-        <div className="max-w-5xl mx-auto">
-            {/* Overview Header */}
-            <div className="space-y-1 mb-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
-                    Overview
-                </p>
-                <h1 className="text-2xl font-semibold text-slate-900 leading-snug">
-                    Transactions
-                </h1>
-                <p className="text-sm text-slate-500 leading-relaxed">
-                    Recent activity across your accounts.
-                </p>
-            </div>
+        <>
+            <SearchTransaction />
+            <div className="max-w-5xl mx-auto">
+                {/* Overview Header */}
+                <div className="space-y-1 mb-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+                        Overview
+                    </p>
+                    <h1 className="text-2xl font-semibold text-slate-900 leading-snug">
+                        Transactions
+                    </h1>
+                    <p className="text-sm text-slate-500 leading-relaxed">
+                        Recent activity across your accounts.
+                    </p>
+                </div>
 
-            {/* Transactions List */}
-            {transactionData.length > 0 ? (
-                <div>{transactionElements}</div>
-            ) : (
-                <Card className="border-dashed border-slate-200 bg-slate-50">
-                    <CardContent className="flex flex-col items-center gap-3 text-sm text-slate-600 py-6">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 mb-2">
-                            <Receipt className="h-6 w-6" />
-                        </div>
-                        <p className="text-lg font-semibold text-slate-800 text-center">
-                            No recent transactions
-                        </p>
-                        <p className="text-center max-w-md">
-                            You haven’t added any income or expenses yet. Add a new entry to
-                            start tracking.
-                        </p>
-                        <Button className="rounded-xl px-4 mt-3" disabled>
-                            <PlusCircle className="h-5 w-5" />
-                            Add a transaction
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
-        </div>
+                {/* Transactions List */}
+                {transactionData.length > 0 ? (
+                    <div>{transactionElements}</div>
+                ) : (
+                    <Card className="border-dashed border-slate-200 bg-slate-50">
+                        <CardContent className="flex flex-col items-center gap-3 text-sm text-slate-600 py-6">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 mb-2">
+                                <Receipt className="h-6 w-6" />
+                            </div>
+                            <p className="text-lg font-semibold text-slate-800 text-center">
+                                No recent transactions
+                            </p>
+                            <p className="text-center max-w-md">
+                                You haven’t added any income or expenses yet. Add a new entry to
+                                start tracking.
+                            </p>
+                            <Button className="rounded-xl px-4 mt-3" disabled>
+                                <PlusCircle className="h-5 w-5" />
+                                Add a transaction
+                            </Button>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
+        </>
     );
 }
