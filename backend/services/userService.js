@@ -16,3 +16,10 @@ export const findUserById = async (userId) => {
     const user = await User.findById(userId);
     return user;
 }
+
+
+export const getAllUsers = async() => {
+    const users = await User.find({});
+
+    return users
+}
