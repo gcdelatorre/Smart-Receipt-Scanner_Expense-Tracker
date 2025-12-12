@@ -1,7 +1,17 @@
 import { getAll, findExpenseById, createExpense } from "../services/expenseService.js";
+import User from "../models/user.model.js";
 
 export const addExpense = async (req, res) => {
+
     try {
+        const expenseAmount = Number(req.body.amount);
+        const user = await User.findById("693aec9c08d1f6edd4c2ad5f"); // hardcoded userId for now
+        if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
+
+        // subtract from user's overallBudget
+        user.overallBudget -= expenseAmount;
+        await user.save();
+
         const newExpense = await createExpense({ ...req.body, userId: "64c1f0f9a4f12b3a5e123456" });
         res.status(200).json({
             success: true,
