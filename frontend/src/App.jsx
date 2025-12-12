@@ -14,6 +14,7 @@ import { navItems } from "./components/utils/navItems";
 import { useStats } from "./components/utils/useStats";
 import { budgets } from "./components/utils/budget";
 import { chartPoints } from "./components/utils/chartPoints";
+import AddNewButton from "./components/ui/AddNewButton";
 
 export default function App() {
 
@@ -40,7 +41,8 @@ export default function App() {
         <Sidebar navItems={navItems} isActive={isActive} />
 
         <main className="flex-1 space-y-6 pb-20 lg:pb-6">
-          <HeaderBar pageTitle={pageTitle} onAdd={() => setShowAdd(true)} />
+          <HeaderBar pageTitle={pageTitle} />
+          <AddNewButton onAdd={() => setShowAdd(true)} />
 
           <Routes>
             <Route
@@ -68,7 +70,7 @@ export default function App() {
         </main>
       </div>
       <AddEntryModal open={showAdd} onClose={() => setShowAdd(false)} refreshTransaction={triggerRefresh} />
-      <MobileNav navItems={navItems} isActive={isActive} />
+      <MobileNav navItems={navItems} isActive={isActive} onLogout={() => { }} user={{ username: "Alex Doe", email: "alex@example.com" }} />
     </div>
   );
 }
