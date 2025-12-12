@@ -24,14 +24,29 @@ export const getUser = async (req, res) => {
     }
 }
 
-// update user
 export const updateUser = async (req, res) => {
-    const user = await findUserById(req.params.id);
-    if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
-
     try {
-        user.overallBudget = req.body.overallBudget; // overwrite overall budget
-        user.categoryBudgets.push(...req.body.categoryBudgets.map(c => ({ ...c, amount: Number(c.amount) })));
+        const user = await findUserById(req.params.id);
+        if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
+
+        const newOverallBudget = Number(req.body.overallBudget ?? user.overallBudget);
+
+        const existingCategoryTotal = user.categoryBudgets.reduce((acc, cat) => acc + cat.amount, 0);
+
+        const newCategoryTotal = (req.body.categoryBudgets || []).reduce((acc, cat) => acc + Number(cat.amount), 0);
+
+        if (existingCategoryTotal + newCategoryTotal > newOverallBudget) {
+            return res.status(400).json({
+                success: false,
+                message: `Cannot add categories. Total would exceed overall budget of ${newOverallBudget}.`
+            });
+        }
+
+        user.overallBudget = newOverallBudget
+
+        if (req.body.categoryBudgets) {
+            user.categoryBudgets.push(...req.body.categoryBudgets.map(c => ({ ...c, amount: Number(c.amount) })));
+        }
 
         const updatedUser = await user.save();
 
@@ -41,6 +56,7 @@ export const updateUser = async (req, res) => {
             message: "User Updated Successfully"
         });
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message })
+        res.status(500).json({ success: false, message: err.message });
     }
-}
+};
+
