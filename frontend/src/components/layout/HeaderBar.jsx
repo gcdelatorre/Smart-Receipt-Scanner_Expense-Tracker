@@ -1,3 +1,5 @@
+import AddNewButton from "../ui/AddNewButton";
+
 
 export default function HeaderBar({ pageTitle, onAdd }) {
   return (
@@ -8,7 +10,7 @@ export default function HeaderBar({ pageTitle, onAdd }) {
       <div className="md:hidden">
         <p className="text-base font-semibold text-slate-900">{pageTitle}</p>
       </div>
-
+      <AddNewButton onAdd={onAdd} />
     </div>
   );
 }

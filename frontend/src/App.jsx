@@ -41,8 +41,8 @@ export default function App() {
         <Sidebar navItems={navItems} isActive={isActive} />
 
         <main className="flex-1 space-y-6 pb-20 lg:pb-6">
-          <HeaderBar pageTitle={pageTitle} />
-          <AddNewButton onAdd={() => setShowAdd(true)} />
+
+          <HeaderBar pageTitle={pageTitle} onAdd={() => setShowAdd(true)} />
 
           <Routes>
             <Route
