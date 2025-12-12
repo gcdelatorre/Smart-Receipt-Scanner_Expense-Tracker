@@ -290,7 +290,6 @@ export default function AddEntryModal({ open, onClose, refreshTransaction }) {
                     placeholder="Total monthly budget"
                     value={form.amount}
                     onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-                    required
                   />
                 </div>
 
