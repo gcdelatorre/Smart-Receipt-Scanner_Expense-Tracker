@@ -4,13 +4,50 @@ import User from "../models/user.model.js";
 export const addExpense = async (req, res) => {
 
     try {
+
+        // commented out code for updating user's overall budget when adding expense
+        // const expenseAmount = Number(req.body.amount);
+        // const user = await User.findById("693aec9c08d1f6edd4c2ad5f"); // hardcoded userId for now
+        // if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
+
+        // // subtract from user's overallBudget
+        // user.overallBudget -= expenseAmount;
+        // await user.save();
+
         const expenseAmount = Number(req.body.amount);
-        const user = await User.findById("693aec9c08d1f6edd4c2ad5f"); // hardcoded userId for now
+        const category = req.body.category;
+        const user = await User.findById("693aec9c08d1f6edd4c2ad5f");
         if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
 
-        // subtract from user's overallBudget
-        user.overallBudget -= expenseAmount;
-        await user.save();
+        // find the category budget
+        const categoryBudget = user.categoryBudgets.find(cat => cat.category === category);
+
+        // check if category budget exists
+        if (!categoryBudget) {
+            return res.status(400).json({
+                success: false,
+                message: `No budget found for category: ${category}`
+            });
+        }
+
+        // validation for checking if expense exceeds category budget
+        if (categoryBudget.usedAmount + expenseAmount > categoryBudget.amount) {
+            return res.status(400).json({
+                success: false,
+                message: `Expense exceeds budget for category: ${category}`
+            });
+        }
+
+        // update the usedAmount for the category budget
+        // updateOne works like
+        // “Find the first user whose _id matches userId and has a category budget named category.
+        // Then, increase ($inc means increase) the usedAmount of that matched category by expenseAmount.
+        // If no user or category matches, do nothing.”
+        await User.updateOne(
+            { _id: "693aec9c08d1f6edd4c2ad5f", "categoryBudgets.category": category },
+            { $inc: { "categoryBudgets.$.usedAmount": expenseAmount } }
+        );
+
 
         const newExpense = await createExpense({ ...req.body, userId: "64c1f0f9a4f12b3a5e123456" });
         res.status(200).json({
