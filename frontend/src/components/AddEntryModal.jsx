@@ -52,6 +52,7 @@ export default function AddEntryModal({ open, onClose, refreshTransaction }) {
               categoryBudgets: budgetCategories.map((cat) => ({
                 category: cat.category,
                 amount: Number(cat.amount) || 0,
+                usedAmount: 0,
               })),
             };
 
