@@ -3,10 +3,10 @@ import { useEffect, useState, useCallback } from "react";
 import { fetchTransactions } from "./fetchTransaction";
 import { fetchUserBudget } from "./fetchUser";
 
-export function useStats() {
+export function useStats(refreshTrigger) {
     const [incomeStats, setIncomeStats] = useState([]);
     const [expenseStats, setExpenseStats] = useState([]);
-    const [userBudget, setUserBudget] = useState([])
+    const [overallBudget, setOverallBudget] = useState(0)
 
     const refresh = useCallback(async () => {
         const res1 = await fetch("/api/income").then(r => r.json());
@@ -20,12 +20,12 @@ export function useStats() {
         const fetchData = async () => {
             await refresh();
             const budget = await fetchUserBudget();
-            setUserBudget(budget);
+            setOverallBudget(budget);
             await fetchTransactions();
         };
 
         fetchData();
-    }, []);
+    }, [refresh, refreshTrigger]);
 
     // process value    
     const totalExpense = expenseStats.reduce((acc, expense) => acc + expense.amount, 0);
@@ -71,6 +71,16 @@ export function useStats() {
         ? Math.max(((totalIncomeThisMonth - totalExpenseThisMonth) / totalIncomeThisMonth) * 100, 0)
         : 0;
 
+    const expenseProgress = overallBudget
+        ? Math.max(((overallBudget - totalExpenseThisMonth) / overallBudget) * 100, 0)
+        : 0;
+
+    // percentage for expense spend until budget is hit
+    const expensePercentage = overallBudget
+        ? Math.min((totalExpenseThisMonth / overallBudget) * 100, 100)
+        : 0;
+
+
     // determine if it has data
     const hasExpense = totalExpenseThisMonth > 0
     const hasIncome = totalIncomeThisMonth > 0
@@ -106,16 +116,15 @@ export function useStats() {
         {
             title: "Monthly Expenses",
             value: `$${totalExpenseThisMonth.toFixed(2)}`,
-            changeLabel: `${totalExpenseThisMonth} vs budget`,
+            changeLabel: hasExpense ? (`${expensePercentage.toFixed(1)}% of budget used`) : defaultLabel,
             changeVariant: "destructive",
-            changeIcon: ArrowDownRight,
+            changeIcon: hasExpense ? ArrowDownRight : CircleSlash,
             icon: Wallet,
             accent: "bg-rose-50 text-rose-700",
-            progress: 46,
-            progressColor: "bg-rose-500",
+            progress: expenseProgress,
+            progressColor: hasExpense ? "bg-rose-500" : defaultProgressColor,
         },
     ];
 
     return { stats, refresh }
 }
-
