@@ -4,18 +4,32 @@ import { Info } from "lucide-react";
 import { fetchUserBudget } from '../utils/fetchUser'
 import { useEffect, useState } from "react";
 
-export default function BudgetsCard({ budgets }) {
+export default function BudgetsCard() {
 
   const [overallBudget, setOverallBudget] = useState(0)
+  const [categoryBudgets, setCategoryBudgets] = useState([])
 
   useEffect(() => {
-    const getBudget = async () => {
 
-      let budget = await fetchUserBudget()
-      setOverallBudget(budget)
+    const fetchBudgets = async () => {
+      const { overallBudget, categoryBudgets } = await fetchUserBudget()
+      setOverallBudget(overallBudget)
+      setCategoryBudgets(categoryBudgets)
     }
-    getBudget()
-  }, [])
+    fetchBudgets()
+  }, []);
+
+  const categoryBudgetElements = categoryBudgets.map((budget) => (
+    <div key={budget.category} className="space-y-2">
+      <div className="flex items-center justify-between text-sm font-medium text-slate-700">
+        <span>{budget.category}</span>
+        <span className="text-slate-500">
+          ${budget.used} / ${budget.amount}
+        </span>
+      </div>
+      <Progress value={(budget.used / budget.amount) * 100} />
+    </div>
+  ))
 
   return (
     <Card className="lg:col-span-4">
@@ -29,18 +43,7 @@ export default function BudgetsCard({ budgets }) {
         </button>
       </CardHeader>
       <CardContent className="space-y-5">
-        {budgets.map((budget) => (
-          <div key={budget.label} className="space-y-2">
-            <div className="flex items-center justify-between text-sm font-medium text-slate-700">
-              <span>{budget.label}</span>
-              <span className="text-slate-500">
-                ${budget.used} / ${budget.total}
-              </span>
-            </div>
-            <Progress value={(budget.used / budget.total) * 100} colorClass={budget.color} />
-          </div>
-        ))}
-
+        {categoryBudgetElements}
         <div className="rounded-2xl bg-indigo-50 px-4 py-4 text-sm text-indigo-800">
           <div className="flex items-start gap-2">
             <span className="mt-0.5">

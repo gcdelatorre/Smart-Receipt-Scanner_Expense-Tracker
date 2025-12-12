@@ -58,7 +58,7 @@ export default function App() {
                       </CardContent>
                     </Card>
 
-                    <BudgetsCard budgets={budgets} />
+                    <BudgetsCard />
                   </div>
                 </>
               }
