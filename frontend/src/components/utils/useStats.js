@@ -72,14 +72,13 @@ export function useStats(refreshTrigger) {
         : 0;
 
     const expenseProgress = overallBudget
-        ? Math.max(((overallBudget - totalExpenseThisMonth) / overallBudget) * 100, 0)
+        ? Math.min(Math.round((totalExpenseThisMonth / overallBudget) * 100), 100)
         : 0;
 
-    // percentage for expense spend until budget is hit
+    // percentage for expense of budget
     const expensePercentage = overallBudget
         ? Math.min((totalExpenseThisMonth / overallBudget) * 100, 100)
         : 0;
-
 
     // determine if it has data
     const hasExpense = totalExpenseThisMonth > 0
@@ -116,8 +115,8 @@ export function useStats(refreshTrigger) {
         {
             title: "Monthly Expenses",
             value: `$${totalExpenseThisMonth.toFixed(2)}`,
-            changeLabel: hasExpense ? (`${(expensePercentage).toFixed(1)}% of budget used`) : defaultLabel,
-            changeVariant: "destructive",
+            changeLabel: overallBudget ? (hasExpense ? (`${(expensePercentage).toFixed(1)}% of budget used`) : defaultLabel) : "Please set your budget",
+            changeVariant: hasExpense ? "destructive" : defaultVariant,
             changeIcon: hasExpense ? ArrowDownRight : CircleSlash,
             icon: Wallet,
             accent: "bg-rose-50 text-rose-700",
