@@ -1,33 +1,93 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 
-export default function MobileNav({ navItems, isActive }) {
+export default function MobileNav({ navItems, isActive, onLogout, user }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const username = user?.username || "User";
+  const email = user?.email || "user@example.com";
+  const initials = username
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-4px_12px_rgba(15,23,42,0.06)] backdrop-blur lg:hidden">
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-2">
-        {navItems.map((item) => {
-          const active = isActive(item.path);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.label}
-              to={item.path}
-              className={`flex flex-col items-center gap-1 rounded-2xl px-3 py-2 text-xs font-medium transition ${
-                active ? "text-indigo-600" : "text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              <span
-                className={`flex h-10 w-10 items-center justify-center rounded-xl ${
-                  active ? "bg-indigo-50 text-indigo-600" : "bg-slate-50 text-slate-500"
-                }`}
+    <>
+      {/* Hamburger Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-3 right-3 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg lg:hidden hover:bg-indigo-700 transition"
+      >
+        {isOpen ? (
+          <X className="h-5 w-5" />
+        ) : (
+          <Menu className="h-5 w-5" />
+        )}
+      </button>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Menu Content */}
+          <div className="fixed inset-x-0 bottom-0 z-40 max-h-[90vh] overflow-y-auto rounded-t-3xl border-t border-slate-200 bg-white shadow-2xl lg:hidden">
+            <div className="space-y-2 p-6">
+              {/* User Profile */}
+              <div className="flex items-center gap-3 rounded-2xl bg-indigo-50 p-4 mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white font-semibold">
+                  {initials}
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-900">{username}</p>
+                  <p className="text-xs text-slate-500">{email}</p>
+                </div>
+              </div>
+
+              {/* Navigation Links */}
+              <div className="space-y-2 border-b border-slate-200 pb-6">
+                {navItems.map((item) => {
+                  const active = isActive(item.path);
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium transition ${
+                        active
+                          ? "bg-indigo-50 text-indigo-700 shadow-inner"
+                          : "text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      <Icon className="h-5 w-5" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Logout Button */}
+              <button
+                onClick={() => {
+                  onLogout();
+                  setIsOpen(false);
+                }}
+                className="w-full rounded-2xl bg-red-50 px-4 py-3 text-left text-base font-medium text-red-700 hover:bg-red-100 transition"
               >
-                <Icon className="h-5 w-5" />
-              </span>
-              {item.label}
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
+                Logout
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 
