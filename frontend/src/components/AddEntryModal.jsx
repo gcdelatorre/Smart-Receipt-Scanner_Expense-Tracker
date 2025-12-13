@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { typeConfigs } from "./utils/typeConfigs";
+import { fetchUserBudget } from "./utils/fetchUser";
 
 export default function AddEntryModal({ open, onClose, refreshTransaction }) {
   const [selectedType, setSelectedType] = useState(null);
   const [budgetCategories, setBudgetCategories] = useState([{ category: "", amount: "" }]);
+  const [overallBudget, setOverallBudget] = useState(0);
 
   const [form, setForm] = useState({
     amount: "",
@@ -21,9 +23,21 @@ export default function AddEntryModal({ open, onClose, refreshTransaction }) {
   const [uploadState, setUploadState] = useState({ status: "idle", message: "" });
 
   useEffect(() => {
+    const fetchOverallBudget = async () => {
+      const { overallBudget } = await fetchUserBudget()
+      setOverallBudget(overallBudget);
+    }
+    fetchOverallBudget();
+  }, [])
+
+  useEffect(() => {
     if (!open) {
+      if (selectedType === "budget") {
+        setForm((f) => ({ ...f, amount: overallBudget }));
+      } else {
+        setForm({ amount: "", category: "", store: "", items: [], description: "", date: "", note: "" });
+      }
       setSelectedType(null);
-      setForm({ amount: "", category: "", store: "", items: [], description: "", date: "", note: "" });
       setReceiptFile(null);
       setUploadState({ status: "idle", message: "" });
       setBudgetCategories([{ category: "", amount: "" }]);
