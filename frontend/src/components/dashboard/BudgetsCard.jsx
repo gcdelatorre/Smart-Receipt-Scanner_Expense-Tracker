@@ -3,6 +3,7 @@ import { Progress } from "../ui/progress";
 import { BanknoteX, Info, PlusCircle, Receipt } from "lucide-react";
 import { fetchUserBudget } from '../utils/fetchUser'
 import { useEffect, useState } from "react";
+import { getBudgetStatus } from "../utils/getBudgetStatus";
 
 export default function BudgetsCard({ refreshTrigger }) {
 
@@ -19,17 +20,24 @@ export default function BudgetsCard({ refreshTrigger }) {
     fetchBudgets()
   }, [refreshTrigger]);
 
-  const categoryBudgetElements = categoryBudgets.map((budget) => (
-    <div key={budget.category} className="space-y-2">
-      <div className="flex items-center justify-between text-sm font-medium text-slate-700">
-        <span>{budget.category}</span>
-        <span className="text-slate-500">
-          ${budget.usedAmount} / ${budget.amount}
-        </span>
+  const categoryBudgetElements = categoryBudgets.map((budget) => {
+
+    const status = getBudgetStatus(budget.usedAmount, budget.amount)
+
+    return (
+      <div key={budget.category} className="space-y-2">
+        <div className="flex items-center justify-between text-sm font-medium text-slate-700">
+          <div className="flex justify-between items-center w-full">
+            <p className="text-base text-slate-900">{budget.category}</p>
+            <p className="text-slate-600">
+              ${budget.usedAmount} / ${budget.amount}
+            </p>
+          </div>
+        </div>
+        <Progress value={status.progress} colorClass={status.progressColor} />
       </div>
-      <Progress value={(budget.amount / budget.amount) * 100} />
-    </div>
-  ))
+    )
+  })
 
   return (
     <>
@@ -37,14 +45,14 @@ export default function BudgetsCard({ refreshTrigger }) {
         (<Card className="lg:col-span-4">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-slate-500">Budget</CardTitle>
-            <div className="mt-3 flex items-center gap-2 text-2xl font-semibold text-slate-900">
+            <div className="mt-3 mb-2 flex items-center gap-2 text-2xl font-semibold text-slate-900">
               {overallBudget ? `$${overallBudget.toFixed(2)}` : `Loading...`}
             </div>
             <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
               Edit
             </button>
           </CardHeader>
-          <CardContent className="space-y-5">
+          <CardContent className="space-y-5 pt-3">
             {categoryBudgetElements}
             {/* <div className="rounded-2xl bg-indigo-50 px-4 py-4 text-sm text-indigo-800">
           <div className="flex items-start gap-2">
