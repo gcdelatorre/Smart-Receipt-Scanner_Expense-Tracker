@@ -4,9 +4,11 @@ import { Receipt, PlusCircle, ArrowUpRight, ArrowDownRight, ChevronRight, Search
 import { useEffect, useState } from "react";
 import { fetchTransactions } from "../components/utils/fetchTransaction";
 import SearchTransaction from "../components/ui/SearchTransaction";
+import ViewTransactionModal from "../components/ViewTransactionModal";
 
-export default function TransactionsPage({ onRefresh, refreshTrigger }) {
+export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
     const [transactionData, setTransactionData] = useState([]);
+    const [showModal, setShowModal] = useState(false);
 
     const fetchTransactionData = async () => {
         const data = await fetchTransactions();
@@ -64,7 +66,9 @@ export default function TransactionsPage({ onRefresh, refreshTrigger }) {
                         <p className={`font-semibold ${amountColor}`}>
                             {isIncome ? "+" : "-"}${transaction.amount.toFixed(2)}
                         </p>
-                        <ChevronRight className="h-5 w-5 text-slate-900" />
+                        <button onClick={() => setShowModal(true)}>
+                            <ChevronRight className="h-5 w-5 text-slate-900" />
+                        </button>
                     </div>
                 </CardTransactionHistory>
             </Card>
@@ -112,6 +116,11 @@ export default function TransactionsPage({ onRefresh, refreshTrigger }) {
                     </Card>
                 )}
             </div>
+
+            <ViewTransactionModal
+                open={showModal}
+                onClose={() => setShowModal(false)}
+            />
         </>
     );
 }
