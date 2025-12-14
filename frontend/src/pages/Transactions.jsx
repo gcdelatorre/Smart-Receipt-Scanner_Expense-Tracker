@@ -9,7 +9,7 @@ import ViewTransactionModal from "../components/ViewTransactionModal";
 export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
     const [transactionData, setTransactionData] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [selectedTransactionType, setSelectedTransactionType] = useState(null);
+    const [transactionToView, setTransactionToView] = useState([]);
 
     const fetchTransactionData = async () => {
         const data = await fetchTransactions();
@@ -69,7 +69,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                         </p>
                         <button onClick={() => {
                             setShowModal(true)
-                            setSelectedTransactionType(transaction.transactionType)
+                            setTransactionToView(transaction)
                         }}>
                             <ChevronRight className="h-5 w-5 text-slate-900" />
                         </button>
@@ -124,7 +124,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
             <ViewTransactionModal
                 open={showModal}
                 onClose={() => setShowModal(false)}
-                selectedTransactionType={selectedTransactionType}
+                transactionToView={transactionToView}
             />
         </>
     );
