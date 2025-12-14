@@ -4,11 +4,13 @@ import { BanknoteX, Info, PlusCircle, Receipt } from "lucide-react";
 import { fetchUserBudget } from '../utils/fetchUser'
 import { useEffect, useState } from "react";
 import { getBudgetStatus } from "../utils/getBudgetStatus";
+import EditBudgetModal from "../EditBudgetModal";
 
 export default function BudgetsCard({ refreshTrigger }) {
 
   const [overallBudget, setOverallBudget] = useState(0)
   const [categoryBudgets, setCategoryBudgets] = useState([])
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
 
@@ -42,17 +44,17 @@ export default function BudgetsCard({ refreshTrigger }) {
   return (
     <>
       {categoryBudgets.length > 0 ?
-        (<Card className="lg:col-span-4">
+        (<Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium text-slate-500">Budget</CardTitle>
-            <div className="mt-3 mb-2 flex items-center gap-2 text-2xl font-semibold text-slate-900">
+            <div className="mt-3 flex items-center gap-2 text-2xl font-semibold text-slate-900">
               {overallBudget ? `$${overallBudget.toFixed(2)}` : `Loading...`}
             </div>
-            <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+            <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700" onClick={() => setShowModal(true)}>
               Edit
             </button>
           </CardHeader>
-          <CardContent className="space-y-5 pt-3">
+          <CardContent className="space-y-4 pt-1">
             {categoryBudgetElements}
             {/* <div className="rounded-2xl bg-indigo-50 px-4 py-4 text-sm text-indigo-800">
           <div className="flex items-start gap-2">
@@ -80,6 +82,7 @@ export default function BudgetsCard({ refreshTrigger }) {
           </Card>
         )
       }
+      <EditBudgetModal open={showModal} onClose={() => setShowModal(false)} categoryBudgets={categoryBudgets}/>
     </>
   );
 }
