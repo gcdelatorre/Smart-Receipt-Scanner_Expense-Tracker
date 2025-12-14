@@ -56,7 +56,9 @@ export default function App() {
                       </CardContent>
                     </Card>
 
-                    <BudgetsCard refreshTrigger={refreshKey} />
+                    <div className="lg:col-span-4">
+                      <BudgetsCard refreshTrigger={refreshKey} />
+                    </div>
                   </div>
                 </>
               }
