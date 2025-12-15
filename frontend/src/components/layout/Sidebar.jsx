@@ -37,7 +37,7 @@ export default function Sidebar({ navItems, isActive }) {
         </div>
       </div>
 
-      <Card className="border-0 bg-indigo-600 text-white shadow-lg shadow-indigo-100">
+      <Card className="border-0 bg-indigo-100 text-white shadow-lg ">
         <CardContent className="flex items-center gap-3 p-4">
           <Avatar className="h-12 w-12 bg-indigo-900 text-white border">AD</Avatar>
           <div className="flex-1 space-y-0.5">
