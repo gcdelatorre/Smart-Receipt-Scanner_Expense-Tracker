@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import AddEntryModal from "./components/AddEntryModal";
 import TransactionsPage from "./pages/Transactions";
 import AnalyticsPage from "./pages/Analytics";
 import { Card, CardContent } from "./components/ui/card";
@@ -69,7 +68,6 @@ export default function App() {
           </Routes>
         </main>
       </div>
-      <AddEntryModal open={showAdd} onClose={() => setShowAdd(false)} refreshTransaction={triggerRefresh} />
       <MobileNav navItems={navItems} isActive={isActive} onLogout={() => { }} user={{ username: "Alex Doe", email: "alex@example.com" }} />
     </div>
   );
