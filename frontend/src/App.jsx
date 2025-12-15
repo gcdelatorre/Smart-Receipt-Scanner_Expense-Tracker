@@ -15,7 +15,6 @@ import { chartPoints } from "./components/utils/chartPoints";
 
 export default function App() {
 
-  const [showAdd, setShowAdd] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const { stats } = useStats(refreshKey);
   const location = useLocation();
@@ -39,7 +38,7 @@ export default function App() {
 
         <main className="flex-1 space-y-6 pb-20 lg:pb-6">
 
-          <HeaderBar pageTitle={pageTitle} onAdd={() => setShowAdd(true)} />
+          <HeaderBar pageTitle={pageTitle} />
 
           <Routes>
             <Route
