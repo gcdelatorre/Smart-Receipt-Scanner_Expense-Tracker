@@ -8,11 +8,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { typeConfigs } from "../utils/typeConfigs";
-import { AddIncomeModal } from "../ModalDialogs";
+import { AddBudgetModal, AddExpenseModal, AddIncomeModal } from "../ModalDialogs";
 
 export default function HeaderBar({ pageTitle }) {
 
   const [open, setOpen] = useState(false)
+  const [openTransactionModal, setOpenTransactionModal] = useState(false)
   const [transactionType, setTransactionType] = useState(null)
 
   return (
@@ -33,13 +34,16 @@ export default function HeaderBar({ pageTitle }) {
             <DialogContent>
               <DialogTitle>Select Transaction Type</DialogTitle>
               <DialogDescription>
-                <div className="grid gap-4 bg-slate-50 px-6 py-6 sm:grid-cols-2">
+                <div className="grid gap-4 bg-slate-50 px-6 py-6 sm:grid-cols-2 rounded-2xl">
                   {["income", "expense", "budget"].map((type) => {
                     const conf = typeConfigs[type];
                     return (
                       <button
                         key={type}
-                        onClick={() => setTransactionType(type)}
+                        onClick={() => {
+                          setTransactionType(type)
+                          setOpenTransactionModal(true)
+                        }}
                         className={`flex h-28 flex-col items-start justify-between rounded-2xl border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow ${conf.color}`}
                       >
                         <span className={`rounded-full px-3 py-1 text-xs font-semibold ${conf.pill}`}>
@@ -57,8 +61,10 @@ export default function HeaderBar({ pageTitle }) {
           </Dialog>
         )
       }
-      // unfinished must be all three modals
-      {transactionType === "income" && <AddIncomeModal open={open} onOpenChange={setOpen} />}
+      {/* // unfinished must be all three modals */}
+      {transactionType === "income" && <AddIncomeModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} />}
+      {transactionType === "expense" && <AddExpenseModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} />}
+      {transactionType === "budget" && <AddBudgetModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} />}
     </>
   );
 }
