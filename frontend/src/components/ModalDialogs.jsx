@@ -32,6 +32,8 @@ export function AddIncomeModal({ open, onOpenChange }) {
         }))
     }
 
+    const notEmpty = !payload.amount || !payload.category || !payload.date
+
     const handleSubmit = async () => {
 
         if (!payload.amount || !payload.category || !payload.date) {
@@ -78,7 +80,6 @@ export function AddIncomeModal({ open, onOpenChange }) {
                                 onChange={handleChange}
                                 name="amount"
                                 type="number"
-                                step="0.01"
                                 placeholder="0.00"
                             />
                         </Field>
@@ -101,7 +102,7 @@ export function AddIncomeModal({ open, onOpenChange }) {
                             />
                         </Field>
 
-                        <Actions onClick={handleSubmit} saveLabel="Save Income" />
+                        <Actions submit={handleSubmit} saveLabel="Save Income" notEmpty={notEmpty} />
                     </form>
                 </DialogDescription>
             </DialogContent>
@@ -201,14 +202,14 @@ function Field({ label, children }) {
     );
 }
 
-function Actions({ onCancel, saveLabel }) {
+function Actions({ onCancel, saveLabel, submit, notEmpty }) {
     return (
         <div className="flex justify-end gap-2 pt-4">
             <Button variant="ghost" type="button" onClick={onCancel}>
                 <X className="mr-2 h-4 w-4" />
                 Cancel
             </Button>
-            <Button>
+            <Button onClick={submit} disabled={notEmpty}>
                 <Save className="mr-2 h-4 w-4" />
                 {saveLabel}
             </Button>
