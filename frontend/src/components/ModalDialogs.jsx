@@ -102,7 +102,7 @@ export function AddIncomeModal({ open, onOpenChange }) {
                             />
                         </Field>
 
-                        <Actions submit={handleSubmit} saveLabel="Save Income" notEmpty={notEmpty} />
+                        <Actions submit={handleSubmit} saveLabel="Save Income" notEmpty={notEmpty} onCancel={() => onOpenChange(false)} />
                     </form>
                 </DialogDescription>
             </DialogContent>
