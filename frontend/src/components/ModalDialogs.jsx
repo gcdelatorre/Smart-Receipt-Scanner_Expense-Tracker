@@ -7,11 +7,62 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Wallet, DollarSign, Save, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import CategorySelection from "./CategorySelection";
+import { categories } from "./utils/categories";
+import { Description } from "@radix-ui/react-dialog";
 
 /* =====================================================
    ADD INCOME MODAL
 ===================================================== */
 export function AddIncomeModal({ open, onOpenChange }) {
+
+    const [categoriesSelection, setCategoriesSelection] = useState([])
+    const [payload, setPayload] = useState({
+        amount: "",
+        category: "",
+        description: "",
+        date: ""
+    })
+
+    const handleChange = (e) => {
+        setPayload(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }))
+    }
+
+    const handleSubmit = async () => {
+
+        if (!payload.amount || !payload.category || !payload.date) {
+            return // maybe add an toast component soon
+        }
+
+        try {
+            const res = await fetch("/api/income/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+
+            if (!res.ok) {
+                console.log("something went wrong")
+            }
+
+            setPayload({ amount: "", category: "", description: "", date: "" })
+            onOpenChange(false)
+
+        } catch (err) {
+            console.log(err) // maybe add an toast component soon
+        }
+    }
+
+    useEffect(() => {
+        setCategoriesSelection(categories)
+    }, [])
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden">
@@ -23,28 +74,41 @@ export function AddIncomeModal({ open, onOpenChange }) {
                 <DialogDescription asChild>
                     <form className="space-y-4 pt-4">
                         <Field label="Amount">
-                            <Input type="number" step="0.01" placeholder="0.00" />
+                            <Input
+                                onChange={handleChange}
+                                name="amount"
+                                type="number"
+                                step="0.01"
+                                placeholder="0.00"
+                            />
                         </Field>
 
-                        <Field label="Category">
-                            <Input placeholder="Salary, Freelance, Bonus" />
-                        </Field>
+                        <CategorySelection
+                            name="category"
+                            categories={categoriesSelection}
+                            onChange={handleChange}
+                        />
 
                         <Field label="Date">
-                            <Input type="date" />
+                            <Input onChange={handleChange} name="date" type="date" />
                         </Field>
 
                         <Field label="Note">
-                            <Input placeholder="Optional" />
+                            <Input
+                                onChange={handleChange}
+                                name="description"
+                                placeholder="Optional"
+                            />
                         </Field>
 
-                        <Actions onCancel={() => onOpenChange(false)} saveLabel="Save Income" />
+                        <Actions onClick={handleSubmit} saveLabel="Save Income" />
                     </form>
                 </DialogDescription>
             </DialogContent>
         </Dialog>
-    );
+    )
 }
+
 
 /* =====================================================
    ADD EXPENSE MODAL
