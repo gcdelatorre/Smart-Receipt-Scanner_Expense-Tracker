@@ -130,6 +130,33 @@ export function AddExpenseModal({ open, onOpenChange }) {
         setCategoriesSelection(expenseCategories)
     }, [])
 
+    const handleChange = (e) => {
+        setPayload(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }))
+    }
+
+    const handleSubmit = async () => {
+        if (!payload.amount || !payload.category || !payload.date) return;
+
+        try {
+            const res = await fetch("/api/expenses", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+
+            setPayload({ amount: "", store: "", category: "", description: "", date: "" })
+            onOpenChange(false)
+
+        } catch (err) {
+            console.log(err) // maybe add an toast component soon
+        }
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden">
@@ -179,25 +206,32 @@ export function AddExpenseModal({ open, onOpenChange }) {
                             </div>
                         </Field>
 
-
                         <Field label="Amount">
-                            <Input type="number" step="0.01" placeholder="0.00" />
+                            <Input onChange={handleChange} name="amount" type="number" step="0.01" placeholder="0.00" />
                         </Field>
 
                         <CategorySelection
                             name="category"
                             categories={categoriesSelection}
+                            onChange={handleChange}
                         />
 
                         <Field label="Store">
-                            <Input placeholder="Optional" />
+                            <Input name="store" placeholder="Optional" onChange={handleChange} />
+                        </Field>
+
+                        <Field label="Note">
+                            <Input
+                                onChange={handleChange}
+                                name="description"
+                                placeholder="Optional" />
                         </Field>
 
                         <Field label="Date">
-                            <Input type="date" />
+                            <Input name="date" type="date" onChange={handleChange} />
                         </Field>
 
-                        <Actions onCancel={() => onOpenChange(false)} saveLabel="Save Expense" />
+                        <Actions onCancel={() => onOpenChange(false)} saveLabel="Save Expense" submit={handleSubmit} />
                     </form>
                 </DialogDescription>
             </DialogContent>
