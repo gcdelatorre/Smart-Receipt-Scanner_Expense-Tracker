@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Wallet, DollarSign, Save, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import CategorySelection from "./CategorySelection";
-import { categories } from "./utils/categories";
+import { incomeCategories, expenseCategories } from "./utils/categories";
+import { Upload } from "lucide-react";
 import { Description } from "@radix-ui/react-dialog";
 
 /* =====================================================
@@ -62,7 +63,7 @@ export function AddIncomeModal({ open, onOpenChange }) {
     }
 
     useEffect(() => {
-        setCategoriesSelection(categories)
+        setCategoriesSelection(incomeCategories)
     }, [])
 
     return (
@@ -115,6 +116,20 @@ export function AddIncomeModal({ open, onOpenChange }) {
    ADD EXPENSE MODAL
 ===================================================== */
 export function AddExpenseModal({ open, onOpenChange }) {
+
+    const [categoriesSelection, setCategoriesSelection] = useState([])
+    const [payload, setPayload] = useState({
+        amount: "",
+        store: "",
+        category: "",
+        description: "",
+        date: ""
+    })
+
+    useEffect(() => {
+        setCategoriesSelection(expenseCategories)
+    }, [])
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden">
@@ -125,13 +140,54 @@ export function AddExpenseModal({ open, onOpenChange }) {
 
                 <DialogDescription asChild>
                     <form className="space-y-4 pt-4">
+
+                        {/* recept area ui */}
+                        <Field label="Automatic Receipt Scanner">
+                            <div className="flex flex-col gap-3">
+                                {/* Upload area */}
+                                <label
+                                    htmlFor="receipt"
+                                    className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center transition hover:border-slate-400 hover:bg-slate-100"
+                                >
+                                    <Upload className="mb-2 h-6 w-6 text-slate-500" />
+                                    <p className="text-sm font-medium text-slate-700">
+                                        Upload receipt
+                                    </p>
+                                    <p className="text-xs text-slate-500">
+                                        PNG, JPG, or JPEG
+                                    </p>
+                                </label>
+
+                                <input
+                                    id="receipt"
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                />
+
+                                {/* OR separator */}
+                                <div className="flex items-center gap-3">
+                                    <div className="h-px flex-1 bg-slate-200" />
+                                    <span className="text-xs font-medium text-slate-500">OR</span>
+                                    <div className="h-px flex-1 bg-slate-200" />
+                                </div>
+
+                                {/* Manual entry hint */}
+                                <p className="text-center text-xs text-slate-500">
+                                    Skip receipt and enter expense details manually
+                                </p>
+                            </div>
+                        </Field>
+
+
                         <Field label="Amount">
                             <Input type="number" step="0.01" placeholder="0.00" />
                         </Field>
 
-                        <Field label="Category">
-                            <Input placeholder="Food, Transport, Bills" />
-                        </Field>
+                        <CategorySelection
+                            name="category"
+                            categories={categoriesSelection}
+                        />
 
                         <Field label="Store">
                             <Input placeholder="Optional" />
@@ -139,10 +195,6 @@ export function AddExpenseModal({ open, onOpenChange }) {
 
                         <Field label="Date">
                             <Input type="date" />
-                        </Field>
-
-                        <Field label="Receipt">
-                            <Input type="file" accept="image/*" />
                         </Field>
 
                         <Actions onCancel={() => onOpenChange(false)} saveLabel="Save Expense" />
@@ -156,7 +208,34 @@ export function AddExpenseModal({ open, onOpenChange }) {
 /* =====================================================
    ADD BUDGET MODAL
 ===================================================== */
-export function AddBudgetModal({ open, onOpenChange }) {
+export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }) {
+    const [overallBudget, setOverallBudget] = useState(0);
+    const [categoryBudgets, setCategoryBudgets] = useState([
+        { category: "", amount: 0 },
+    ]);
+
+    const handleAddCategory = () => {
+        setCategoryBudgets([...categoryBudgets, { category: "", amount: 0 }]);
+    };
+
+    const handleCategoryChange = (index, value) => {
+        const newCategories = [...categoryBudgets];
+        newCategories[index].category = value;
+        setCategoryBudgets(newCategories);
+    };
+
+    const handleAmountChange = (index, value) => {
+        const newCategories = [...categoryBudgets];
+        newCategories[index].amount = value;
+        setCategoryBudgets(newCategories);
+    };
+
+    const handleSave = () => {
+        // Send data to backend / Mongoose model
+        onSave(overallBudget, categoryBudgets);
+        onOpenChange(false); // close modal
+    };
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden">
@@ -165,23 +244,57 @@ export function AddBudgetModal({ open, onOpenChange }) {
                     Set Budget
                 </DialogTitle>
 
-                <DialogDescription asChild>
-                    <form className="space-y-4 pt-4">
-                        <Field label="Overall Budget">
-                            <Input type="number" placeholder="Monthly budget" />
-                        </Field>
+                <form className="space-y-4 pt-4" onSubmit={(e) => e.preventDefault()}>
+                    {/* Overall Budget */}
+                    <Field label="Overall Budget">
+                        <Input
+                            type="number"
+                            placeholder="Monthly budget"
+                            value={overallBudget}
+                            onChange={(e) => setOverallBudget(Number(e.target.value))}
+                        />
+                    </Field>
 
-                        <Field label="Category">
-                            <Input placeholder="Food, Rent, Utilities" />
-                        </Field>
+                    {/* Dynamic Category + Amount rows */}
+                    {categoryBudgets.map((item, index) => (
+                        <div key={index} className="grid grid-cols-2 gap-4">
+                            <Field label="Category">
+                                <CategorySelection
+                                    categories={expenseCategories}
+                                    name={`category-${index}`}
+                                    value={item.category}
+                                    onChange={(value) => handleCategoryChange(index, value)}
+                                />
+                            </Field>
 
-                        <Field label="Amount">
-                            <Input type="number" placeholder="0.00" />
-                        </Field>
+                            <Field label="Amount">
+                                <Input
+                                    type="number"
+                                    placeholder="0.00"
+                                    value={item.amount}
+                                    onChange={(e) =>
+                                        handleAmountChange(index, Number(e.target.value))
+                                    }
+                                />
+                            </Field>
+                        </div>
+                    ))}
 
-                        <Actions onCancel={() => onOpenChange(false)} saveLabel="Save Budget" />
-                    </form>
-                </DialogDescription>
+                    <Button type="button" variant="default" onClick={handleAddCategory}>
+                        Add Category
+                    </Button>
+
+                    <Actions
+                        onCancel={() => {
+                            onOpenChange(false);
+                            setCategoryBudgets([{ category: "", amount: 0 }]);
+                            setOverallBudget(0);
+                        }}
+                        saveLabel="Save Budget"
+                        onSave={handleSave}
+                    />
+
+                </form>
             </DialogContent>
         </Dialog>
     );
