@@ -33,30 +33,29 @@ export default function HeaderBar({ pageTitle }) {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogTitle>Select Transaction Type</DialogTitle>
-              <DialogDescription>
-                <div className="grid gap-4 bg-slate-50 px-6 py-6 sm:grid-cols-2 rounded-2xl">
-                  {["income", "expense", "budget"].map((type) => {
-                    const conf = typeConfigs[type];
-                    return (
-                      <button
-                        key={type}
-                        onClick={() => {
-                          setTransactionType(type)
-                          setOpenTransactionModal(true)
-                        }}
-                        className={`flex h-28 flex-col items-start justify-between rounded-2xl border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow ${conf.color}`}
-                      >
-                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${conf.pill}`}>
-                          {conf.label}
-                        </span>
-                        <p className="text-sm text-slate-700">
-                          Track a new {conf.label.toLowerCase()}.
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-              </DialogDescription>
+              <DialogDescription></DialogDescription>
+              <div className="grid gap-4 bg-slate-50 px-6 py-6 sm:grid-cols-2 rounded-2xl">
+                {["income", "expense", "budget"].map((type) => {
+                  const conf = typeConfigs[type];
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        setTransactionType(type)
+                        setOpenTransactionModal(true)
+                      }}
+                      className={`flex h-28 flex-col items-start justify-between rounded-2xl border px-4 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow ${conf.color}`}
+                    >
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${conf.pill}`}>
+                        {conf.label}
+                      </span>
+                      <p className="text-sm text-slate-700">
+                        Track a new {conf.label.toLowerCase()}.
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
             </DialogContent>
           </Dialog>
         )
