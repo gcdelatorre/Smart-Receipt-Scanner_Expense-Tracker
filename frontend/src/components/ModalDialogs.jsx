@@ -6,12 +6,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Wallet, DollarSign, Save, X } from "lucide-react";
+import { Wallet, DollarSign, Save, X, Notebook } from "lucide-react";
 import { useState, useEffect } from "react";
 import CategorySelection from "./CategorySelection";
 import { incomeCategories, expenseCategories } from "./utils/categories";
 import { Upload } from "lucide-react";
-import { Description } from "@radix-ui/react-dialog";
 
 /* =====================================================
    ADD INCOME MODAL
@@ -103,14 +102,13 @@ export function AddIncomeModal({ open, onOpenChange }) {
                             />
                         </Field>
 
-                        <Actions submit={handleSubmit} saveLabel="Save Income" notEmpty={notEmpty} onCancel={() => onOpenChange(false)} />
+                        <Actions submit={handleSubmit} saveLabel="Save" notEmpty={notEmpty} onCancel={() => onOpenChange(false)} />
                     </form>
                 </DialogDescription>
             </DialogContent>
         </Dialog>
     )
 }
-
 
 /* =====================================================
    ADD EXPENSE MODAL
@@ -125,6 +123,8 @@ export function AddExpenseModal({ open, onOpenChange }) {
         description: "",
         date: ""
     })
+
+    const notEmpty = !payload.amount || !payload.category || !payload.date
 
     useEffect(() => {
         setCategoriesSelection(expenseCategories)
@@ -148,6 +148,10 @@ export function AddExpenseModal({ open, onOpenChange }) {
                 },
                 body: JSON.stringify(payload)
             })
+
+            if (!res.ok) {
+                console.log("something went wrong")
+            }
 
             setPayload({ amount: "", store: "", category: "", description: "", date: "" })
             onOpenChange(false)
@@ -231,7 +235,7 @@ export function AddExpenseModal({ open, onOpenChange }) {
                             <Input name="date" type="date" onChange={handleChange} />
                         </Field>
 
-                        <Actions onCancel={() => onOpenChange(false)} saveLabel="Save Expense" submit={handleSubmit} />
+                        <Actions onCancel={() => onOpenChange(false)} saveLabel="Save" submit={handleSubmit} notEmpty={notEmpty} />
                     </form>
                 </DialogDescription>
             </DialogContent>
@@ -243,10 +247,17 @@ export function AddExpenseModal({ open, onOpenChange }) {
    ADD BUDGET MODAL
 ===================================================== */
 export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }) {
+    const [categoriesSelection, setCategoriesSelection] = useState([])
     const [overallBudget, setOverallBudget] = useState(0);
     const [categoryBudgets, setCategoryBudgets] = useState([
         { category: "", amount: 0 },
     ]);
+
+    const notEmpty = !overallBudget || !overallBudget
+
+    useEffect(() => {
+        setCategoriesSelection(expenseCategories)
+    }, [])
 
     const handleAddCategory = () => {
         setCategoryBudgets([...categoryBudgets, { category: "", amount: 0 }]);
@@ -264,10 +275,33 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }
         setCategoryBudgets(newCategories);
     };
 
-    const handleSave = () => {
-        // Send data to backend / Mongoose model
-        onSave(overallBudget, categoryBudgets);
-        onOpenChange(false); // close modal
+    const handleSubmit = async () => {
+
+        let payload;
+        categoryBudgets.length === 0
+            ? payload = { overallBudget }
+            : payload = { overallBudget, categoryBudgets }
+
+        try {
+            const res = await fetch("/api/user/budget/693aec9c08d1f6edd4c2ad5f", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+
+            if (!res.ok) {
+                console.log("something went wrong")
+            }
+
+            setOverallBudget(0)
+            setCategoryBudgets([{ category: "", amount: 0 },]);
+            onOpenChange(false)
+
+        } catch (err) {
+            console.log(err) // maybe add an toast component soon
+        }
     };
 
     return (
@@ -294,7 +328,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }
                         <div key={index} className="grid grid-cols-2 gap-4">
                             <Field label="Category">
                                 <CategorySelection
-                                    categories={expenseCategories}
+                                    categories={categoriesSelection}
                                     name={`category-${index}`}
                                     value={item.category}
                                     onChange={(value) => handleCategoryChange(index, value)}
@@ -324,8 +358,9 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }
                             setCategoryBudgets([{ category: "", amount: 0 }]);
                             setOverallBudget(0);
                         }}
-                        saveLabel="Save Budget"
-                        onSave={handleSave}
+                        saveLabel="Save"
+                        submit={handleSubmit}
+                        notEmpty={notEmpty}
                     />
 
                 </form>
