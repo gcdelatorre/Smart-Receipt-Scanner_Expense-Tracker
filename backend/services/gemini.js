@@ -29,8 +29,8 @@ export async function categorizeExpense(text) {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
-    category should be one only of the following: Food, Transport, Entertainment, Utilities, Health, 
-    Education, Shopping, Travel, Miscellaneous, Other.
+    category should be one only of the following: "Food", "Transport", "Entertainment", "Utilities", "Health", 
+    "Education", "Shopping", "Travel", "Miscellaneous", "Other" (if none of the above).
 Parse this receipt text and return a JSON with ONLY these fields:
 {
   "store": "",
