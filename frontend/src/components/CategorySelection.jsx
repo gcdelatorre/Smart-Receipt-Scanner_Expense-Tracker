@@ -8,7 +8,7 @@ import {
     SelectItem,
 } from "./ui/select"
 
-export default function CategorySelection({ categories = [], onChange, name }) {
+export default function CategorySelection({ categories = [], onChange, name, value }) {
 
     const categoryElements = categories.map(category => {
         return (
@@ -20,6 +20,7 @@ export default function CategorySelection({ categories = [], onChange, name }) {
 
     return (
         <Select
+            value={value}
             onValueChange={(value) =>
                 onChange({ target: { name, value } })
             }
