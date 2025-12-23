@@ -33,9 +33,14 @@ export const createExpenseFromReceipt = async (req, res) => {
         const categoryBudget = user.categoryBudgets.find(cat => cat.category === category);
 
         if (!categoryBudget) {
-            return res.status(400).json({
-                success: false,
-                message: `No budget found for category: ${category}`
+            const newExpense = await createExpense({ ...structured, imageUrl: `/uploads/${req.file.filename}`, userId: "693aec9c08d1f6edd4c2ad5f" })
+            // hardcoded userId for now
+            // will add userId after i added user models or user accounts
+            // and with authentication to input valid id
+            // so that it can determine whose this expense if its theirs
+            return res.json({
+                success: true,
+                data: newExpense
             });
         }
 
@@ -50,18 +55,6 @@ export const createExpenseFromReceipt = async (req, res) => {
             { _id: "693aec9c08d1f6edd4c2ad5f", "categoryBudgets.category": category },
             { $inc: { "categoryBudgets.$.usedAmount": expenseAmount } }
         );
-
-
-
-        const newExpense = await createExpense({ ...structured, imageUrl: `/uploads/${req.file.filename}`, userId: "693aec9c08d1f6edd4c2ad5f" })
-        // hardcoded userId for now
-        // will add userId after i added user models or user accounts
-        // and with authentication to input valid id
-        // so that it can determine whose this expense if its theirs
-        return res.json({
-            success: true,
-            data: newExpense
-        });
 
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
