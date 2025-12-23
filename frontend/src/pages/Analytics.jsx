@@ -16,11 +16,11 @@ export default function AnalyticsPage() {
             </div>
 
             <Card className="border-dashed border-slate-200 bg-slate-50">
-                <CardHeader className="flex flex-col items-center justify-center gap-2 text-center">
+                <CardHeader className="flex flex-col items-center justify-center gap-4 text-center">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
                         <BarChart3 className="h-6 w-6" />
                     </div>
-                    <CardTitle className="text-lg font-semibold text-slate-800">Analytics coming soon</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-slate-800 h-2">Analytics coming soon</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-8 text-center text-sm text-slate-600">
                     We’re preparing charts and insights to help you track spending and income trends.
