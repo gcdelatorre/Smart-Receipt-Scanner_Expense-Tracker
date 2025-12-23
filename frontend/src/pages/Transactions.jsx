@@ -112,10 +112,6 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                                 You haven’t added any income or expenses yet. Add a new entry to
                                 start tracking.
                             </p>
-                            <Button className="rounded-xl px-4 mt-3" disabled>
-                                <PlusCircle className="h-5 w-5" />
-                                Add a transaction
-                            </Button>
                         </CardContent>
                     </Card>
                 )}
