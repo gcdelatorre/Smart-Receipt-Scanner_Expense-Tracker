@@ -6,11 +6,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Wallet, DollarSign, Save, X, Notebook } from "lucide-react";
+import { Wallet, DollarSign, Save, X, Notebook, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import CategorySelection from "./CategorySelection";
 import { incomeCategories, expenseCategories } from "./utils/categories";
 import { Upload } from "lucide-react";
+import { Spinner } from "./ui/spinner";
 
 /* =====================================================
    ADD INCOME MODAL
@@ -140,6 +141,12 @@ export function AddExpenseModal({ open, onOpenChange }) {
     const handleSubmit = async () => {
         if (!payload.amount || !payload.category || !payload.date) return;
 
+        // If the form was populated from a receipt, the expense is already created.
+        if (uploaded) {
+            onOpenChange(false);
+            return;
+        }
+
         try {
             const res = await fetch("/api/expenses", {
                 method: "POST",
@@ -160,6 +167,40 @@ export function AddExpenseModal({ open, onOpenChange }) {
             console.log(err) // maybe add an toast component soon
         }
     }
+
+    const [receiptFile, setReceiptFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [uploaded, setUploaded] = useState(false);
+
+    const handleReceiptUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setReceiptFile(file);
+        setUploading(true);
+        setUploaded(false);
+
+        try {
+
+            const formData = new FormData();
+            formData.append("image", file);
+            const res = await fetch("/api/expenses/upload", { method: "POST", body: formData });
+            const { data } = await res.json();
+            setPayload({
+                amount: data.amount,
+                store: data.store,
+                category: data.category,
+                description: data.description,
+                date: new Date(data.date).toISOString().split('T')[0]
+            });
+            setUploaded(true);
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setUploading(false);
+        }
+    };
+
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -194,7 +235,21 @@ export function AddExpenseModal({ open, onOpenChange }) {
                                     type="file"
                                     accept="image/*"
                                     className="hidden"
+                                    onChange={handleReceiptUpload}
                                 />
+
+                                {receiptFile && (
+                                    <div className="flex justify-between items-center">
+                                        <Button variant="outline" size="sm" className="text-slate-900 w-fit justify-center flex content-center pointer-events-none">
+                                            {uploading && <Spinner />}
+                                            {uploaded && <Check className="text-green-500" />}
+
+                                            {uploading && "Processing"}
+                                            {uploaded && "Process Complete"}
+                                        </Button>
+                                        <p className="text-slate-800">{uploading && "Please wait..."}</p>
+                                    </div>)
+                                }
 
                                 {/* OR separator */}
                                 <div className="flex items-center gap-3">
@@ -211,28 +266,30 @@ export function AddExpenseModal({ open, onOpenChange }) {
                         </Field>
 
                         <Field label="Amount">
-                            <Input onChange={handleChange} name="amount" type="number" step="0.01" placeholder="0.00" />
+                            <Input onChange={handleChange} name="amount" type="number" step="0.01" placeholder="0.00" value={payload.amount} />
                         </Field>
 
                         <CategorySelection
                             name="category"
                             categories={categoriesSelection}
                             onChange={handleChange}
+                            value={payload.category}
                         />
 
                         <Field label="Store">
-                            <Input name="store" placeholder="Optional" onChange={handleChange} />
+                            <Input name="store" placeholder="Optional" onChange={handleChange} value={payload.store} />
                         </Field>
 
                         <Field label="Note">
                             <Input
                                 onChange={handleChange}
                                 name="description"
-                                placeholder="Optional" />
+                                placeholder="Optional"
+                                value={payload.description} />
                         </Field>
 
                         <Field label="Date">
-                            <Input name="date" type="date" onChange={handleChange} />
+                            <Input name="date" type="date" onChange={handleChange} value={payload.date} />
                         </Field>
 
                         <Actions onCancel={() => onOpenChange(false)} saveLabel="Save" submit={handleSubmit} notEmpty={notEmpty} />
