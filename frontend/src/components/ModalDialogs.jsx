@@ -12,6 +12,7 @@ import CategorySelection from "./CategorySelection";
 import { incomeCategories, expenseCategories } from "./utils/categories";
 import { Upload } from "lucide-react";
 import { Spinner } from "./ui/spinner";
+import { fetchUserBudget } from "./utils/fetchUser";
 
 /* =====================================================
    ADD INCOME MODAL
@@ -304,6 +305,7 @@ export function AddExpenseModal({ open, onOpenChange }) {
    ADD BUDGET MODAL
 ===================================================== */
 export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }) {
+
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [overallBudget, setOverallBudget] = useState(0);
     const [categoryBudgets, setCategoryBudgets] = useState([
@@ -313,8 +315,26 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }
     const notEmpty = !overallBudget || !overallBudget
 
     useEffect(() => {
+        const getUserBudget = async () => {
+            const { overallBudget, categoryBudgets } = await fetchUserBudget();
+            setOverallBudget(overallBudget || 0);
+            if (categoryBudgets && categoryBudgets.length > 0) {
+                setCategoryBudgets(categoryBudgets);
+            }
+        };
+
+        if (open) {
+            getUserBudget();
+        }
+    }, [open]);
+
+    useEffect(() => {
         setCategoriesSelection(expenseCategories)
-    }, [])
+    }, [expenseCategories])
+
+    const handleOverallBudgetChange = (e) => {
+        setOverallBudget(Number(e.target.value))
+    }
 
     const handleAddCategory = () => {
         setCategoryBudgets([...categoryBudgets, { category: "", amount: 0 }]);
@@ -376,7 +396,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }
                             type="number"
                             placeholder="Monthly budget"
                             value={overallBudget}
-                            onChange={(e) => setOverallBudget(Number(e.target.value))}
+                            onChange={(e) => handleOverallBudgetChange(e)}
                         />
                     </Field>
 
@@ -388,7 +408,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }
                                     categories={categoriesSelection}
                                     name={`category-${index}`}
                                     value={item.category}
-                                    onChange={(value) => handleCategoryChange(index, value)}
+                                    onChange={(e) => handleCategoryChange(index, e.target.value)}
                                 />
                             </Field>
 

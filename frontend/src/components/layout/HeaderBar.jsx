@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog"
 import { typeConfigs } from "../utils/typeConfigs";
 import { AddBudgetModal, AddExpenseModal, AddIncomeModal } from "../ModalDialogs";
+import { expenseCategories } from "../utils/categories";
 
 export default function HeaderBar({ pageTitle }) {
 
@@ -63,7 +64,7 @@ export default function HeaderBar({ pageTitle }) {
       {/* // unfinished must be all three modals */}
       {transactionType === "income" && <AddIncomeModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} />}
       {transactionType === "expense" && <AddExpenseModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} />}
-      {transactionType === "budget" && <AddBudgetModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} />}
+      {transactionType === "budget" && <AddBudgetModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} expenseCategories={expenseCategories} />}
     </>
   );
 }
