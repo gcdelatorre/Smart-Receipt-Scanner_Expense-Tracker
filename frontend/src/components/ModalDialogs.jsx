@@ -17,7 +17,7 @@ import { fetchUserBudget } from "./utils/fetchUser";
 /* =====================================================
    ADD INCOME MODAL
 ===================================================== */
-export function AddIncomeModal({ open, onOpenChange }) {
+export function AddIncomeModal({ open, onOpenChange, onIncomeAdded }) {
 
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [payload, setPayload] = useState({
@@ -56,7 +56,10 @@ export function AddIncomeModal({ open, onOpenChange }) {
             }
 
             setPayload({ amount: "", category: "", description: "", date: "" })
-            onOpenChange(false)
+            if (onIncomeAdded) {
+                onIncomeAdded();
+            }
+            onOpenChange(false);
 
         } catch (err) {
             console.log(err) // maybe add an toast component soon
@@ -115,7 +118,7 @@ export function AddIncomeModal({ open, onOpenChange }) {
 /* =====================================================
    ADD EXPENSE MODAL
 ===================================================== */
-export function AddExpenseModal({ open, onOpenChange }) {
+export function AddExpenseModal({ open, onOpenChange, onExpenseAdded }) {
 
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [payload, setPayload] = useState({
@@ -162,7 +165,10 @@ export function AddExpenseModal({ open, onOpenChange }) {
             }
 
             setPayload({ amount: "", store: "", category: "", description: "", date: "" })
-            onOpenChange(false)
+            if (onExpenseAdded) {
+                onExpenseAdded();
+            }
+            onOpenChange(false);
 
         } catch (err) {
             console.log(err) // maybe add an toast component soon
@@ -304,7 +310,7 @@ export function AddExpenseModal({ open, onOpenChange }) {
 /* =====================================================
    ADD BUDGET MODAL
 ===================================================== */
-export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }) {
+export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudgetAdded }) {
 
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [overallBudget, setOverallBudget] = useState(0);
@@ -374,7 +380,10 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onSave }
 
             setOverallBudget(0)
             setCategoryBudgets([{ category: "", amount: 0 },]);
-            onOpenChange(false)
+            if (onBudgetAdded) {
+                onBudgetAdded();
+            }
+            onOpenChange(false);
 
         } catch (err) {
             console.log(err) // maybe add an toast component soon

@@ -42,15 +42,26 @@ export const addExpense = async (req, res) => {
             }
 
             // update the usedAmount for the category budget
-            // updateOne works like
-            // “Find the first user whose _id matches userId and has a category budget named category.
-            // Then, increase ($inc means increase) the usedAmount of that matched category by expenseAmount.
-            // If no user or category matches, do nothing.”
             await User.updateOne(
                 { _id: "693aec9c08d1f6edd4c2ad5f", "categoryBudgets.category": category },
                 { $inc: { "categoryBudgets.$.usedAmount": expenseAmount } }
             );
+
+            const newExpense = await createExpense({ ...req.body, userId: "64c1f0f9a4f12b3a5e123456" });
+            return res.status(200).json({
+                success: true,
+                data: newExpense,
+                message: "Expense Created and Budget Updated Successfully"
+            });
         }
+
+        // This part will only be reached if there's no category budget
+        const newExpense = await createExpense({ ...req.body, userId: "64c1f0f9a4f12b3a5e123456" });
+        res.status(200).json({
+            success: true,
+            data: newExpense,
+            message: "Expense Created Successfully"
+        });
 
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
