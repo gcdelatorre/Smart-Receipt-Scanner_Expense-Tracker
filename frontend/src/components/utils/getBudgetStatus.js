@@ -1,5 +1,12 @@
 export const getBudgetStatus = (usedAmount, amount) => {
 
+    if (amount === 0) {
+        return {
+            progressColor: "bg-green-500",
+            progress: 0,
+        };
+    }
+
     let percent = Math.min((usedAmount / amount) * 100, 100);
     percent = Math.round(percent);
 

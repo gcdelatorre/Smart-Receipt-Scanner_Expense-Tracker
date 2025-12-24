@@ -34,7 +34,7 @@ export const updateUser = async (req, res) => {
 
         if (req.body.categoryBudgets) {
             const validCategoryBudgets = req.body.categoryBudgets.filter(
-                (budget) => budget.category && Number(budget.amount) > 0
+                (budget) => budget.category && Number(budget.amount) >= 0
             );
 
             const newCategoryTotal = validCategoryBudgets.reduce((acc, cat) => acc + Number(cat.amount), 0);
@@ -45,7 +45,7 @@ export const updateUser = async (req, res) => {
                     message: `Category budgets total (${newCategoryTotal}) cannot exceed overall budget of ${newOverallBudget}.`
                 });
             }
-            user.categoryBudgets = validCategoryBudgets.map(c => ({ ...c, amount: Number(c.amount) }));
+            user.categoryBudgets = validCategoryBudgets.map(c => ({ ...c, amount: Number(c.amount), usedAmount: c.usedAmount || 0 }));
         }
 
         const updatedUser = await user.save();
