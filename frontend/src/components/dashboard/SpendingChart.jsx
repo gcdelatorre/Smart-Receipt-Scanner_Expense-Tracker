@@ -1,4 +1,3 @@
-import { Button } from "../ui/button";
 import {
   CartesianGrid,
   Line,
@@ -8,6 +7,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  Select,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"
+import { useState } from "react";
 
 function SpendingTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
@@ -21,16 +28,27 @@ function SpendingTooltip({ active, payload }) {
 }
 
 export default function SpendingChart({ data }) {
+
+  const [period, setPeriod] = useState("")
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-base font-semibold text-slate-800">Spending Analytics</p>
-          <p className="text-sm text-slate-500">This Week</p>
+          <p className="text-sm text-slate-500">{period}</p>
         </div>
-        <Button variant="secondary" size="sm" className="h-10 rounded-xl">
-          This Week
-        </Button>
+        <Select value={period} onValueChange={setPeriod}>
+          <SelectTrigger className="w-[135px]">
+            <SelectValue placeholder="Select Period" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="This Week">This Week</SelectItem>
+            <SelectItem value="This Month">This Month</SelectItem>
+            <SelectItem value="Last Month">Last Month</SelectItem>
+            <SelectItem value="This Year">This Year</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div className="mt-4 h-64">
         <ResponsiveContainer width="100%" height="100%">
