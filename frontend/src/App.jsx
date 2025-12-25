@@ -11,7 +11,6 @@ import BudgetsCard from "./components/dashboard/BudgetsCard";
 import SpendingChart from "./components/dashboard/SpendingChart";
 import { navItems } from "./components/utils/navItems";
 import { useStats } from "./components/utils/useStats";
-import { chartPoints } from "./components/utils/chartPoints";
 
 export default function App() {
 
@@ -50,7 +49,7 @@ export default function App() {
                   <div className="grid gap-5 lg:grid-cols-12">
                     <Card className="lg:col-span-8">
                       <CardContent className="pt-6">
-                        <SpendingChart data={chartPoints} />
+                        <SpendingChart />
                       </CardContent>
                     </Card>
 
