@@ -14,7 +14,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function SpendingTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
@@ -27,9 +27,24 @@ function SpendingTooltip({ active, payload }) {
   );
 }
 
-export default function SpendingChart({ data }) {
+export default function SpendingChart() {
 
-  const [period, setPeriod] = useState("")
+  const [period, setPeriod] = useState("This Week");
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const res = await fetch(`/api/expenses/analytics?period=${period}`);
+        const { data } = await res.json();
+        setChartData(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchChartData();
+  }, [period]);
 
   return (
     <div className="w-full">
@@ -45,14 +60,13 @@ export default function SpendingChart({ data }) {
           <SelectContent>
             <SelectItem value="This Week">This Week</SelectItem>
             <SelectItem value="This Month">This Month</SelectItem>
-            <SelectItem value="Last Month">Last Month</SelectItem>
             <SelectItem value="This Year">This Year</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <div className="mt-4 h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+          <LineChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
             <defs>
               <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
