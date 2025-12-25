@@ -1,10 +1,11 @@
 import express from 'express'
-import { addExpense, getAllExpense, updateExpenseById, deleteExpenseById, getSingleExpenseById } from "../controllers/expenseController.js";
+import { addExpense, getAllExpense, updateExpenseById, deleteExpenseById, getSingleExpenseById, getSpendingAnalytics } from "../controllers/expenseController.js";
 import { createExpenseFromReceipt, upload } from "../controllers/uploadController.js";
 
 const router = express.Router()
 
 router.get("/", getAllExpense)
+router.get("/analytics", getSpendingAnalytics)
 router.get("/:id", getSingleExpenseById)
 
 router.post("/", addExpense)
