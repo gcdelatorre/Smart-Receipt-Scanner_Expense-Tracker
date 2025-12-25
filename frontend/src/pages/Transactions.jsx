@@ -121,6 +121,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                 open={showModal}
                 onClose={() => setShowModal(false)}
                 transactionToView={transactionToView}
+                onRefresh={onRefresh}
             />
         </>
     );

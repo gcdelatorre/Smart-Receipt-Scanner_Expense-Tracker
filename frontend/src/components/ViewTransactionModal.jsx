@@ -1,7 +1,7 @@
 import { Button } from "./ui/button";
 import { ArrowUpRight, ArrowDownRight, ReceiptText } from "lucide-react";
 
-export default function ViewTransactionModal({ open, onClose, transactionToView }) {
+export default function ViewTransactionModal({ open, onClose, transactionToView, onRefresh }) {
 
     const formattedDate = (dateStr) => {
         const d = new Date(dateStr);
@@ -22,6 +22,9 @@ export default function ViewTransactionModal({ open, onClose, transactionToView 
             })
 
             onClose()
+            if (onRefresh) {
+                onRefresh();
+            }
         } catch (err) {
             console.log(err)
         }
