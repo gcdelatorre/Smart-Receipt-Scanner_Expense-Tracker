@@ -15,9 +15,17 @@ export default function ViewTransactionModal({ open, onClose, transactionToView 
 
     if (!open) return null;
 
-    // placeholder for income are, category, amount, note, date
-    // placeholder for expense are, category, amount, store, items, note, date
-    // render differently based on transaction type that is passed in as prop from parent transaction page
+    const handleDelete = async () => {
+        try {
+            await fetch(`/api/expenses/${transactionToView._id}`, {
+                method: "DELETE",
+            })
+
+            onClose()
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     return (
         <>
@@ -80,7 +88,7 @@ export default function ViewTransactionModal({ open, onClose, transactionToView 
                     {/* Footer */}
                     <div className="mt-6 flex justify-end gap-2">
                         <Button onClick={onClose}>Edit</Button>
-                        <Button variant="secondary" onClick={onClose}>Delete</Button>
+                        <Button variant="secondary" onClick={handleDelete}>Delete</Button>
                     </div>
                 </div>
             </div>
