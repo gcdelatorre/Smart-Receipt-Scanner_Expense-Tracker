@@ -1,5 +1,57 @@
 import { getAll, findExpenseById, createExpense } from "../services/expenseService.js";
 import User from "../models/user.model.js";
+import Expense from "../models/expense.model.js";
+
+export const getSpendingAnalytics = async (req, res) => {
+    const { period } = req.query;
+
+    let startDate;
+    const endDate = new Date();
+
+    if (period === 'This Week') {
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+    } else if (period === 'This Month') {
+        startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+    } else if (period === 'Last Month') {
+        startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 1, 1);
+        endDate.setDate(0);
+    } else if (period === 'This Year') {
+        startDate = new Date(endDate.getFullYear(), 0, 1);
+    } else {
+        return res.status(400).json({ success: false, message: 'Invalid period' });
+    }
+
+    try {
+        const expenses = await Expense.aggregate([
+            {
+                $match: {
+                    date: { $gte: startDate, $lte: endDate }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+                    total: { $sum: "$amount" }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            },
+            {
+                $project: {
+                    day: '$_id',
+                    value: '$total',
+                    _id: 0
+                }
+            }
+        ]);
+
+        res.status(200).json({ success: true, data: expenses });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
 
 export const addExpense = async (req, res) => {
 
