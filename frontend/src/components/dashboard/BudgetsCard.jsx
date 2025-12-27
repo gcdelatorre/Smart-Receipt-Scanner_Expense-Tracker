@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
 import { BanknoteX, Info, PlusCircle, Receipt } from "lucide-react";
 import { fetchUserBudget } from '../utils/fetchUser'
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getBudgetStatus } from "../utils/getBudgetStatus";
 import EditBudgetModal from "../EditBudgetModal";
 
@@ -11,16 +11,21 @@ export default function BudgetsCard({ refreshTrigger }) {
   const [overallBudget, setOverallBudget] = useState(0)
   const [categoryBudgets, setCategoryBudgets] = useState([])
   const [showModal, setShowModal] = useState(false);
+  const userId = "693aec9c08d1f6edd4c2ad5f"; // Following hardcoded pattern
+
+  const fetchBudgets = useCallback(async () => {
+    const { overallBudget, categoryBudgets } = await fetchUserBudget()
+    setOverallBudget(overallBudget)
+    setCategoryBudgets(categoryBudgets)
+  }, []);
 
   useEffect(() => {
-
-    const fetchBudgets = async () => {
-      const { overallBudget, categoryBudgets } = await fetchUserBudget()
-      setOverallBudget(overallBudget)
-      setCategoryBudgets(categoryBudgets)
-    }
     fetchBudgets()
-  }, [refreshTrigger]);
+  }, [refreshTrigger, fetchBudgets]);
+
+  const handleBudgetUpdate = () => {
+    fetchBudgets(); // Refetch data after update
+  }
 
   const categoryBudgetElements = categoryBudgets.map((budget) => {
 
@@ -56,14 +61,6 @@ export default function BudgetsCard({ refreshTrigger }) {
           </CardHeader>
           <CardContent className="space-y-4 pt-1">
             {categoryBudgetElements}
-            {/* <div className="rounded-2xl bg-indigo-50 px-4 py-4 text-sm text-indigo-800">
-          <div className="flex items-start gap-2">
-          <span className="mt-0.5">
-          <Info className="h-4 w-4" />
-          </span>
-          <span>You're close to hitting your limit on Entertainment!</span>
-          </div>
-          </div> */}
           </CardContent>
         </Card>) : (
           <Card className="border-dashed border-slate-200 bg-slate-50">
@@ -82,7 +79,14 @@ export default function BudgetsCard({ refreshTrigger }) {
           </Card>
         )
       }
-      <EditBudgetModal open={showModal} onClose={() => setShowModal(false)} categoryBudgets={categoryBudgets}/>
+      <EditBudgetModal 
+        open={showModal} 
+        onClose={() => setShowModal(false)} 
+        categoryBudgets={categoryBudgets}
+        overallBudget={overallBudget}
+        userId={userId}
+        onUpdate={handleBudgetUpdate}
+      />
     </>
   );
 }
