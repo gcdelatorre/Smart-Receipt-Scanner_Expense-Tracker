@@ -18,8 +18,52 @@ export const findUserById = async (userId) => {
 }
 
 
-export const getAllUsers = async() => {
+export const getAllUsers = async () => {
     const users = await User.find({});
 
     return users
+}
+
+
+export const updateBudgets = async (userId, budgets) => {
+    const { overallBudget, categoryBudgets } = budgets;
+
+    const user = await User.findById(userId);
+    if (!user) {
+        throw { status: 404, message: "User not found" };
+    }
+
+    // Use the new overall budget if provided, otherwise keep the existing one
+    const newOverallBudget = Number(overallBudget ?? user.overallBudget);
+
+    // Validate and sanitize category budgets if provided
+    if (categoryBudgets && Array.isArray(categoryBudgets)) {
+        const validCategoryBudgets = categoryBudgets.filter(
+            (budget) => budget.category && Number(budget.amount) >= 0
+        );
+
+        const newCategoryTotal = validCategoryBudgets.reduce((acc, cat) => acc + Number(cat.amount), 0);
+
+        if (newCategoryTotal > newOverallBudget) {
+            throw {
+                status: 400,
+                message: `Category budgets total (${newCategoryTotal}) cannot exceed overall budget of ${newOverallBudget}.`
+            };
+        }
+        
+        // Preserve usedAmount for existing categories while updating
+        user.categoryBudgets = validCategoryBudgets.map(newBudget => {
+            const existingBudget = user.categoryBudgets.find(b => b.category === newBudget.category);
+            return {
+                ...newBudget,
+                amount: Number(newBudget.amount),
+                usedAmount: existingBudget?.usedAmount || 0
+            };
+        });
+    }
+    
+    user.overallBudget = newOverallBudget;
+
+    const updatedUser = await user.save();
+    return updatedUser;
 }
