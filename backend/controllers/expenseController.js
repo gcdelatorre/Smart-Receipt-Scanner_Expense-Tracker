@@ -1,4 +1,4 @@
-import { getAll, findExpenseById, createExpense } from "../services/expenseService.js";
+import { getAll, findExpenseById, createExpense, deleteExpenseAndUpdateBudget } from "../services/expenseService.js";
 import User from "../models/user.model.js";
 import Expense from "../models/expense.model.js";
 
@@ -76,7 +76,7 @@ export const addExpense = async (req, res) => {
 
         // check if category budget exists
         if (!categoryBudget) {
-            const newExpense = await createExpense({ ...req.body, userId: "64c1f0f9a4f12b3a5e123456" });
+            const newExpense = await createExpense({ ...req.body, userId: "693aec9c08d1f6edd4c2ad5f" });
             res.status(200).json({
                 success: true,
                 data: newExpense,
@@ -99,7 +99,7 @@ export const addExpense = async (req, res) => {
                 { $inc: { "categoryBudgets.$.usedAmount": expenseAmount } }
             );
 
-            const newExpense = await createExpense({ ...req.body, userId: "64c1f0f9a4f12b3a5e123456" });
+            const newExpense = await createExpense({ ...req.body, userId: "693aec9c08d1f6edd4c2ad5f" });
             return res.status(200).json({
                 success: true,
                 data: newExpense,
@@ -108,7 +108,7 @@ export const addExpense = async (req, res) => {
         }
 
         // This part will only be reached if there's no category budget
-        const newExpense = await createExpense({ ...req.body, userId: "64c1f0f9a4f12b3a5e123456" });
+        const newExpense = await createExpense({ ...req.body, userId: "693aec9c08d1f6edd4c2ad5f" });
         res.status(200).json({
             success: true,
             data: newExpense,
@@ -173,15 +173,12 @@ export const updateExpenseById = async (req, res) => {
 }
 
 export const deleteExpenseById = async (req, res) => {
-    const expense = await findExpenseById(req.params.id);
-    if (!expense) {
-        return res.status(404).json({ success: false, message: "Expense Not Found" });
-    }
     try {
-        await expense.deleteOne();
+        await deleteExpenseAndUpdateBudget(req.params.id);
+
         res.status(200).json({
             success: true,
-            message: "Expense Deleted Successfully"
+            message: "Expense Deleted and Budget Updated Successfully"
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
