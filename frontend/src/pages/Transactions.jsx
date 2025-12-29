@@ -5,11 +5,14 @@ import { useEffect, useState } from "react";
 import { fetchTransactions } from "../components/utils/fetchTransaction";
 import SearchTransaction from "../components/ui/SearchTransaction";
 import ViewTransactionModal from "../components/ViewTransactionModal";
+import EditTransactionModal from "../components/EditTransactionModal";
 
 export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
     const [transactionData, setTransactionData] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    const [transactionToView, setTransactionToView] = useState([]);
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [transactionToViewId, setTransactionToViewId] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [transactionToEdit, setTransactionToEdit] = useState(null);
 
     const fetchTransactionData = async () => {
         const data = await fetchTransactions();
@@ -18,7 +21,9 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
 
     useEffect(() => {
         fetchTransactionData();
-    }, [refreshTrigger]);
+    }, [refreshTrigger, onRefresh]);
+
+    const transactionToView = transactionData.find(t => t._id === transactionToViewId);
 
     const sortedTransactions = [...transactionData].sort(
         (a, b) => new Date(b.date) - new Date(a.date)
@@ -29,6 +34,16 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
         const options = { month: "short", day: "numeric", year: "numeric" };
         return d.toLocaleDateString(undefined, options);
     };
+
+    const handleOpenEditModal = (transaction) => {
+        setTransactionToEdit(transaction);
+        setShowEditModal(true);
+    };
+
+    const handleRefresh = () => {
+        fetchTransactionData();
+        if(onRefresh) onRefresh();
+    }
 
     const transactionElements = sortedTransactions.map((transaction) => {
         const isIncome = transaction.transactionType === "income";
@@ -68,8 +83,8 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                             {isIncome ? "+" : "-"}${transaction.amount.toFixed(2)}
                         </p>
                         <button onClick={() => {
-                            setShowModal(true)
-                            setTransactionToView(transaction)
+                            setShowViewModal(true)
+                            setTransactionToViewId(transaction._id)
                         }}>
                             <ChevronRight className="h-5 w-5 text-slate-900" />
                         </button>
@@ -118,10 +133,21 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
             </div>
 
             <ViewTransactionModal
-                open={showModal}
-                onClose={() => setShowModal(false)}
+                open={showViewModal}
+                onClose={() => {
+                    setShowViewModal(false);
+                    setTransactionToViewId(null);
+                }}
                 transactionToView={transactionToView}
-                onRefresh={onRefresh}
+                onRefresh={handleRefresh}
+                onEdit={() => handleOpenEditModal(transactionToView)}
+            />
+            
+            <EditTransactionModal
+                open={showEditModal}
+                onClose={() => setShowEditModal(false)}
+                transactionToEdit={transactionToEdit}
+                onRefresh={handleRefresh}
             />
         </>
     );
