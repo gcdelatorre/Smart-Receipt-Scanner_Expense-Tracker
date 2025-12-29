@@ -1,4 +1,4 @@
-import { getAll, findExpenseById, createExpense, deleteExpenseAndUpdateBudget } from "../services/expenseService.js";
+import { getAll, findExpenseById, createExpense, deleteExpenseAndUpdateBudget, updateExpense } from "../services/expenseService.js";
 import User from "../models/user.model.js";
 import Expense from "../models/expense.model.js";
 
@@ -153,22 +153,16 @@ export const getAllExpense = async (req, res) => {
 }
 
 export const updateExpenseById = async (req, res) => {
-    const expense = await findExpenseById(req.params.id);
-
-    if (!expense) {
-        return res.status(404).json({ success: false, message: "Expense Not Found" });
-    }
-
     try {
-        Object.assign(expense, req.body);
-        const updatedExpense = await expense.save();
+        const updatedExpense = await updateExpense(req.params.id, req.body);
         res.status(200).json({
             success: true,
             data: updatedExpense,
             message: "Expense Updated Successfully"
         });
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+        const statusCode = err.status || 500;
+        res.status(statusCode).json({ success: false, message: err.message });
     }
 }
 
@@ -184,3 +178,4 @@ export const deleteExpenseById = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 }
+
