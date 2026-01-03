@@ -19,8 +19,8 @@ function NavItem({ icon: Icon, label, path, active }) {
 
 export default function Sidebar({ navItems, isActive }) {
   return (
-    <aside className="hidden w-64 flex-col justify-between rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-100 lg:flex">
-      <div className="space-y-8">
+    <aside className="hidden lg:flex h-[95vh] w-64 flex-col sticky top-0 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-100">
+      <div className="flex-1 space-y-8 overflow-y-auto">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-sm shadow-indigo-100">
             <Aperture className="h-6 w-6" />
