@@ -33,7 +33,7 @@ export default function App() {
     setRefreshKey(prev => prev + 1);
   };
 
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(true);
 
   return (
     <>
@@ -61,7 +61,7 @@ export default function App() {
 
                 <Routes>
                   <Route
-                    path="/"
+                    path="/dashboard"
                     element={
                       <>
                         <StatsGrid stats={stats} />
@@ -82,7 +82,7 @@ export default function App() {
                   />
                   <Route path="/transactions" element={<TransactionsPage key={refreshKey} refreshTrigger={refreshKey} onRefresh={triggerRefresh} />} />
                   <Route path="/analytics" element={<AnalyticsPage />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </main>
             </div>
