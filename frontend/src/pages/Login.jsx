@@ -22,12 +22,12 @@ export default function Login() {
                 <CardContent className="pt-2">
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" placeholder="m@example.com" />
+                            <Label htmlFor="username">Username</Label>
+                            <Input id="username" type="username" name="username" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
-                            <Input id="password" type="password" />
+                            <Input id="password" type="password" name="password" />
                         </div>
                         <Button type="submit" className="w-full">
                             Login
