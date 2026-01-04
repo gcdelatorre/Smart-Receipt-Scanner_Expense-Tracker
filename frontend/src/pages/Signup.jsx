@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "react-router-dom";
 
 export default function Signup() {
     return (
@@ -23,11 +24,11 @@ export default function Signup() {
                     <div className="space-y-3">
                         <div className="space-y-2">
                             <Label htmlFor="username">Username</Label>
-                            <Input id="username" type="username" name="username"/>
+                            <Input id="username" type="username" name="username" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
-                            <Input id="password" type="password" name="password"/>
+                            <Input id="password" type="password" name="password" />
                         </div>
                         <Button type="submit" className="w-full">
                             Login
@@ -35,9 +36,12 @@ export default function Signup() {
                     </div>
                     <div className="mt-4 text-center text-sm">
                         Have an account?{" "}
-                        <a href="#" className="underline">
+                        <Link
+                            to="/login"
+                            className="text-slate-600 hover:underline"
+                        >
                             Login
-                        </a>
+                        </Link>
                     </div>
                 </CardContent>
             </Card>
