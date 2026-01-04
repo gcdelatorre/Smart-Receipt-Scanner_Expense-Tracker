@@ -11,6 +11,8 @@ import BudgetsCard from "./components/dashboard/BudgetsCard";
 import SpendingChart from "./components/dashboard/SpendingChart";
 import { navItems } from "./components/utils/navItems";
 import { useStats } from "./components/utils/useStats";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 export default function App() {
 
@@ -30,43 +32,61 @@ export default function App() {
     setRefreshKey(prev => prev + 1);
   };
 
+  const [isAuth, setIsAuth] = useState(false);
+
   return (
-    <div className="min-h-screen bg-[hsl(var(--background))] text-slate-900">
-      <div className="mx-auto flex max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:px-8">
-        <Sidebar navItems={navItems} isActive={isActive} />
+    <>
 
-        <main className="flex-1 space-y-6 pb-20 lg:pb-6">
-
-          <HeaderBar pageTitle={pageTitle} />
-
+      {!isAuth && (
+        <>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                  <StatsGrid stats={stats} />
-
-                  <div className="grid gap-5 lg:grid-cols-12">
-                    <Card className="lg:col-span-8">
-                      <CardContent className="pt-6">
-                        <SpendingChart />
-                      </CardContent>
-                    </Card>
-
-                    <div className="lg:col-span-4">
-                      <BudgetsCard refreshTrigger={refreshKey} />
-                    </div>
-                  </div>
-                </>
-              }
-            />
-            <Route path="/transactions" element={<TransactionsPage key={refreshKey} refreshTrigger={refreshKey} onRefresh={triggerRefresh} />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
           </Routes>
-        </main>
-      </div>
-      <MobileNav navItems={navItems} isActive={isActive} onLogout={() => { }} user={{ username: "Alex Doe", email: "alex@example.com" }} />
-    </div>
+        </>
+      )}
+
+      {isAuth && (
+        <>
+          <div className="min-h-screen bg-[hsl(var(--background))] text-slate-900">
+            <div className="mx-auto flex max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:px-8">
+              <Sidebar navItems={navItems} isActive={isActive} />
+
+              <main className="flex-1 space-y-6 pb-20 lg:pb-6">
+
+                <HeaderBar pageTitle={pageTitle} />
+
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      <>
+                        <StatsGrid stats={stats} />
+
+                        <div className="grid gap-5 lg:grid-cols-12">
+                          <Card className="lg:col-span-8">
+                            <CardContent className="pt-6">
+                              <SpendingChart />
+                            </CardContent>
+                          </Card>
+
+                          <div className="lg:col-span-4">
+                            <BudgetsCard refreshTrigger={refreshKey} />
+                          </div>
+                        </div>
+                      </>
+                    }
+                  />
+                  <Route path="/transactions" element={<TransactionsPage key={refreshKey} refreshTrigger={refreshKey} onRefresh={triggerRefresh} />} />
+                  <Route path="/analytics" element={<AnalyticsPage />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </main>
+            </div>
+            <MobileNav navItems={navItems} isActive={isActive} onLogout={() => { }} user={{ username: "Alex Doe", email: "alex@example.com" }} />
+          </div>
+        </>
+      )}
+    </>
   );
 }
