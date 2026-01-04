@@ -16,7 +16,7 @@ export default function Signup() {
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
                     <CardDescription>
-                        Enter your email below to login to your account
+                        Create your username and password below
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-2">
@@ -34,9 +34,9 @@ export default function Signup() {
                         </Button>
                     </div>
                     <div className="mt-4 text-center text-sm">
-                        Don't have an account?{" "}
+                        Have an account?{" "}
                         <a href="#" className="underline">
-                            Sign up
+                            Login
                         </a>
                     </div>
                 </CardContent>
