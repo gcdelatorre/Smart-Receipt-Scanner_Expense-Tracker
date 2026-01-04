@@ -13,6 +13,7 @@ import { navItems } from "./components/utils/navItems";
 import { useStats } from "./components/utils/useStats";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Landing from "./pages/Landing";
 
 export default function App() {
 
@@ -40,8 +41,10 @@ export default function App() {
       {!isAuth && (
         <>
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </>
       )}
