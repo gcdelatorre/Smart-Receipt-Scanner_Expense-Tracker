@@ -37,7 +37,7 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const apiEndpoint = isExpense ? `/api/expenses/${transactionToEdit._id}` : `/api/incomes/${transactionToEdit._id}`;
+        const apiEndpoint = isExpense ? `/api/expenses/${transactionToEdit._id}` : `/api/income/${transactionToEdit._id}`;
 
         try {
             const response = await fetch(apiEndpoint, {
