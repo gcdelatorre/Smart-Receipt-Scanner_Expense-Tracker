@@ -3,7 +3,7 @@ import { getAll, findIncomeById, createIncome } from '../services/incomeService.
 // create a new income
 export const addIncome = async (req, res) => {
     try {
-        const newIncome = await createIncome({ ...req.body, userId: "64c1f0f9a4f12b3a5e123456" }); // hardcoded userId for now  
+        const newIncome = await createIncome({ ...req.body, userId: req.user._id });
         res.status(200).json({
             success: true,
             data: newIncome,
@@ -16,11 +16,11 @@ export const addIncome = async (req, res) => {
 
 // get single income by id
 export const getSingleIncomeById = async (req, res) => {
-    const income = await findIncomeById(req.params.id);
-    if (!income) {
-        return res.status(404).json({ success: false, message: "Income Not Found" });
-    }
     try {
+        const income = await findIncomeById(req.params.id, req.user._id);
+        if (!income) {
+            return res.status(404).json({ success: false, message: "Income Not Found" });
+        }
         res.status(200).json({
             success: true,
             data: income,
@@ -32,8 +32,8 @@ export const getSingleIncomeById = async (req, res) => {
 };
 // get all income
 export const getAllIncome = async (req, res) => {
-    const incomes = await getAll({})
     try {
+        const incomes = await getAll(req.user._id);
         res.status(200).json({
             success: true,
             data: incomes,
@@ -46,11 +46,11 @@ export const getAllIncome = async (req, res) => {
 
 // update income by id
 export const updateIncomeById = async (req, res) => {
-    const income = await findIncomeById(req.params.id);
-    if (!income) {
-        return res.status(404).json({ success: false, message: "Income Not Found" });
-    }
     try {
+        const income = await findIncomeById(req.params.id, req.user._id);
+        if (!income) {
+            return res.status(404).json({ success: false, message: "Income Not Found" });
+        }
         Object.assign(income, req.body);
         const updatedIncome = await income.save();
         res.status(200).json({
@@ -65,12 +65,12 @@ export const updateIncomeById = async (req, res) => {
 
 //delete income by id
 export const deleteIncomeById = async (req, res) => {
-    const income = await findIncomeById(req.params.id);
-    if (!income) {
-        return res.status(404).json({ success: false, message: "Income Not Found" });
-    }
     try {
-        await income.remove();
+        const income = await findIncomeById(req.params.id, req.user._id);
+        if (!income) {
+            return res.status(404).json({ success: false, message: "Income Not Found" });
+        }
+        await income.deleteOne();
         res.status(200).json({
             success: true,
             message: "Income Deleted Successfully"
