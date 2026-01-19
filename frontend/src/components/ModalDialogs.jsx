@@ -13,6 +13,7 @@ import { incomeCategories, expenseCategories } from "./utils/categories";
 import { Upload } from "lucide-react";
 import { Spinner } from "./ui/spinner";
 import { fetchUserBudget } from "./utils/fetchUser";
+import api from "../services/api";
 
 /* =====================================================
    ADD INCOME MODAL
@@ -43,17 +44,7 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded }) {
         }
 
         try {
-            const res = await fetch("/api/income/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            })
-
-            if (!res.ok) {
-                console.log("something went wrong")
-            }
+            await api.post("/income", payload);
 
             setPayload({ amount: "", category: "", description: "", date: "" })
             if (onIncomeAdded) {
@@ -152,17 +143,7 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded }) {
         }
 
         try {
-            const res = await fetch("/api/expenses", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            })
-
-            if (!res.ok) {
-                console.log("something went wrong")
-            }
+            await api.post("/expenses", payload);
 
             setPayload({ amount: "", store: "", category: "", description: "", date: "" })
             if (onExpenseAdded) {
@@ -188,11 +169,14 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded }) {
         setUploaded(false);
 
         try {
-
             const formData = new FormData();
             formData.append("image", file);
-            const res = await fetch("/api/expenses/upload", { method: "POST", body: formData });
-            const { data } = await res.json();
+            const res = await api.post("/expenses/upload", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            const { data } = res.data;
             setPayload({
                 amount: data.amount,
                 store: data.store,
@@ -366,17 +350,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
             : payload = { overallBudget, categoryBudgets }
 
         try {
-            const res = await fetch("/api/user/budget/693aec9c08d1f6edd4c2ad5f", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            })
-
-            if (!res.ok) {
-                console.log("something went wrong")
-            }
+            await api.put("/user/budget", payload);
 
             setOverallBudget(0)
             setCategoryBudgets([{ category: "", amount: 0 },]);

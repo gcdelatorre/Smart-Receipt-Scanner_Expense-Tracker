@@ -1,7 +1,8 @@
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
+import api from "../services/api";
 
-export default function EditBudgetModal({ open, onClose, categoryBudgets, overallBudget, userId, onUpdate }) {
+export default function EditBudgetModal({ open, onClose, categoryBudgets, overallBudget, onUpdate }) {
     const [payload, setPayload] = useState([]);
     const [editableOverallBudget, setEditableOverallBudget] = useState(0);
     const [error, setError] = useState(null);
@@ -30,24 +31,15 @@ export default function EditBudgetModal({ open, onClose, categoryBudgets, overal
     const handleSubmit = async () => {
         setError(null);
         try {
-            const response = await fetch(`/api/user/budget/${userId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    overallBudget: editableOverallBudget,
-                    categoryBudgets: payload
-                })
+            await api.put('/user/budget', {
+                overallBudget: editableOverallBudget,
+                categoryBudgets: payload
             });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to update budgets.');
-            }
             
             onUpdate(); // Trigger data refresh in parent
             onClose();  // Close modal on success
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || err.message || 'Failed to update budgets.');
         }
     };
 

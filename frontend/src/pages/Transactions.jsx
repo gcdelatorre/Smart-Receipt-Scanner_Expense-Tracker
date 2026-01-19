@@ -1,7 +1,7 @@
 import { Card, CardContent, CardTransactionHistory } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Receipt, PlusCircle, ArrowUpRight, ArrowDownRight, ChevronRight, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { fetchTransactions } from "../components/utils/fetchTransaction";
 import SearchTransaction from "../components/ui/SearchTransaction";
 import ViewTransactionModal from "../components/ViewTransactionModal";
@@ -14,14 +14,13 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
     const [showEditModal, setShowEditModal] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState(null);
 
-    const fetchTransactionData = async () => {
-        const data = await fetchTransactions();
-        setTransactionData(data);
-    };
-
     useEffect(() => {
+        const fetchTransactionData = async () => {
+            const data = await fetchTransactions();
+            setTransactionData(data);
+        };
         fetchTransactionData();
-    }, [refreshTrigger, onRefresh]);
+    }, [refreshTrigger]);
 
     const transactionToView = transactionData.find(t => t._id === transactionToViewId);
 
@@ -40,10 +39,11 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
         setShowEditModal(true);
     };
 
-    const handleRefresh = () => {
-        fetchTransactionData();
+    const handleRefresh = useCallback(async () => {
+        const data = await fetchTransactions();
+        setTransactionData(data);
         if(onRefresh) onRefresh();
-    }
+    }, [onRefresh]);
 
     const transactionElements = sortedTransactions.map((transaction) => {
         const isIncome = transaction.transactionType === "income";

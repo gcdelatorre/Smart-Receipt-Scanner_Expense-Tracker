@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
+import api from "../services/api";
 
 export default function EditTransactionModal({ open, onClose, transactionToEdit, onRefresh }) {
     const [formData, setFormData] = useState({});
@@ -37,30 +38,17 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const apiEndpoint = isExpense ? `/api/expenses/${transactionToEdit._id}` : `/api/income/${transactionToEdit._id}`;
+        const apiEndpoint = isExpense ? `/expenses/${transactionToEdit._id}` : `/income/${transactionToEdit._id}`;
 
         try {
-            const response = await fetch(apiEndpoint, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                if (onRefresh) {
-                    onRefresh();
-                }
-                onClose();
-            } else {
-                // Handle error
-                const errorData = await response.json();
-                console.error("Failed to update transaction:", errorData.message);
-                // Optionally, display an error message to the user
+            await api.put(apiEndpoint, formData);
+            if (onRefresh) {
+                onRefresh();
             }
+            onClose();
         } catch (err) {
             console.error("Error submitting form:", err);
+            // Optionally, display an error message to the user
         }
     };
 

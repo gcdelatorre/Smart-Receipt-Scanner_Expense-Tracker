@@ -1,7 +1,7 @@
 import { Aperture } from "lucide-react";
-import { Card, CardContent } from "../ui/card";
-import { Avatar } from "../ui/avatar";
 import { Link } from "react-router-dom";
+import UserDropdown from "./UserDropdown";
+import { useAuth } from "../../contexts/AuthContext";
 
 function NavItem({ icon: Icon, label, path, active }) {
   return (
@@ -18,6 +18,8 @@ function NavItem({ icon: Icon, label, path, active }) {
 }
 
 export default function Sidebar({ navItems, isActive }) {
+  const { user } = useAuth();
+
   return (
     <aside className="hidden lg:flex h-[95vh] w-64 flex-col sticky top-0 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-100">
       <div className="flex-1 space-y-8 overflow-y-auto">
@@ -37,15 +39,9 @@ export default function Sidebar({ navItems, isActive }) {
         </div>
       </div>
 
-      <Card className="border-0 bg-indigo-100 text-white shadow-lg ">
-        <CardContent className="flex items-center gap-3 p-4">
-          <Avatar className="h-12 w-12 bg-indigo-900 text-white border">AD</Avatar>
-          <div className="flex-1 space-y-0.5">
-            <p className="text-sm font-semibold text-slate-900 leading-tight">Alex Doe</p>
-            <p className="text-xs text-slate-500 leading-tight">alex@example.com</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="border-t border-slate-200 pt-4 mt-auto">
+        <UserDropdown user={user} />
+      </div>
     </aside>
   );
 }

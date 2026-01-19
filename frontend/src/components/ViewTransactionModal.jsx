@@ -7,6 +7,7 @@ import {
     DialogTitle,
 } from "./ui/dialog";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import api from "../services/api";
 
 export default function ViewTransactionModal({ open, onClose, transactionToView, onRefresh, onEdit }) {
 
@@ -24,18 +25,15 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
     if (!open || !transactionToView) return null;
 
     const handleDelete = async () => {
-        const apiEndpoint = transactionToView.transactionType === 'expense' ? `/api/expenses/${transactionToView._id}` : `/api/incomes/${transactionToView._id}`;
+        const apiEndpoint = transactionToView.transactionType === 'expense' ? `/expenses/${transactionToView._id}` : `/income/${transactionToView._id}`;
         try {
-            await fetch(apiEndpoint, {
-                method: "DELETE",
-            })
-
-            onClose()
+            await api.delete(apiEndpoint);
+            onClose();
             if (onRefresh) {
                 onRefresh();
             }
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
 

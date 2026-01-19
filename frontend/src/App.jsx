@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import TransactionsPage from "./pages/Transactions";
 import AnalyticsPage from "./pages/Analytics";
@@ -11,6 +11,7 @@ import BudgetsCard from "./components/dashboard/BudgetsCard";
 import SpendingChart from "./components/dashboard/SpendingChart";
 import { navItems } from "./components/utils/navItems";
 import { useStats } from "./components/utils/useStats";
+import { useAuth } from "./contexts/AuthContext";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Landing from "./pages/Landing";
@@ -18,38 +19,60 @@ import Landing from "./pages/Landing";
 export default function App() {
 
   const [refreshKey, setRefreshKey] = useState(0);
-  const { stats } = useStats(refreshKey);
+  const { isAuthenticated, user, logout, loading } = useAuth();
+  const { stats } = useStats(isAuthenticated ? refreshKey : null);
   const location = useLocation();
   const pathname = location.pathname;
-  const isActive = (path) => (path === "/" ? pathname === "/" : pathname.startsWith(path));
-  const pageTitle =
-    pathname === "/transactions"
-      ? "Transactions"
-      : pathname === "/analytics"
-        ? "Analytics"
-        : "Dashboard";
+  
+  const isActive = useCallback((path) => {
+    if (path === "/") {
+      return pathname === "/" || pathname === "/dashboard";
+    }
+    return pathname.startsWith(path);
+  }, [pathname]);
+  
+  const pageTitle = useMemo(() => {
+    if (pathname === "/transactions") return "Transactions";
+    if (pathname === "/analytics") return "Analytics";
+    return "Dashboard";
+  }, [pathname]);
 
-  const triggerRefresh = () => {
+  const triggerRefresh = useCallback(() => {
     setRefreshKey(prev => prev + 1);
-  };
+  }, []);
 
-  const [isAuth, setIsAuth] = useState(true);
+  const handleLogout = useCallback(async () => {
+    await logout();
+  }, [logout]);
+
+  const userInfo = useMemo(() => {
+    return user ? { username: user.username || user.name, email: user.email } : null;
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
-
-      {!isAuth && (
+      {!isAuthenticated && (
         <>
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </>
       )}
 
-      {isAuth && (
+      {isAuthenticated && (
         <>
           <div className="min-h-screen bg-[hsl(var(--background))] text-slate-900">
             <div className="mx-auto flex max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:px-8">
@@ -86,7 +109,12 @@ export default function App() {
                 </Routes>
               </main>
             </div>
-            <MobileNav navItems={navItems} isActive={isActive} onLogout={() => { }} user={{ username: "Alex Doe", email: "alex@example.com" }} />
+            <MobileNav 
+              navItems={navItems} 
+              isActive={isActive} 
+              onLogout={handleLogout} 
+              user={userInfo} 
+            />
           </div>
         </>
       )}

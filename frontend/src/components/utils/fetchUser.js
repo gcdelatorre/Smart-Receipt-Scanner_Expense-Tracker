@@ -1,9 +1,11 @@
+import api from '../../services/api';
+
 export const fetchUserBudget = async () => {
-    const res = await fetch("/api/user/693aec9c08d1f6edd4c2ad5f").then(r => r.json());
+    const res = await api.get("/user/me");
 
     return {
-        overallBudget: res.data.overallBudget,
-        categoryBudgets: res.data.categoryBudgets
+        overallBudget: res.data.data.overallBudget,
+        categoryBudgets: res.data.data.categoryBudgets
     };
 };
 
