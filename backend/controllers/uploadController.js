@@ -27,34 +27,33 @@ export const createExpenseFromReceipt = async (req, res) => {
 
         const expenseAmount = Number(structured.amount);
         const category = structured.category;
-        const user = await User.findById("693aec9c08d1f6edd4c2ad5f");
+        const userId = req.user._id;
+
+        const user = await User.findById(userId);
         if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
 
         const categoryBudget = user.categoryBudgets.find(cat => cat.category === category);
 
-        if (!categoryBudget) {
-            const newExpense = await createExpense({ ...structured, imageUrl: `/uploads/${req.file.filename}`, userId: "693aec9c08d1f6edd4c2ad5f" })
-            // hardcoded userId for now
-            // will add userId after i added user models or user accounts
-            // and with authentication to input valid id
-            // so that it can determine whose this expense if its theirs
-            return res.json({
-                success: true,
-                data: newExpense
-            });
+        if (categoryBudget) {
+            if (categoryBudget.usedAmount + expenseAmount > categoryBudget.amount) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Expense exceeds budget for category: ${category}`
+                });
+            }
+
+            await User.updateOne(
+                { _id: userId, "categoryBudgets.category": category },
+                { $inc: { "categoryBudgets.$.usedAmount": expenseAmount } }
+            );
         }
 
-        if (categoryBudget.usedAmount + expenseAmount > categoryBudget.amount) {
-            return res.status(400).json({
-                success: false,
-                message: `Expense exceeds budget for category: ${category}`
-            });
-        }
-
-        await User.updateOne(
-            { _id: "693aec9c08d1f6edd4c2ad5f", "categoryBudgets.category": category },
-            { $inc: { "categoryBudgets.$.usedAmount": expenseAmount } }
-        );
+        const newExpense = await createExpense({ ...structured, imageUrl: `/uploads/${req.file.filename}`, userId });
+        
+        res.json({
+            success: true,
+            data: newExpense
+        });
 
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
