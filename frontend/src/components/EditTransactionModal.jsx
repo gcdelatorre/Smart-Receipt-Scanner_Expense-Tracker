@@ -12,6 +12,8 @@ import api from "../services/api";
 
 export default function EditTransactionModal({ open, onClose, transactionToEdit, onRefresh }) {
     const [formData, setFormData] = useState({});
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (transactionToEdit) {
@@ -23,6 +25,7 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
                 ...transactionToEdit,
                 date: formattedDate,
             });
+            setError(null);
         }
     }, [transactionToEdit]);
 
@@ -38,17 +41,29 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(null);
+        setLoading(true);
+
         const apiEndpoint = isExpense ? `/expenses/${transactionToEdit._id}` : `/income/${transactionToEdit._id}`;
 
         try {
-            await api.put(apiEndpoint, formData);
+            // Convert amount to number
+            const submitData = {
+                ...formData,
+                amount: Number(formData.amount)
+            };
+
+            await api.put(apiEndpoint, submitData);
             if (onRefresh) {
                 onRefresh();
             }
             onClose();
         } catch (err) {
+            const errorMessage = err.response?.data?.message || err.message || "An error occurred while updating the transaction";
+            setError(errorMessage);
             console.error("Error submitting form:", err);
-            // Optionally, display an error message to the user
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -61,6 +76,12 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 py-4">
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">
+                            {error}
+                        </div>
+                    )}
+
                     <div>
                         <label htmlFor="amount" className="text-sm font-medium text-slate-700">Amount</label>
                         <Input type="number" name="amount" id="amount" value={formData.amount || ''} onChange={handleChange} />
@@ -90,8 +111,8 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
 
 
                     <DialogFooter className="grid grid-cols-2 gap-2">
-                        <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
-                        <Button type="submit">Save Changes</Button>
+                        <Button variant="secondary" type="button" onClick={onClose} disabled={loading}>Cancel</Button>
+                        <Button type="submit" disabled={loading}>{loading ? "Saving..." : "Save Changes"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

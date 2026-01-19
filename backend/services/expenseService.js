@@ -63,14 +63,21 @@ export const updateExpense = async (expenseId, updateData, userId) => {
     const originalAmount = originalExpense.amount;
     const originalCategory = originalExpense.category;
 
-    const newAmount = updateData.amount === undefined ? originalAmount : updateData.amount;
+    const newAmount = updateData.amount === undefined ? originalAmount : Number(updateData.amount);
     const newCategory = updateData.category === undefined ? originalCategory : updateData.category;
 
+    const user = await User.findById(userId);
+    if (!user) {
+        throw { status: 404, message: "User not found" };
+    }
 
     // Only adjust budgets if category or amount changes
     if (originalCategory !== newCategory || originalAmount !== newAmount) {
-        // Revert the used amount for the original category
-        if (originalAmount > 0) {
+        // Check if original category exists in budget before reverting
+        const originalCategoryBudget = user.categoryBudgets.find(b => b.category === originalCategory);
+        
+        // Revert the used amount for the original category (only if it exists in budgets)
+        if (originalCategoryBudget && originalAmount > 0) {
             await User.updateOne(
                 { _id: userId, "categoryBudgets.category": originalCategory },
                 { $inc: { "categoryBudgets.$.usedAmount": -originalAmount } }
@@ -78,14 +85,13 @@ export const updateExpense = async (expenseId, updateData, userId) => {
         }
 
         // Apply the used amount for the new category
-        const user = await User.findById(userId);
-        const categoryBudget = user.categoryBudgets.find(b => b.category === newCategory);
+        const newCategoryBudget = user.categoryBudgets.find(b => b.category === newCategory);
 
-        if (categoryBudget) {
+        if (newCategoryBudget) {
             // Check for budget overflow
-            if (categoryBudget.usedAmount + newAmount > categoryBudget.amount) {
-                // Rollback the reverted amount
-                if (originalAmount > 0) {
+            if (newCategoryBudget.usedAmount + newAmount > newCategoryBudget.amount) {
+                // Rollback the reverted amount if we reverted anything
+                if (originalCategoryBudget && originalAmount > 0) {
                     await User.updateOne(
                         { _id: userId, "categoryBudgets.category": originalCategory },
                         { $inc: { "categoryBudgets.$.usedAmount": originalAmount } }
@@ -100,7 +106,6 @@ export const updateExpense = async (expenseId, updateData, userId) => {
             );
         }
     }
-
 
     // Update and save the expense
     Object.assign(originalExpense, updateData);
