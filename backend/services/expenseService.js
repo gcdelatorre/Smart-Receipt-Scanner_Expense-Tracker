@@ -13,17 +13,17 @@ export const createExpense = async (expenseData) => {
 
 }
 
-// get all expenses
-export const getAll = async () => {
-    const expenses = await Expense.find({})
+// get all expenses for a user
+export const getAll = async (userId) => {
+    const expenses = await Expense.find({ userId })
 
     return expenses;
 }
 
 
 // find expense by id
-export const findExpenseById = async (expenseId) => {
-    const expense = await Expense.findById(expenseId);
+export const findExpenseById = async (expenseId, userId) => {
+    const expense = await Expense.findOne({ _id: expenseId, userId });
     return expense;
 }
 
@@ -41,8 +41,8 @@ export const deductCategoryBudget = async (userId, category, amount) => {
     )
 }
 
-export const deleteExpenseAndUpdateBudget = async (expenseId) => {
-    const expense = await Expense.findById(expenseId)
+export const deleteExpenseAndUpdateBudget = async (expenseId, userId) => {
+    const expense = await Expense.findOne({ _id: expenseId, userId })
 
     if (!expense) {
         throw { status: 404, message: "Expense not found" };
@@ -53,8 +53,8 @@ export const deleteExpenseAndUpdateBudget = async (expenseId) => {
     await deductCategoryBudget(expense.userId, expense.category, expense.amount);
 }
 
-export const updateExpense = async (expenseId, updateData) => {
-    const originalExpense = await Expense.findById(expenseId);
+export const updateExpense = async (expenseId, updateData, userId) => {
+    const originalExpense = await Expense.findOne({ _id: expenseId, userId });
 
     if (!originalExpense) {
         throw { status: 404, message: "Expense not found" };
@@ -62,7 +62,6 @@ export const updateExpense = async (expenseId, updateData) => {
 
     const originalAmount = originalExpense.amount;
     const originalCategory = originalExpense.category;
-    const userId = originalExpense.userId;
 
     const newAmount = updateData.amount === undefined ? originalAmount : updateData.amount;
     const newCategory = updateData.category === undefined ? originalCategory : updateData.category;

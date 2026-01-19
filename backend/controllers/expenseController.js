@@ -26,6 +26,7 @@ export const getSpendingAnalytics = async (req, res) => {
         const expenses = await Expense.aggregate([
             {
                 $match: {
+                    userId: req.user._id,
                     date: { $gte: startDate, $lte: endDate }
                 }
             },
@@ -54,36 +55,18 @@ export const getSpendingAnalytics = async (req, res) => {
 };
 
 export const addExpense = async (req, res) => {
-
     try {
-
-        // commented out code for updating user's overall budget when adding expense
-        // const expenseAmount = Number(req.body.amount);
-        // const user = await User.findById("693aec9c08d1f6edd4c2ad5f"); // hardcoded userId for now
-        // if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
-
-        // // subtract from user's overallBudget
-        // user.overallBudget -= expenseAmount;
-        // await user.save();
-
         const expenseAmount = Number(req.body.amount);
         const category = req.body.category;
-        const user = await User.findById("693aec9c08d1f6edd4c2ad5f");
+        const userId = req.user._id;
+
+        const user = await User.findById(userId);
         if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
 
         // find the category budget
         const categoryBudget = user.categoryBudgets.find(cat => cat.category === category);
 
         // check if category budget exists
-        if (!categoryBudget) {
-            const newExpense = await createExpense({ ...req.body, userId: "693aec9c08d1f6edd4c2ad5f" });
-            res.status(200).json({
-                success: true,
-                data: newExpense,
-                message: "Expense Created Successfully"
-            });
-        }
-
         if (categoryBudget) {
             // validation for checking if expense exceeds category budget
             if (categoryBudget.usedAmount + expenseAmount > categoryBudget.amount) {
@@ -95,24 +78,16 @@ export const addExpense = async (req, res) => {
 
             // update the usedAmount for the category budget
             await User.updateOne(
-                { _id: "693aec9c08d1f6edd4c2ad5f", "categoryBudgets.category": category },
+                { _id: userId, "categoryBudgets.category": category },
                 { $inc: { "categoryBudgets.$.usedAmount": expenseAmount } }
             );
-
-            const newExpense = await createExpense({ ...req.body, userId: "693aec9c08d1f6edd4c2ad5f" });
-            return res.status(200).json({
-                success: true,
-                data: newExpense,
-                message: "Expense Created and Budget Updated Successfully"
-            });
         }
 
-        // This part will only be reached if there's no category budget
-        const newExpense = await createExpense({ ...req.body, userId: "693aec9c08d1f6edd4c2ad5f" });
+        const newExpense = await createExpense({ ...req.body, userId });
         res.status(200).json({
             success: true,
             data: newExpense,
-            message: "Expense Created Successfully"
+            message: categoryBudget ? "Expense Created and Budget Updated Successfully" : "Expense Created Successfully"
         });
 
     } catch (err) {
@@ -121,13 +96,13 @@ export const addExpense = async (req, res) => {
 };
 
 export const getSingleExpenseById = async (req, res) => {
-    const expense = await findExpenseById(req.params.id);
-
-    if (!expense) {
-        return res.status(404).json({ success: false, message: "Expense Not Found" });
-    }
-
     try {
+        const expense = await findExpenseById(req.params.id, req.user._id);
+
+        if (!expense) {
+            return res.status(404).json({ success: false, message: "Expense Not Found" });
+        }
+
         res.status(200).json({
             success: true,
             data: expense,
@@ -139,9 +114,9 @@ export const getSingleExpenseById = async (req, res) => {
 };
 
 export const getAllExpense = async (req, res) => {
-    const expenses = await getAll({})
-
     try {
+        const expenses = await getAll(req.user._id);
+
         res.status(200).json({
             success: true,
             data: expenses,
@@ -154,7 +129,7 @@ export const getAllExpense = async (req, res) => {
 
 export const updateExpenseById = async (req, res) => {
     try {
-        const updatedExpense = await updateExpense(req.params.id, req.body);
+        const updatedExpense = await updateExpense(req.params.id, req.body, req.user._id);
         res.status(200).json({
             success: true,
             data: updatedExpense,
@@ -168,14 +143,15 @@ export const updateExpenseById = async (req, res) => {
 
 export const deleteExpenseById = async (req, res) => {
     try {
-        await deleteExpenseAndUpdateBudget(req.params.id);
+        await deleteExpenseAndUpdateBudget(req.params.id, req.user._id);
 
         res.status(200).json({
             success: true,
             message: "Expense Deleted and Budget Updated Successfully"
         });
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+        const statusCode = err.status || 500;
+        res.status(statusCode).json({ success: false, message: err.message });
     }
 }
 

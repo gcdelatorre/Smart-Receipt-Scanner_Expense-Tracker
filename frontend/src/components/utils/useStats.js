@@ -1,6 +1,5 @@
 import { ArrowUpRight, ArrowDownRight, PiggyBank, TrendingUp, Wallet, ArrowDown, CircleSlash, Circle } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
-import { fetchTransactions } from "./fetchTransaction";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { fetchUserBudget } from "./fetchUser";
 
 export function useStats(refreshTrigger) {
@@ -9,23 +8,30 @@ export function useStats(refreshTrigger) {
     const [overallBudget, setOverallBudget] = useState(0)
 
     const refresh = useCallback(async () => {
-        const res1 = await fetch("/api/income").then(r => r.json());
-        const res2 = await fetch("/api/expenses").then(r => r.json());
+        try {
+            const api = (await import('../../services/api')).default;
+            const res1 = await api.get("/income");
+            const res2 = await api.get("/expenses");
 
-        setIncomeStats(res1.data);
-        setExpenseStats(res2.data);
+            setIncomeStats(res1.data.data);
+            setExpenseStats(res2.data.data);
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+        }
     }, []);
 
     useEffect(() => {
+        // Only fetch if refreshTrigger is not null (meaning user is authenticated)
+        if (refreshTrigger === null) return;
+        
         const fetchData = async () => {
             await refresh();
             const { overallBudget } = await fetchUserBudget();
             setOverallBudget(overallBudget);
-            await fetchTransactions();
         };
 
         fetchData();
-    }, [refresh, refreshTrigger]);
+    }, [refreshTrigger]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // process value    
     const totalExpense = expenseStats.reduce((acc, expense) => acc + expense.amount, 0);
@@ -89,7 +95,7 @@ export function useStats(refreshTrigger) {
     const defaultVariant = "secondary"
     const defaultProgressColor = "bg-gray-300"
 
-    const stats = [
+    const stats = useMemo(() => [
         {
             title: "Total Balance",
             value: `$${totalBalance.toFixed(2)}`,
@@ -123,7 +129,7 @@ export function useStats(refreshTrigger) {
             progress: expenseProgress,
             progressColor: hasExpense ? "bg-rose-500" : defaultProgressColor,
         },
-    ];
+    ], [totalBalance, totalIncomeThisMonth, totalExpenseThisMonth, hasData, hasIncome, hasExpense, change, changeLabel, incomeProgress, expenseProgress, expensePercentage, overallBudget]);
 
     return { stats, refresh }
 }

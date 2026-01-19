@@ -1,8 +1,12 @@
 import express from 'express'
 import { addExpense, getAllExpense, updateExpenseById, deleteExpenseById, getSingleExpenseById, getSpendingAnalytics } from "../controllers/expenseController.js";
 import { createExpenseFromReceipt, upload } from "../controllers/uploadController.js";
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router()
+
+// All routes require authentication
+router.use(protect);
 
 router.get("/", getAllExpense)
 router.get("/analytics", getSpendingAnalytics)

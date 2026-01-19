@@ -11,15 +11,15 @@ export const createIncome = async (incomeData) => {
     return newIncome;
 }
 
-// get all expenses
-export const getAll = async () => {
-    const incomes = await Income.find({})
+// get all incomes for a user
+export const getAll = async (userId) => {
+    const incomes = await Income.find({ userId })
 
     return incomes;
 }
 
 // find income by id
-export const findIncomeById = async (incomeId) => {
-    const income = await Income.findById(incomeId);
+export const findIncomeById = async (incomeId, userId) => {
+    const income = await Income.findOne({ _id: incomeId, userId });
     return income;
 }

@@ -11,7 +11,6 @@ export default function BudgetsCard({ refreshTrigger }) {
   const [overallBudget, setOverallBudget] = useState(0)
   const [categoryBudgets, setCategoryBudgets] = useState([])
   const [showModal, setShowModal] = useState(false);
-  const userId = "693aec9c08d1f6edd4c2ad5f"; // Following hardcoded pattern
 
   const fetchBudgets = useCallback(async () => {
     const { overallBudget, categoryBudgets } = await fetchUserBudget()
@@ -21,7 +20,7 @@ export default function BudgetsCard({ refreshTrigger }) {
 
   useEffect(() => {
     fetchBudgets()
-  }, [refreshTrigger, fetchBudgets]);
+  }, [refreshTrigger]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBudgetUpdate = () => {
     fetchBudgets(); // Refetch data after update
@@ -84,7 +83,6 @@ export default function BudgetsCard({ refreshTrigger }) {
         onClose={() => setShowModal(false)} 
         categoryBudgets={categoryBudgets}
         overallBudget={overallBudget}
-        userId={userId}
         onUpdate={handleBudgetUpdate}
       />
     </>

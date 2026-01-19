@@ -35,9 +35,9 @@ export default function SpendingChart() {
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const res = await fetch(`/api/expenses/analytics?period=${period}`);
-        const { data } = await res.json();
-        setChartData(data);
+        const api = (await import('../../services/api')).default;
+        const res = await api.get(`/expenses/analytics?period=${period}`);
+        setChartData(res.data.data);
       } catch (err) {
         console.log(err);
       }

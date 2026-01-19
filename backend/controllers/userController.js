@@ -1,23 +1,13 @@
-import { createUser, findUserById, updateBudgets } from "../services/userService.js"
+import { findUserById, updateBudgets } from "../services/userService.js"
 
-// create new user
-export const addUser = async (req, res) => {
-    try {
-        const newUser = await createUser(req.body);
-        res.status(200).json({ success: true, data: newUser, message: "User Created Successfully" })
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message })
-    }
-}
-
-// get user
+// get current user
 export const getUser = async (req, res) => {
-    const user = await findUserById(req.params.id)
-    if (!user) {
-        return res.status(404).json({ success: false, message: "User Not Found" });
-    }
-
     try {
+        const user = await findUserById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User Not Found" });
+        }
+
         res.status(200).json({ success: true, data: user, message: "Successfully Retrieved Data" })
     } catch (err) {
         res.status(500).json({ success: false, message: err.message })
@@ -28,7 +18,7 @@ export const getUser = async (req, res) => {
 export const updateUserBudgets = async (req, res) => {
     try {
         const { overallBudget, categoryBudgets } = req.body;
-        const updatedUser = await updateBudgets(req.params.id, { overallBudget, categoryBudgets });
+        const updatedUser = await updateBudgets(req.user._id, { overallBudget, categoryBudgets });
 
         res.status(200).json({
             success: true,
