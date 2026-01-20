@@ -40,26 +40,34 @@ export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
                     </div>
                 )}
                 <div className="space-y-2">
-                    <Label htmlFor="emailOrUsername">Email or Username</Label>
+                    <Label htmlFor="emailOrUsername" className="text-sm font-medium text-muted-foreground ml-1">Email or Username</Label>
                     <Input
                         id="emailOrUsername"
                         type="text"
                         value={emailOrUsername}
                         onChange={(e) => setEmailOrUsername(e.target.value)}
                         required
+                        className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
+                        placeholder="john@example.com"
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password" className="text-sm font-medium text-muted-foreground ml-1">Password</Label>
                     <Input
                         id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
+                        placeholder="••••••••"
                     />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                    type="submit"
+                    className="w-full h-11 text-base font-medium shadow-md hover:shadow-lg transition-all"
+                    disabled={loading}
+                >
                     {loading ? "Logging in..." : "Login"}
                 </Button>
             </form>

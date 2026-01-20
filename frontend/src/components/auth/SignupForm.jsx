@@ -51,36 +51,42 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
                     </div>
                 )}
                 <div className="space-y-2">
-                    <Label htmlFor="name">Name (Optional)</Label>
+                    <Label htmlFor="name" className="text-sm font-medium text-muted-foreground ml-1">Name (Optional)</Label>
                     <Input
                         id="name"
                         type="text"
                         value={formData.name}
                         onChange={handleChange}
+                        className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
+                        placeholder="John Doe"
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
+                    <Label htmlFor="username" className="text-sm font-medium text-muted-foreground ml-1">Username</Label>
                     <Input
                         id="username"
                         type="text"
                         value={formData.username}
                         onChange={handleChange}
                         required
+                        className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
+                        placeholder="johndoe"
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email" className="text-sm font-medium text-muted-foreground ml-1">Email</Label>
                     <Input
                         id="email"
                         type="email"
                         value={formData.email}
                         onChange={handleChange}
                         required
+                        className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
+                        placeholder="john@example.com"
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password" className="text-sm font-medium text-muted-foreground ml-1">Password</Label>
                     <Input
                         id="password"
                         type="password"
@@ -88,9 +94,15 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
                         onChange={handleChange}
                         required
                         minLength={6}
+                        className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
+                        placeholder="••••••••"
                     />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                    type="submit"
+                    className="w-full h-11 text-base font-medium shadow-md hover:shadow-lg transition-all"
+                    disabled={loading}
+                >
                     {loading ? "Creating account..." : "Sign Up"}
                 </Button>
             </form>
