@@ -12,8 +12,7 @@ import SpendingChart from "./components/dashboard/SpendingChart";
 import { navItems } from "./components/utils/navItems";
 import { useStats } from "./components/utils/useStats";
 import { useAuth } from "./contexts/AuthContext";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+// Login and Signup pages removed in favor of modals on Landing page
 import Landing from "./pages/Landing";
 
 export default function App() {
@@ -23,14 +22,14 @@ export default function App() {
   const { stats } = useStats(isAuthenticated ? refreshKey : null);
   const location = useLocation();
   const pathname = location.pathname;
-  
+
   const isActive = useCallback((path) => {
     if (path === "/") {
       return pathname === "/" || pathname === "/dashboard";
     }
     return pathname.startsWith(path);
   }, [pathname]);
-  
+
   const pageTitle = useMemo(() => {
     if (pathname === "/transactions") return "Transactions";
     if (pathname === "/analytics") return "Analytics";
@@ -65,9 +64,8 @@ export default function App() {
         <>
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </>
       )}
@@ -109,11 +107,11 @@ export default function App() {
                 </Routes>
               </main>
             </div>
-            <MobileNav 
-              navItems={navItems} 
-              isActive={isActive} 
-              onLogout={handleLogout} 
-              user={userInfo} 
+            <MobileNav
+              navItems={navItems}
+              isActive={isActive}
+              onLogout={handleLogout}
+              user={userInfo}
             />
           </div>
         </>
