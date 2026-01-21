@@ -2,31 +2,52 @@ import { Card, CardContent, CardTransactionHistory } from "../components/ui/card
 import { Button } from "../components/ui/button";
 import { Receipt, PlusCircle, ArrowUpRight, ArrowDownRight, ChevronRight, Search } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
-import { fetchTransactions } from "../components/utils/fetchTransaction";
 import SearchTransaction from "../components/ui/SearchTransaction";
 import ViewTransactionModal from "../components/ViewTransactionModal";
 import EditTransactionModal from "../components/EditTransactionModal";
+import api from "../services//api";
 
 export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
-    const [transactionData, setTransactionData] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [limit, setLimit] = useState(10);
+    const [sortBy, setSortBy] = useState("date");
+    const [order, setOrder] = useState("desc");
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     const [showViewModal, setShowViewModal] = useState(false);
     const [transactionToViewId, setTransactionToViewId] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState(null);
 
+    const fetchTransactions = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await api.get("/transactions", {
+                params: { page, limit, sortBy, order }
+            })
+            if (response.data.success) {
+                setTransactions(response.data.data)
+                setTotalPages(response.data.pagination.totalPages)
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false);
+        }
+    }, [page, limit, sortBy, order]);
+
     useEffect(() => {
-        const fetchTransactionData = async () => {
-            const data = await fetchTransactions();
-            setTransactionData(data);
-        };
-        fetchTransactionData();
-    }, [refreshTrigger]);
+        fetchTransactions()
+    }, [fetchTransactions, refreshTrigger])
 
-    const transactionToView = transactionData.find(t => t._id === transactionToViewId);
+    const handleRefresh = useCallback(() => {
+        fetchTransactions();
+        if (onRefresh) onRefresh();
+    }, [fetchTransactions, onRefresh]);
 
-    const sortedTransactions = [...transactionData].sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
-    );
+    const transactionToView = transactions.find(t => t._id === transactionToViewId);
 
     const formatDate = (dateStr) => {
         const d = new Date(dateStr);
@@ -39,13 +60,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
         setShowEditModal(true);
     };
 
-    const handleRefresh = useCallback(async () => {
-        const data = await fetchTransactions();
-        setTransactionData(data);
-        if(onRefresh) onRefresh();
-    }, [onRefresh]);
-
-    const transactionElements = sortedTransactions.map((transaction) => {
+    const transactionElements = transactions.map((transaction) => {
         const isIncome = transaction.transactionType === "income";
         const amountColor = isIncome ? "text-green-500" : "text-rose-500";
         const Icon = isIncome ? ArrowUpRight : ArrowDownRight;
@@ -112,8 +127,33 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                 </div>
 
                 {/* Transactions List */}
-                {transactionData.length > 0 ? (
-                    <div>{transactionElements}</div>
+                {transactions.length > 0 ? (
+                    <div className="space-y-4">
+                        <div>{transactionElements}</div>
+
+                        {/* Pagination Controls */}
+                        <div className="flex items-center justify-between pt-4 pb-8">
+                            <Button
+                                variant="outline"
+                                onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+                                disabled={page === 1}
+                                className="w-24"
+                            >
+                                Previous
+                            </Button>
+                            <span className="text-sm text-slate-500">
+                                Page {page} of {totalPages}
+                            </span>
+                            <Button
+                                variant="outline"
+                                onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={page === totalPages}
+                                className="w-24"
+                            >
+                                Next
+                            </Button>
+                        </div>
+                    </div>
                 ) : (
                     <Card className="border-dashed border-slate-200 bg-slate-50">
                         <CardContent className="flex flex-col items-center gap-3 text-sm text-slate-600 py-6">
@@ -142,7 +182,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                 onRefresh={handleRefresh}
                 onEdit={() => handleOpenEditModal(transactionToView)}
             />
-            
+
             <EditTransactionModal
                 open={showEditModal}
                 onClose={() => setShowEditModal(false)}
