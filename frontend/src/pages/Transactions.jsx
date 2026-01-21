@@ -14,7 +14,7 @@ import { useEffect, useState, useCallback } from "react";
 import SearchTransaction from "../components/ui/SearchTransaction";
 import ViewTransactionModal from "../components/ViewTransactionModal";
 import EditTransactionModal from "../components/EditTransactionModal";
-import api from "../services//api";
+import api from "../services/api";
 
 export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
     const [page, setPage] = useState(1);
@@ -162,7 +162,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectItem value="date">Date</SelectItem>
+                                    <SelectItem value="createdAt">Date</SelectItem>
                                     <SelectItem value="amount">Amount</SelectItem>
                                 </SelectGroup>
                             </SelectContent>
