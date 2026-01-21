@@ -11,7 +11,7 @@ import { typeConfigs } from "../utils/typeConfigs";
 import { AddBudgetModal, AddExpenseModal, AddIncomeModal } from "../ModalDialogs";
 import { expenseCategories } from "../utils/categories";
 
-export default function HeaderBar({ pageTitle }) {
+export default function HeaderBar({ pageTitle, onRefresh }) {
 
   const [open, setOpen] = useState(false)
   const [openTransactionModal, setOpenTransactionModal] = useState(false)
@@ -105,10 +105,10 @@ export default function HeaderBar({ pageTitle }) {
 
       {/* --- Specific Modals --- */}
       {transactionType === "income" && (
-        <AddIncomeModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} onBack={handleBackToSelection} />
+        <AddIncomeModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} onBack={handleBackToSelection} onIncomeAdded={onRefresh} />
       )}
       {transactionType === "expense" && (
-        <AddExpenseModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} onBack={handleBackToSelection} />
+        <AddExpenseModal open={openTransactionModal} onOpenChange={setOpenTransactionModal} onBack={handleBackToSelection} onExpenseAdded={onRefresh} />
       )}
       {transactionType === "budget" && (
         <AddBudgetModal
@@ -116,6 +116,7 @@ export default function HeaderBar({ pageTitle }) {
           onOpenChange={setOpenTransactionModal}
           expenseCategories={expenseCategories}
           onBack={handleBackToSelection}
+          onBudgetAdded={onRefresh}
         />
       )}
     </>

@@ -78,7 +78,7 @@ export default function App() {
 
               <main className="flex-1 space-y-6 pb-20 lg:pb-6">
 
-                <HeaderBar pageTitle={pageTitle} />
+                <HeaderBar pageTitle={pageTitle} onRefresh={triggerRefresh} />
 
                 <Routes>
                   <Route
