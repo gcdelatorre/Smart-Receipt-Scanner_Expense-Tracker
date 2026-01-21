@@ -18,7 +18,7 @@ import api from "../services/api";
 /* =====================================================
    ADD INCOME MODAL
 ===================================================== */
-export function AddIncomeModal({ open, onOpenChange, onIncomeAdded }) {
+export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
 
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [payload, setPayload] = useState({
@@ -98,7 +98,7 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded }) {
                             />
                         </Field>
 
-                        <Actions submit={handleSubmit} saveLabel="Save" notEmpty={notEmpty} onCancel={() => onOpenChange(false)} />
+                        <Actions submit={handleSubmit} saveLabel="Save" notEmpty={notEmpty} onCancel={onBack} />
                     </form>
                 </DialogDescription>
             </DialogContent>
@@ -109,7 +109,7 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded }) {
 /* =====================================================
    ADD EXPENSE MODAL
 ===================================================== */
-export function AddExpenseModal({ open, onOpenChange, onExpenseAdded }) {
+export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) {
 
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [payload, setPayload] = useState({
@@ -283,7 +283,7 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded }) {
                             <Input name="date" type="date" onChange={handleChange} value={payload.date} />
                         </Field>
 
-                        <Actions onCancel={() => onOpenChange(false)} saveLabel="Save" submit={handleSubmit} notEmpty={notEmpty} />
+                        <Actions onCancel={onBack} saveLabel="Save" submit={handleSubmit} notEmpty={notEmpty} />
                     </form>
                 </DialogDescription>
             </DialogContent>
@@ -294,7 +294,7 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded }) {
 /* =====================================================
    ADD BUDGET MODAL
 ===================================================== */
-export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudgetAdded }) {
+export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudgetAdded, onBack }) {
 
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [overallBudget, setOverallBudget] = useState(0);
@@ -414,7 +414,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
 
                     <Actions
                         onCancel={() => {
-                            onOpenChange(false);
+                            onBack();
                             setCategoryBudgets([{ category: "", amount: 0 }]);
                             setOverallBudget(0);
                         }}
