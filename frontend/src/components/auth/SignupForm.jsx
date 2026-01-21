@@ -51,7 +51,7 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
                     </div>
                 )}
                 <div className="space-y-2">
-                    <Label htmlFor="name" className="text-sm font-medium text-muted-foreground ml-1">Name (Optional)</Label>
+                    <Label htmlFor="name" className="text-sm font-medium text-muted-foreground ml-1">Full Name</Label>
                     <Input
                         id="name"
                         type="text"
