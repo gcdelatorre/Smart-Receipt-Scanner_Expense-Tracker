@@ -149,6 +149,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectItem value="all">All</SelectItem>
                                     <SelectItem value="income">Income</SelectItem>
                                     <SelectItem value="expense">Expense</SelectItem>
                                 </SelectGroup>
