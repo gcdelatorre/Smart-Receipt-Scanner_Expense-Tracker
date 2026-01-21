@@ -7,9 +7,12 @@ export const getTransaction = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        const sortBy = req.query.sortBy || "date";
+        const sortBy = req.query.sortBy || "createdAt";
         const order = req.query.order === 'asc' ? 1 : -1;
         const filter = req.query.filter || 'all';
+        
+        // Default to descending order (newest first) when no order is specified
+        const finalOrder = req.query.order ? order : -1;
 
         const userId = new mongoose.Types.ObjectId(req.user._id);
 
@@ -20,7 +23,7 @@ export const getTransaction = async (req, res) => {
             // 2. Add a 'type' field for filtering
             { $addFields: { type: "income" } },
 
-            // 3. Union with Expenses
+            // 3. Union with @Expenses
             {
                 $unionWith: {
                     coll: "expenses",
@@ -35,7 +38,7 @@ export const getTransaction = async (req, res) => {
             ...(filter !== 'all' ? [{ $match: { type: filter } }] : []),
 
             // 5. Sort combined results
-            { $sort: { [sortBy]: order } },
+            { $sort: { [sortBy]: finalOrder } },
 
             // 6. Pagination
             {
@@ -105,3 +108,5 @@ export const getTransaction = async (req, res) => {
 //     res.status(500).json({ success: false, message: "Server Error", error: err.message });
 //   }
 // };
+
+

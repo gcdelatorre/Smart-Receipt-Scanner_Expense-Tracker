@@ -9,7 +9,7 @@ import {
     SelectLabel,
     SelectGroup
 } from "../components/ui/select";
-import { Receipt, PlusCircle, ArrowUpRight, ArrowDownRight, ChevronRight, Search, ArrowUpDown } from "lucide-react";
+import { Receipt, ArrowUpRight, ArrowDownRight, ChevronRight, ArrowUpDown } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import SearchTransaction from "../components/ui/SearchTransaction";
 import ViewTransactionModal from "../components/ViewTransactionModal";
