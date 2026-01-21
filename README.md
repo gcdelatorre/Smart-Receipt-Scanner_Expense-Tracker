@@ -1,9 +1,5 @@
 # TrackWise - Smart Receipt Scanner + Expense Tracker
 
-<img width="959" height="434" alt="image" src="https://github.com/user-attachments/assets/2db148cb-a741-415b-80b4-9bc73436a0df" />
-<img width="206" height="398" display="inline-block" alt="Screenshot 2025-12-12 210649" src="https://github.com/user-attachments/assets/03ad2f27-ce1b-46c6-bf19-5b3f0b7dd9b6" />
-<img width="210.5" height="403.5" alt="Screenshot 2025-12-12 210629" src="https://github.com/user-attachments/assets/029a7c2f-7d4c-4af3-bc68-d00666c5db17" />
-
 Track your expenses automatically by uploading receipts. The app extracts text from receipts and categorizes expenses using AI.
 
 Manual expense tracking is tedious. Receipts get lost, and budgets are easily forgotten. This project simplifies the process by allowing users to upload photos of receipts and automatically extracting structured expense data. 
@@ -34,3 +30,7 @@ Manual expense tracking is tedious. Receipts get lost, and budgets are easily fo
 ## ⚠️ Note
 
 This project is ongoing. Features and implementation are still in progress.
+
+<img width="1919" height="865" alt="UI_SCREENSHOTS" src="https://github.com/user-attachments/assets/bcab7f05-2ebb-40ca-8bd2-7dd4d3452a51" />
+<img width="1897" height="863" alt="ui-1" src="https://github.com/user-attachments/assets/44fc1439-87e7-4beb-9946-5f79fbb25483" />
+<img width="1897" height="865" alt="image" src="https://github.com/user-attachments/assets/784f0a1f-77f8-4a8e-a5f7-89ce8e9041dd" />
