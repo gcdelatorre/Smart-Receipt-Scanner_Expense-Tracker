@@ -13,6 +13,7 @@ import IncomeRouter from './routes/incomeRoutes.js';
 import UserRouter from './routes/userRoutes.js';
 import AuthRouter from './routes/authRoutes.js';
 import TransactionRouter from './routes/transactionRoutes.js';
+import ProfileRouter from './routes/profileRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +38,7 @@ app.use("/api/expenses", ExpenseRouter);
 app.use("/api/income", IncomeRouter);
 app.use("/api/user", UserRouter);
 app.use("/api/transactions", TransactionRouter);
+app.use("/api/profile", ProfileRouter);
 
 const startServer = async () => {
     try {
