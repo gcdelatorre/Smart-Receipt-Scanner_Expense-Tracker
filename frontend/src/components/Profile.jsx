@@ -11,18 +11,37 @@ import { Avatar } from "@/components/ui/avatar";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Mail, Pencil, Save, X } from "lucide-react"; // Make sure to install lucide-react
+import api from "@/services/api";
 
 export default function Profile({ openProfile, setOpenProfile }) {
     const [ifEdit, setIfEdit] = useState(false);
-    const { user } = useAuth();
+    const { user, setUser } = useAuth();
+
+    const [payload, setPayload] = useState({ name: "", username: "", email: "" });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setPayload(prev => ({ ...prev, [name]: value }));
+    }
 
     const handleIfEdit = () => {
+        if (!ifEdit) {
+            // Initialize payload with current user data when entering edit mode
+            setPayload({ name: user?.name || "", username: user?.username || "", email: user?.email || "" });
+        }
         setIfEdit(!ifEdit);
     };
 
-    const handleSave = () => {
-        // save to database
-        setOpenProfile(false);
+    const handleSave = async () => {
+        try {
+            const res = await api.put('/profile/update', payload);
+            // update/setUser to update the user in the AuthContext
+            setUser(res.data.data);
+            setIfEdit(false);
+        } catch (err) {
+            console.error("Error updating profile:", err);
+            alert("Failed to update profile. Please try again.");
+        }
     }
 
     const handleOpenChange = (val) => {
@@ -80,15 +99,15 @@ export default function Profile({ openProfile, setOpenProfile }) {
                         <div className="flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-200">
                             <div className="space-y-1.5">
                                 <Label>Full Name</Label>
-                                <Input defaultValue={user?.name} />
+                                <Input name="name" value={payload.name} onChange={handleChange} />
                             </div>
                             <div className="space-y-1.5">
                                 <Label>Username</Label>
-                                <Input defaultValue={user?.username} />
+                                <Input name="username" value={payload.username} onChange={handleChange} />
                             </div>
                             <div className="space-y-1.5">
                                 <Label>Email</Label>
-                                <Input defaultValue={user?.email} />
+                                <Input name="email" value={payload.email} onChange={handleChange} type="email" />
                             </div>
 
                             <div className="flex justify-end gap-2 mt-2 pt-4 border-t">
