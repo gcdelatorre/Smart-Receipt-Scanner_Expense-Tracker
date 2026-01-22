@@ -9,10 +9,10 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import api from "../services/api";
+import { activateToast } from "./Toast/ActivateToast";
 
 export default function EditTransactionModal({ open, onClose, transactionToEdit, onRefresh }) {
     const [formData, setFormData] = useState({});
-    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -25,7 +25,6 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
                 ...transactionToEdit,
                 date: formattedDate,
             });
-            setError(null);
         }
     }, [transactionToEdit]);
 
@@ -41,7 +40,6 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
         setLoading(true);
 
         const apiEndpoint = isExpense ? `/expenses/${transactionToEdit._id}` : `/income/${transactionToEdit._id}`;
@@ -58,9 +56,10 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
                 onRefresh();
             }
             onClose();
+            activateToast("success", "Transaction updated successfully");
         } catch (err) {
             const errorMessage = err.response?.data?.message || err.message || "An error occurred while updating the transaction";
-            setError(errorMessage);
+            activateToast("error", errorMessage);
             console.error("Error submitting form:", err);
         } finally {
             setLoading(false);
@@ -76,11 +75,6 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 py-4">
-                    {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">
-                            {error}
-                        </div>
-                    )}
 
                     <div>
                         <label htmlFor="amount" className="text-sm font-medium text-slate-700">Amount</label>

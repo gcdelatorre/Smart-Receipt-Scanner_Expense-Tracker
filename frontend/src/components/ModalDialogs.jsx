@@ -14,6 +14,7 @@ import { Upload } from "lucide-react";
 import { Spinner } from "./ui/spinner";
 import { fetchUserBudget } from "./utils/fetchUser";
 import api from "../services/api";
+import { activateToast } from "./Toast/ActivateToast";
 
 /* =====================================================
    ADD INCOME MODAL
@@ -40,20 +41,22 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
     const handleSubmit = async () => {
 
         if (!payload.amount || !payload.category || !payload.date) {
-            return // maybe add an toast component soon
+            activateToast("error", "Please fill in all required fields");
+            return
         }
 
         try {
             await api.post("/income", payload);
+            activateToast("success", "Income added successfully");
 
             setPayload({ amount: "", category: "", description: "", date: "" })
+            onOpenChange(false);
             if (onIncomeAdded) {
                 onIncomeAdded();
             }
-            onOpenChange(false);
 
         } catch (err) {
-            console.log(err) // maybe add an toast component soon
+            activateToast("error", "Failed to add income. Please try again.");
         }
     }
 
@@ -70,7 +73,7 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
                 </DialogTitle>
 
                 <DialogDescription asChild>
-                    <form className="space-y-4 pt-4">
+                    <form className="space-y-4 pt-4" onSubmit={(e) => e.preventDefault()}>
                         <Field label="Amount">
                             <Input
                                 onChange={handleChange}
@@ -134,7 +137,10 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
     }
 
     const handleSubmit = async () => {
-        if (!payload.amount || !payload.category || !payload.date) return;
+        if (!payload.amount || !payload.category || !payload.date) {
+            activateToast("error", "Please fill in all required fields");
+            return;
+        }
 
         // If the form was populated from a receipt, the expense is already created.
         if (uploaded) {
@@ -144,15 +150,16 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
 
         try {
             await api.post("/expenses", payload);
+            activateToast("success", "Expense added successfully");
 
             setPayload({ amount: "", store: "", category: "", description: "", date: "" })
+            onOpenChange(false);
             if (onExpenseAdded) {
                 onExpenseAdded();
             }
-            onOpenChange(false);
 
         } catch (err) {
-            console.log(err) // maybe add an toast component soon
+            activateToast("error", "Failed to add expense. Can't exceed budget.");
         }
     }
 
@@ -185,8 +192,9 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
                 date: new Date(data.date).toISOString().split('T')[0]
             });
             setUploaded(true);
+            activateToast("success", "Receipt processed successfully");
         } catch (err) {
-            console.log(err);
+            activateToast("error", "Failed to process receipt. Please try again.");
         } finally {
             setUploading(false);
         }
@@ -202,7 +210,7 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
                 </DialogTitle>
 
                 <DialogDescription asChild>
-                    <form className="space-y-4 pt-4">
+                    <form className="space-y-4 pt-4" onSubmit={(e) => e.preventDefault()}>
 
                         {/* recept area ui */}
                         <Field label="Automatic Receipt Scanner">
@@ -351,16 +359,17 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
 
         try {
             await api.put("/user/budget", payload);
+            activateToast("success", "Budget updated successfully");
 
             setOverallBudget(0)
             setCategoryBudgets([{ category: "", amount: 0 },]);
+            onOpenChange(false);
             if (onBudgetAdded) {
                 onBudgetAdded();
             }
-            onOpenChange(false);
 
         } catch (err) {
-            console.log(err) // maybe add an toast component soon
+            activateToast("error", "Failed to update budget. Please try again.");
         }
     };
 
@@ -451,7 +460,7 @@ function Actions({ onCancel, saveLabel, submit, notEmpty }) {
                 <X className="mr-2 h-4 w-4" />
                 Cancel
             </Button>
-            <Button onClick={submit} disabled={notEmpty}>
+            <Button onClick={submit} disabled={notEmpty} type="button">
                 <Save className="mr-2 h-4 w-4" />
                 {saveLabel}
             </Button>

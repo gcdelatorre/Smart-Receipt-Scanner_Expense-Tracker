@@ -1,18 +1,17 @@
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 import api from "../services/api";
+import { activateToast } from "./Toast/ActivateToast";
 
 export default function EditBudgetModal({ open, onClose, categoryBudgets, overallBudget, onUpdate }) {
     const [payload, setPayload] = useState([]);
     const [editableOverallBudget, setEditableOverallBudget] = useState(0);
-    const [error, setError] = useState(null);
 
     // When modal opens, populate payload with current budgets
     useEffect(() => {
         if (open && categoryBudgets) {
             setPayload(categoryBudgets.map(b => ({ ...b })));
             setEditableOverallBudget(overallBudget || 0);
-            setError(null); // Reset error on open
         }
     }, [open, categoryBudgets, overallBudget]);
 
@@ -29,17 +28,17 @@ export default function EditBudgetModal({ open, onClose, categoryBudgets, overal
     }
 
     const handleSubmit = async () => {
-        setError(null);
         try {
             await api.put('/user/budget', {
                 overallBudget: editableOverallBudget,
                 categoryBudgets: payload
             });
-            
+
             onUpdate(); // Trigger data refresh in parent
             onClose();  // Close modal on success
+            activateToast("success", "Budget updated successfully");
         } catch (err) {
-            setError(err.response?.data?.message || err.message || 'Failed to update budgets.');
+            activateToast("error", err.response?.data?.message || "Failed to update budgets.");
         }
     };
 
@@ -92,8 +91,6 @@ export default function EditBudgetModal({ open, onClose, categoryBudgets, overal
                         </div>
                     ))}
                 </div>
-
-                {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
                 <div className="mt-6 flex justify-end gap-2">
                     <Button variant="secondary" onClick={onClose}>Cancel</Button>

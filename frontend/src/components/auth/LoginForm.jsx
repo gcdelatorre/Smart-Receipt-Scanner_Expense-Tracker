@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "../../contexts/AuthContext";
+import { activateToast } from "../Toast/ActivateToast";
 
 export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
     const [emailOrUsername, setEmailOrUsername] = useState("");
@@ -20,6 +21,7 @@ export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
 
         try {
             await login(emailOrUsername, password);
+            activateToast("success", "Welcome back!");
             if (onLoginSuccess) {
                 onLoginSuccess();
             }

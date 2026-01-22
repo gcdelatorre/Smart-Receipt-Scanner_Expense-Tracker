@@ -8,6 +8,7 @@ import {
 } from "./ui/dialog";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import api from "../services/api";
+import { activateToast } from "./Toast/ActivateToast";
 
 export default function ViewTransactionModal({ open, onClose, transactionToView, onRefresh, onEdit }) {
 
@@ -32,8 +33,9 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
             if (onRefresh) {
                 onRefresh();
             }
+            activateToast("success", "Transaction deleted successfully");
         } catch (err) {
-            console.log(err);
+            activateToast("error", "Failed to delete transaction. Please try again.");
         }
     }
 

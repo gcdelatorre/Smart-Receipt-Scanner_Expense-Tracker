@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "../../contexts/AuthContext";
+import { activateToast } from "../Toast/ActivateToast";
 
 export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
     const [formData, setFormData] = useState({
@@ -31,6 +32,7 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
 
         try {
             await register(formData);
+            activateToast("success", "Account created successfully!");
             if (onSignupSuccess) {
                 onSignupSuccess();
             }
