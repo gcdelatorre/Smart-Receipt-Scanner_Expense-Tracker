@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Mail, Pencil, Save, X } from "lucide-react"; // Make sure to install lucide-react
 import api from "@/services/api";
+import { activateToast } from "./Toast/ActivateToast";
 
 export default function Profile({ openProfile, setOpenProfile }) {
     const [ifEdit, setIfEdit] = useState(false);
@@ -38,9 +39,9 @@ export default function Profile({ openProfile, setOpenProfile }) {
             // update/setUser to update the user in the AuthContext
             setUser(res.data.data);
             setIfEdit(false);
+            activateToast("success", "Profile updated successfully");
         } catch (err) {
-            console.error("Error updating profile:", err);
-            alert("Failed to update profile. Please try again.");
+            activateToast("error", "Failed to update profile. Please try again.");
         }
     }
 

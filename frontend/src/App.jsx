@@ -12,6 +12,7 @@ import SpendingChart from "./components/dashboard/SpendingChart";
 import { navItems } from "./components/utils/navItems";
 import { useStats } from "./components/utils/useStats";
 import { useAuth } from "./contexts/AuthContext";
+import { Toaster } from "./components/ui/sonner";
 // Login and Signup pages removed in favor of modals on Landing page
 import Landing from "./pages/Landing";
 
@@ -60,6 +61,7 @@ export default function App() {
 
   return (
     <>
+      <Toaster />
       {!isAuthenticated && (
         <>
           <Routes>
