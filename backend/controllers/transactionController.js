@@ -10,11 +10,12 @@ export const getTransaction = async (req, res) => {
         const sortBy = req.query.sortBy || "createdAt";
         const order = req.query.order === 'asc' ? 1 : -1;
         const filter = req.query.filter || 'all';
-        
+
         // Default to descending order (newest first) when no order is specified
         const finalOrder = req.query.order ? order : -1;
 
         const userId = new mongoose.Types.ObjectId(req.user._id);
+        const search = req.query.search || "";
 
         const pipeline = [
             // 1. Match Income docs for this user
@@ -23,7 +24,7 @@ export const getTransaction = async (req, res) => {
             // 2. Add a 'type' field for filtering
             { $addFields: { type: "income" } },
 
-            // 3. Union with @Expenses
+            // 3. Union with Expenses
             {
                 $unionWith: {
                     coll: "expenses",
@@ -34,7 +35,18 @@ export const getTransaction = async (req, res) => {
                 }
             },
 
-            // 4. Filter by type if not 'all'
+            // 4. Search Filter (matches search term in category, store, or description)
+            ...(search ? [{
+                $match: {
+                    $or: [
+                        { category: { $regex: search, $options: "i" } },
+                        { store: { $regex: search, $options: "i" } },
+                        { description: { $regex: search, $options: "i" } }
+                    ]
+                }
+            }] : []),
+
+            // 5. Filter by type if not 'all'
             ...(filter !== 'all' ? [{ $match: { type: filter } }] : []),
 
             // 5. Sort combined results

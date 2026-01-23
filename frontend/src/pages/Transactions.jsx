@@ -23,6 +23,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
     const [sortBy, setSortBy] = useState(undefined);
     const [order, setOrder] = useState(undefined);
     const [filter, setFilter] = useState(undefined);
+    const [search, setSearch] = useState(undefined);
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -35,7 +36,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
         setLoading(true);
         try {
             const response = await api.get("/transactions", {
-                params: { page, limit, sortBy, order, filter }
+                params: { page, limit, sortBy, order, filter, search }
             })
             if (response.data.success) {
                 setTransactions(response.data.data)
@@ -46,7 +47,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
         } finally {
             setLoading(false);
         }
-    }, [page, limit, sortBy, order, filter]);
+    }, [page, limit, sortBy, order, filter, search]);
 
     useEffect(() => {
         fetchTransactions()
@@ -141,7 +142,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <SearchTransaction />
+                        <SearchTransaction search={search} setSearch={setSearch}/>
                         <Select value={filter} onValueChange={setFilter}>
                             <SelectTrigger className="w-[140px] h-10 bg-card">
                                 <SelectValue placeholder="Filter by Type" />
