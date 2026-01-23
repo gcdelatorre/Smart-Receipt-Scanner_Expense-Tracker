@@ -125,7 +125,6 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
 
     return (
         <>
-            <SearchTransaction />
             <div className="max-w-5xl mx-auto">
                 {/* Overview Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
@@ -142,7 +141,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                     </div>
 
                     <div className="flex items-center gap-2">
-
+                        <SearchTransaction />
                         <Select value={filter} onValueChange={setFilter}>
                             <SelectTrigger className="w-[140px] h-10 bg-card">
                                 <SelectValue placeholder="Filter by Type" />
