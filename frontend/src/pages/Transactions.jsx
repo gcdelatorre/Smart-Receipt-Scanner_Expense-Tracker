@@ -23,9 +23,20 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
     const [sortBy, setSortBy] = useState(undefined);
     const [order, setOrder] = useState(undefined);
     const [filter, setFilter] = useState(undefined);
-    const [search, setSearch] = useState(undefined);
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // Debounce search, this is best practice to prevent too many requests or API calls
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPage(1); // Reset to page 1 when search changes
+        }, 400);
+
+        return () => clearTimeout(handler);
+    }, [search]);
 
     const [showViewModal, setShowViewModal] = useState(false);
     const [transactionToViewId, setTransactionToViewId] = useState(null);
@@ -36,7 +47,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
         setLoading(true);
         try {
             const response = await api.get("/transactions", {
-                params: { page, limit, sortBy, order, filter, search }
+                params: { page, limit, sortBy, order, filter, search: debouncedSearch }
             })
             if (response.data.success) {
                 setTransactions(response.data.data)
@@ -47,7 +58,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
         } finally {
             setLoading(false);
         }
-    }, [page, limit, sortBy, order, filter, search]);
+    }, [page, limit, sortBy, order, filter, debouncedSearch]);
 
     useEffect(() => {
         fetchTransactions()
@@ -142,7 +153,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <SearchTransaction search={search} setSearch={setSearch}/>
+                        <SearchTransaction search={search} setSearch={setSearch} />
                         <Select value={filter} onValueChange={setFilter}>
                             <SelectTrigger className="w-[140px] h-10 bg-card">
                                 <SelectValue placeholder="Filter by Type" />
