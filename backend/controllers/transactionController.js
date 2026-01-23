@@ -10,12 +10,12 @@ export const getTransaction = async (req, res) => {
         const sortBy = req.query.sortBy || "createdAt";
         const order = req.query.order === 'asc' ? 1 : -1;
         const filter = req.query.filter || 'all';
+        const search = req.query.search || "";
 
         // Default to descending order (newest first) when no order is specified
         const finalOrder = req.query.order ? order : -1;
 
         const userId = new mongoose.Types.ObjectId(req.user._id);
-        const search = req.query.search || "";
 
         const pipeline = [
             // 1. Match Income docs for this user
@@ -96,9 +96,17 @@ export const getTransaction = async (req, res) => {
 //     const sortBy = req.query.sortBy || "date";
 //     const order = req.query.order === 'asc' ? 1 : -1;
 //     const filter = req.query.filter; // 'income', 'expense', or undefined
+//     const search = req.query.search || "";
 
 //     const match = { userId: new mongoose.Types.ObjectId(req.user._id) };
 //     if (filter && filter !== 'all') match.type = filter;
+//     if (search) {
+//       match.$or = [
+//         { category: { $regex: search, $options: "i" } },
+//         { store: { $regex: search, $options: "i" } },
+//         { description: { $regex: search, $options: "i" } }
+//       ];
+//     }
 
 //     // Query with sorting and pagination
 //     const data = await Transaction.find(match)
