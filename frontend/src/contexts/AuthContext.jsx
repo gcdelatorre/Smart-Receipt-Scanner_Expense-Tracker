@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
                         // Optionally verify token by fetching current user
                         try {
                             const response = await authService.getCurrentUser();
+                            // Access the nested 'data' field from the response
                             setUser(response.data);
                         } catch (error) {
                             // Token might be invalid, clear storage
@@ -46,6 +47,8 @@ export const AuthProvider = ({ children }) => {
 
     const login = useCallback(async (emailOrUsername, password) => {
         const response = await authService.login(emailOrUsername, password);
+        // authService.login now returns response.data (the whole body)
+        // We set the user to response.data (which is the user object because of the fix in authService)
         setUser(response.data);
         return response;
     }, []);

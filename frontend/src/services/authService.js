@@ -4,9 +4,9 @@ export const authService = {
     // Register a new user
     async register(userData) {
         const response = await api.post('/auth/register', userData);
-        if (response.data.token) {
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.data));
+        if (response.data.accessToken) {
+            localStorage.setItem('token', response.data.accessToken);
+            localStorage.setItem('user', JSON.stringify(response.data.data)); // User data is in .data
         }
         return response.data;
     },
@@ -14,9 +14,9 @@ export const authService = {
     // Login user
     async login(emailOrUsername, password) {
         const response = await api.post('/auth/login', { emailOrUsername, password });
-        if (response.data.token) {
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.data));
+        if (response.data.accessToken) {
+            localStorage.setItem('token', response.data.accessToken);
+            localStorage.setItem('user', JSON.stringify(response.data.data)); // User data is in .data
         }
         return response.data;
     },

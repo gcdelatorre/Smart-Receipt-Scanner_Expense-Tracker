@@ -19,29 +19,43 @@ api.interceptors.request.use(
     }
 );
 
-// Response interceptor - handle errors
+// Response interceptor - handle errors and silent refresh
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            // Unauthorized - clear token
-            const currentPath = window.location.pathname;
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            // Only redirect if we're not already on login/signup/landing page
-            // and if this is not a request that's expected to fail (like during initial auth check)
-            if (!currentPath.includes('/login') && 
-                !currentPath.includes('/signup') && 
-                !currentPath.includes('/') &&
-                error.config?.url !== '/auth/me') {
-                // Use a small delay to avoid redirect loops
-                setTimeout(() => {
-                    if (!localStorage.getItem('token')) {
-                        window.location.href = '/login';
-                    }
-                }, 100);
+    async (error) => {
+        const originalRequest = error.config;
+
+        // If error is 401 (Unauthorized) and we haven't tried to refresh yet
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                // 1. Call the refresh endpoint to get a new access token
+                // Use a separate axios instance or absolute path to avoid interceptor loops
+                const response = await axios.post('/api/auth/refresh-token', {}, { withCredentials: true });
+
+                if (response.data.success && response.data.accessToken) {
+                    const newToken = response.data.accessToken;
+
+                    // 2. Sync the new token to localStorage
+                    localStorage.setItem('token', newToken);
+
+                    // 3. Update the original request's header and retry it
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                    return api(originalRequest);
+                }
+            } catch (refreshError) {
+                // 4. Refresh failed (RT expired) - Clean up and go to home/login
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+
+                // Only redirect if not already on the landing page
+                if (window.location.pathname !== '/') {
+                    window.location.href = '/';
+                }
             }
         }
+
         return Promise.reject(error);
     }
 );

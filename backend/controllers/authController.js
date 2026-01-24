@@ -1,5 +1,5 @@
 import { registerUser, loginUser, getCurrentUser } from '../services/authService.js';
-import User from '../models/userModel.js';
+import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 
 // @desc    Register a new user
