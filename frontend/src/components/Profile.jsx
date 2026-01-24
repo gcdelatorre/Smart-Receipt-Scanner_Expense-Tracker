@@ -33,7 +33,8 @@ export default function Profile({ openProfile, setOpenProfile }) {
         setIfEdit(!ifEdit);
     };
 
-    const handleSave = async () => {
+    const handleSave = async (e) => {
+        if (e) e.preventDefault();
         try {
             const res = await api.put('/profile/update', payload);
             // update/setUser to update the user in the AuthContext
@@ -97,29 +98,29 @@ export default function Profile({ openProfile, setOpenProfile }) {
                 <div className="px-6 pb-6">
                     {ifEdit ? (
                         /* EDIT MODE: Show ALL fields as inputs */
-                        <div className="flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-200">
+                        <form onSubmit={handleSave} className="flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-200">
                             <div className="space-y-1.5">
                                 <Label>Full Name</Label>
-                                <Input name="name" value={payload.name} onChange={handleChange} />
+                                <Input minLength={2} required name="name" value={payload.name} onChange={handleChange} />
                             </div>
                             <div className="space-y-1.5">
                                 <Label>Username</Label>
-                                <Input name="username" value={payload.username} onChange={handleChange} />
+                                <Input minLength={6} required name="username" value={payload.username} onChange={handleChange} />
                             </div>
                             <div className="space-y-1.5">
                                 <Label>Email</Label>
-                                <Input name="email" value={payload.email} onChange={handleChange} type="email" />
+                                <Input minLength={6} required name="email" value={payload.email} onChange={handleChange} type="email" />
                             </div>
 
                             <div className="flex justify-end gap-2 mt-2 pt-4 border-t">
-                                <Button variant="ghost" size="sm" onClick={handleIfEdit}>
+                                <Button type="button" variant="ghost" size="sm" onClick={handleIfEdit}>
                                     <X className="w-4 h-4 mr-2" /> Cancel
                                 </Button>
-                                <Button size="sm" onClick={handleSave}>
+                                <Button type="submit" size="sm">
                                     <Save className="w-4 h-4 mr-2" /> Save
                                 </Button>
                             </div>
-                        </div>
+                        </form>
                     ) : (
                         /* VIEW MODE: Show ONLY contact info (No redundancy) */
                         <div className="space-y-4">
