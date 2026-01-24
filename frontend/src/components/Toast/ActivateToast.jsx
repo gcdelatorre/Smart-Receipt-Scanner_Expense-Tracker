@@ -4,20 +4,20 @@ export const activateToast = (type, message) => {
     switch (type) {
         case "success":
             toast.success(message, {
-                position: "bottom-center",
+                position: "top-center",
             });
             break;
         case "error":
             toast.error(message, {
-                position: "bottom-center",
+                position: "top-center",
             });
             break;
         case "info":
             toast(message, {
-                position: "bottom-center",
+                position: "top-center",
             }); // default info
             break;
         default:
-            toast(message, { position: "bottom-center" });
+            toast(message, { position: "top-center" });
     }
 };
