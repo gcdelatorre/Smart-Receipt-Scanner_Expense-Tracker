@@ -36,7 +36,7 @@ export default function BudgetsCard({ refreshTrigger }) {
           <div className="flex justify-between items-center w-full">
             <p className="text-base text-slate-900">{budget.category}</p>
             <p className="text-slate-600">
-              ${budget.usedAmount} / ${budget.amount}
+              ${Math.round(budget.usedAmount)} / ${Math.round(budget.amount)}
             </p>
           </div>
         </div>
@@ -52,7 +52,7 @@ export default function BudgetsCard({ refreshTrigger }) {
           <CardHeader>
             <CardTitle className="text-sm font-medium text-slate-500">Budget</CardTitle>
             <div className="mt-3 flex items-center gap-2 text-2xl font-semibold text-slate-900">
-              {overallBudget ? `$${overallBudget.toFixed(2)}` : `Loading...`}
+              {(overallBudget !== undefined && overallBudget !== null) ? `$${Math.round(overallBudget)}` : `Loading...`}
             </div>
             <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700" onClick={() => setShowModal(true)}>
               Edit
@@ -78,9 +78,9 @@ export default function BudgetsCard({ refreshTrigger }) {
           </Card>
         )
       }
-      <EditBudgetModal 
-        open={showModal} 
-        onClose={() => setShowModal(false)} 
+      <EditBudgetModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
         categoryBudgets={categoryBudgets}
         overallBudget={overallBudget}
         onUpdate={handleBudgetUpdate}
