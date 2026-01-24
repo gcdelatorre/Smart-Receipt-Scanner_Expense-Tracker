@@ -1,4 +1,6 @@
 import { registerUser, loginUser, getCurrentUser } from '../services/authService.js';
+import User from '../models/userModel.js';
+import jwt from 'jsonwebtoken';
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -24,18 +26,26 @@ export const register = async (req, res) => {
             categoryBudgets
         });
 
-        // Set token in HTTP-only cookie
-        res.cookie('token', result.token, {
+        // Set Access Token (15 mins)
+        res.cookie('accessToken', result.accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+            maxAge: 15 * 60 * 1000
+        });
+
+        res.cookie('refreshToken', result.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
         res.status(201).json({
             success: true,
             data: result.user,
-            token: result.token,
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
             message: 'User registered successfully'
         });
     } catch (error) {
@@ -64,18 +74,26 @@ export const login = async (req, res) => {
 
         const result = await loginUser(emailOrUsername, password);
 
-        // Set token in HTTP-only cookie
-        res.cookie('token', result.token, {
+        // Set Access Token (15 mins)
+        res.cookie('accessToken', result.accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+            maxAge: 15 * 60 * 1000
+        });
+
+        res.cookie('refreshToken', result.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
 
         res.status(200).json({
             success: true,
             data: result.user,
-            token: result.token,
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
             message: 'Login successful'
         });
     } catch (error) {
@@ -113,7 +131,12 @@ export const getMe = async (req, res) => {
 // @access  Private
 export const logout = async (req, res) => {
     try {
-        res.cookie('token', '', {
+        res.cookie('accessToken', '', {
+            httpOnly: true,
+            expires: new Date(0)
+        });
+
+        res.cookie('refreshToken', '', {
             httpOnly: true,
             expires: new Date(0)
         });
@@ -126,6 +149,66 @@ export const logout = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Server error during logout'
+        });
+    }
+};
+
+
+export const refreshToken = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(401).json({ success: false, message: "No refresh token" });
+        }
+
+        // 1. Verify the token (using the Refresh Secret)
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+        // 2. Security Check: Find user AND ensure this specific RT is the one stored in DB
+        const user = await User.findOne({ _id: decoded.userId, refreshToken: refreshToken });
+
+        if (!user) {
+            return res.status(401).json({ success: false, message: "Invalid session" });
+        }
+
+        // 3. Generate NEW set of tokens (Rotation)
+        const newAccessToken = generateAccessToken(user._id);
+        const newRefreshToken = generateRefreshToken(user._id);
+
+        // 4. Update the database with the new Refresh Token
+        user.refreshToken = newRefreshToken;
+        await user.save();
+
+        // 5. Update BOTH cookies
+        // Access Token Cookie (15 mins)
+        res.cookie('accessToken', newAccessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 1000
+        });
+
+        // Refresh Token Cookie (7 days)
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
+        // 6. Return NEW Access Token in JSON
+        // This is required so the Frontend Axios Interceptor can catch it and retry the failed request
+        res.status(200).json({
+            success: true,
+            accessToken: newAccessToken
+        });
+
+    } catch (error) {
+        // If JWT verify fails (expired or tampered), catch it here
+        res.status(403).json({
+            success: false,
+            message: 'Refresh token expired or invalid'
         });
     }
 };

@@ -2,10 +2,17 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
 
-// Generate JWT Token
-const generateToken = (userId) => {
+// Generate Access Token (Short lived)
+const generateAccessToken = (userId) => {
     return jwt.sign({ userId }, process.env.JWT_SECRET, {
-        expiresIn: '30d'
+        expiresIn: '15m'
+    });
+};
+
+// Generate Refresh Token (Long lived)
+const generateRefreshToken = (userId) => {
+    return jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, {
+        expiresIn: '7d'
     });
 };
 
@@ -40,7 +47,8 @@ export const registerUser = async (userData) => {
     });
 
     // Generate token
-    const token = generateToken(newUser._id);
+    const accessToken = generateAccessToken(newUser._id);
+    const refreshToken = generateRefreshToken(newUser._id);
 
     // Return user without password
     const userObj = newUser.toObject();
@@ -48,7 +56,8 @@ export const registerUser = async (userData) => {
 
     return {
         user: userObj,
-        token
+        accessToken,
+        refreshToken
     };
 };
 
@@ -77,7 +86,8 @@ export const loginUser = async (emailOrUsername, password) => {
     }
 
     // Generate token
-    const token = generateToken(user._id);
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
 
     // Return user without password
     const userObj = user.toObject();
@@ -85,14 +95,15 @@ export const loginUser = async (emailOrUsername, password) => {
 
     return {
         user: userObj,
-        token
+        accessToken,
+        refreshToken
     };
 };
 
 // Get current user
 export const getCurrentUser = async (userId) => {
     const user = await User.findById(userId).select('-password');
-    
+
     if (!user) {
         throw {
             status: 404,
