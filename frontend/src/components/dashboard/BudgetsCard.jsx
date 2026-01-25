@@ -62,7 +62,7 @@ export default function BudgetsCard({ refreshTrigger }) {
             {categoryBudgetElements}
           </CardContent>
         </Card>) : (
-          <Card className="border-dashed border-slate-200 bg-slate-50">
+          <Card className="border-dashed border-border bg-muted/50">
             <CardContent className="flex flex-col items-center gap-3 text-sm text-muted-foreground py-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-2">
                 <BanknoteX className="h-6 w-6" />
