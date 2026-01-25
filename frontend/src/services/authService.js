@@ -45,6 +45,12 @@ export const authService = {
         return response.data;
     },
 
+    // Delete account
+    async deleteAccount() {
+        const response = await api.delete('/auth/delete-account');
+        return response.data;
+    },
+
     // Check if user is authenticated
     isAuthenticated() {
         return !!localStorage.getItem('token');

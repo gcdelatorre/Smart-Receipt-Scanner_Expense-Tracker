@@ -64,12 +64,30 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     }, []);
 
+    const deleteAccount = useCallback(async () => {
+        try {
+            // 1. Tell the backend to nuke the data
+            const response = await authService.deleteAccount();
+            // 2. Wipe the frontend state immediately
+            setUser(null);
+
+            // 3. Clean up storage (Reuse your existing logic)
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            return response;
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            throw error; // <--- CRITICAL: Rethrow so the UI can handle the error
+        }
+    }, []);
+
     const value = useMemo(() => ({
         user,
         setUser,
         login,
         register,
         logout,
+        deleteAccount,
         isAuthenticated: !!user,
         loading
     }), [user, login, register, logout, loading]);

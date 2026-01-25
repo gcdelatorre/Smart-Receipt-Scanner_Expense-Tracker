@@ -19,10 +19,14 @@ const sizes = {
   icon: "h-10 w-10",
 };
 
+export const buttonVariants = ({ variant = "default", size = "md", className = "" } = {}) => {
+  return cn(baseStyles, variants[variant], sizes[size], className);
+};
+
 export function Button({ className, variant = "default", size = "md", ...props }) {
   return (
     <button
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
+      className={buttonVariants({ variant, size, className })}
       {...props}
     />
   );

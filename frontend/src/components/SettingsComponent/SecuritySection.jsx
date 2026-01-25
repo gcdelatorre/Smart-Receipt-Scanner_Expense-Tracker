@@ -1,3 +1,14 @@
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -5,6 +16,7 @@ import { Trash2 } from "lucide-react"
 import { useState } from "react"
 import { authService } from "@/services/authService"
 import { activateToast } from "../Toast/ActivateToast"
+import { useAuth } from "@/contexts/AuthContext"
 
 export default function SecuritySection({ securityRef }) {
 
@@ -62,6 +74,23 @@ export default function SecuritySection({ securityRef }) {
         }
     }
 
+    const [isDeleting, setIsDeleting] = useState(false)
+    const { deleteAccount } = useAuth()
+
+    const handleDelete = async () => {
+        setIsDeleting(true)
+        try {
+            await deleteAccount()
+            // NOTE: Since deleteAccount() wipes the user state in AuthContext, 
+            // this component will automatically "disappear" as the app redirects to Landing.
+            activateToast('success', 'Account deleted successfully')
+        } catch (error) {
+            console.error(error)
+            activateToast('error', 'Failed to delete account')
+        } finally {
+            setIsDeleting(false)
+        }
+    }
 
     return (
         <section ref={securityRef} id="security" className="space-y-6 scroll-mt-8" >
@@ -73,15 +102,15 @@ export default function SecuritySection({ securityRef }) {
             <div className="space-y-4">
                 <div className="space-y-2">
                     <Label>Current Password</Label>
-                    <Input type="password" placeholder="••••••••" onChange={handleChange} name="oldPassword" value={payload.oldPassword}/>
+                    <Input type="password" placeholder="••••••••" onChange={handleChange} name="oldPassword" value={payload.oldPassword} />
                 </div>
                 <div className="space-y-2">
                     <Label>New Password</Label>
-                    <Input type="password" placeholder="••••••••" onChange={handleChange} name="newPassword" value={payload.newPassword}/>
+                    <Input type="password" placeholder="••••••••" onChange={handleChange} name="newPassword" value={payload.newPassword} />
                 </div>
                 <div className="space-y-2">
                     <Label>Confirm New Password</Label>
-                    <Input type="password" placeholder="••••••••" onChange={handleChange} name="confirmNewPassword" value={payload.confirmNewPassword}/>
+                    <Input type="password" placeholder="••••••••" onChange={handleChange} name="confirmNewPassword" value={payload.confirmNewPassword} />
                 </div>
                 <Button className="w-full sm:w-auto" onClick={handleSubmit} disabled={loading}>
                     {loading ? "Updating..." : "Update Password"}
@@ -89,10 +118,33 @@ export default function SecuritySection({ securityRef }) {
             </div>
 
             <div className="flex flex-col gap-3 pt-4 border-t dark:border-slate-800">
-                <Button variant="ghost" className="justify-start gap-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 p-0 h-auto font-medium">
-                    <Trash2 className="w-4 h-4" />
-                    Delete Account
-                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="ghost" className="justify-start gap-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 p-0 h-auto font-medium">
+                            <Trash2 className="w-4 h-4" />
+                            Delete Account
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your account
+                                from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={handleDelete}
+                                disabled={isDeleting}
+                                className="bg-rose-600 hover:bg-rose-700 text-white"
+                            >
+                                {isDeleting ? "Deleting..." : "Delete Account"}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </section >
     )
