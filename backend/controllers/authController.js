@@ -1,4 +1,4 @@
-import { registerUser, loginUser, getCurrentUser } from '../services/authService.js';
+import { registerUser, loginUser, getCurrentUser, changeUserPassword } from '../services/authService.js';
 import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 
@@ -212,3 +212,23 @@ export const refreshToken = async (req, res) => {
         });
     }
 };
+
+export const changePassword = async (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+        const userId = req.user._id;
+
+        const result = await changeUserPassword(userId, oldPassword, newPassword);
+
+        res.status(200).json({
+            success: true,
+            message: result.message
+        });
+    } catch (error) {
+        const statusCode = error.status || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || 'Server error during password change'
+        });
+    }
+}
