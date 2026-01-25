@@ -30,7 +30,5 @@ Manual expense tracking is tedious. Receipts get lost, and budgets are easily fo
 ## ⚠️ Note
 
 This project is ongoing. Features and implementation are still in progress.
-
-<img width="1919" height="865" alt="UI_SCREENSHOTS" src="https://github.com/user-attachments/assets/bcab7f05-2ebb-40ca-8bd2-7dd4d3452a51" />
-<img width="1897" height="863" alt="ui-1" src="https://github.com/user-attachments/assets/44fc1439-87e7-4beb-9946-5f79fbb25483" />
-<img width="1897" height="865" alt="image" src="https://github.com/user-attachments/assets/784f0a1f-77f8-4a8e-a5f7-89ce8e9041dd" />
+<img width="1919" height="867" alt="Screenshot 2026-01-26 020643" src="https://github.com/user-attachments/assets/3d00bb99-c0d5-4c05-9d96-ec4879e934fc" />
+<img width="1919" height="866" alt="Screenshot 2026-01-26 020704" src="https://github.com/user-attachments/assets/ba6ba104-6b1f-4d9e-81e6-eadc77c125d5" />
