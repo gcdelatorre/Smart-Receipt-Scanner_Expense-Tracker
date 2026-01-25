@@ -10,8 +10,12 @@ import {
 } from "@/components/ui/dialog"
 import LoginForm from "../components/auth/LoginForm"
 import SignupForm from "../components/auth/SignupForm"
+import { useTheme } from "next-themes"
+import lightLogo from "/TrackWise-Logo-removebg-preview.png"
+import darkLogo from "/logo-dark-mode.png"
 
 export default function Landing() {
+    const { resolvedTheme } = useTheme();
     const [loginOpen, setLoginOpen] = useState(false);
     const [signupOpen, setSignupOpen] = useState(false);
 
@@ -30,10 +34,13 @@ export default function Landing() {
             {/* Navbar Placeholder / Branding */}
             <header className="px-6 py-4 flex items-center justify-between max-w-7xl mx-auto w-full">
                 <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-xl">
-                        E
+                    <div className="h-16 flex items-center">
+                        <img
+                            src={resolvedTheme === 'dark' ? darkLogo : lightLogo}
+                            alt="TrackWise Logo"
+                            className="h-full w-auto object-contain"
+                        />
                     </div>
-                    <span className="text-xl font-bold tracking-tight">Expensify</span>
                 </div>
                 <div className="flex gap-4">
                     {/* Auth buttons will go here via the layout or just handled in hero */}
