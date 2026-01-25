@@ -48,11 +48,10 @@ export const createExpenseFromReceipt = async (req, res) => {
             );
         }
 
-        const newExpense = await createExpense({ ...structured, imageUrl: `/uploads/${req.file.filename}`, userId });
-        
+
         res.json({
             success: true,
-            data: newExpense
+            data: structured
         });
 
     } catch (err) {
