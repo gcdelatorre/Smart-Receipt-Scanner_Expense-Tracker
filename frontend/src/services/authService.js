@@ -39,6 +39,12 @@ export const authService = {
         return response.data;
     },
 
+    // Change password
+    async changePassword(oldPassword, newPassword) {
+        const response = await api.put('/auth/change-password', { oldPassword, newPassword });
+        return response.data;
+    },
+
     // Check if user is authenticated
     isAuthenticated() {
         return !!localStorage.getItem('token');
