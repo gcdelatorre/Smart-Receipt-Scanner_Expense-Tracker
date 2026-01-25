@@ -74,7 +74,7 @@ export default function App() {
 
       {isAuthenticated && (
         <>
-          <div className="min-h-screen bg-[hsl(var(--background))] text-slate-900">
+          <div className="min-h-screen bg-[hsl(var(--background))] text-foreground">
             <div className="mx-auto flex max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:px-8">
               <Sidebar navItems={navItems} isActive={isActive} />
 

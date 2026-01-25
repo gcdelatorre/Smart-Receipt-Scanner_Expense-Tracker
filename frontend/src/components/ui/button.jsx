@@ -4,10 +4,12 @@ const baseStyles =
   "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed";
 
 const variants = {
-  default: "bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-indigo-200",
+  default: "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary/50 shadow-sm",
   secondary:
-    "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 focus-visible:ring-slate-200",
-  ghost: "text-slate-700 hover:bg-slate-100",
+    "bg-secondary text-secondary-foreground border border-border hover:bg-secondary/80 focus-visible:ring-ring",
+  ghost: "text-foreground hover:bg-muted hover:text-accent-foreground",
+  outline: "border border-border bg-background hover:bg-muted hover:text-accent-foreground",
+  destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90"
 };
 
 const sizes = {

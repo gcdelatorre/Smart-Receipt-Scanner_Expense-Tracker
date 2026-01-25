@@ -41,61 +41,60 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent>
+            <DialogContent className="bg-card text-card-foreground border-border">
                 <DialogHeader>
-                    <DialogTitle>Transaction Details</DialogTitle>
+                    <DialogTitle className="text-foreground">Transaction Details</DialogTitle>
                 </DialogHeader>
 
-                <div className="space-y-3 py-4">
-                    <div className="flex items-center gap-3">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-full ${transactionToView.transactionType === "income" ? "bg-green-100" : "bg-rose-100"}`}>
-                            {transactionToView.transactionType === "income" ? <ArrowUpRight variant="success" className="h-5 w-5 text-green-500" /> : <ArrowDownRight variant="destructive" className=" text-rose-500 h-5 w-5" />}
+                <div className="space-y-4 py-4">
+                    <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border border-border/50">
+                        <div className={`flex h-12 w-12 items-center justify-center rounded-full ${transactionToView.transactionType === "income" ? "bg-emerald-500/20 text-emerald-500" : "bg-rose-500/20 text-rose-500"}`}>
+                            {transactionToView.transactionType === "income" ? <ArrowUpRight className="h-6 w-6" /> : <ArrowDownRight className="h-6 w-6" />}
                         </div>
-                        <div className="flex flex-col gap-1">
-                            <p className="font-semibold text-xl">{transactionToView.transactionType === "income" ? "Income" : "Expense"}</p>
+                        <div className="flex flex-col">
+                            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{transactionToView.transactionType === "income" ? "Income" : "Expense"}</p>
+                            <p className="text-2xl font-bold text-foreground">${transactionToView.amount.toFixed(2)}</p>
                         </div>
                     </div>
 
-                    <div>
-                        <p className="text-base font-semibold text-slate-700">Category</p>
-                        <p className="text-sm text-slate-500">{transactionToView.category || "N/A"}</p>
-                    </div>
+                    <div className="grid grid-cols-2 gap-6 px-1">
+                        <div>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Category</p>
+                            <p className="text-sm font-medium text-foreground mt-1">{transactionToView.category || "N/A"}</p>
+                        </div>
 
-                    <div>
-                        <p className="text-base font-semibold text-slate-700">Amount</p>
-                        <p className="text-sm text-slate-500">${transactionToView.amount.toFixed(2)}</p>
-                    </div>
+                        <div>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Date</p>
+                            <p className="text-sm font-medium text-foreground mt-1">{formattedDate(transactionToView.date)}</p>
+                        </div>
 
-                    {transactionToView.transactionType === "expense" && (
-                        <>
-                            <div>
-                                <p className="text-base font-semibold text-slate-700">Store</p>
-                                <p className="text-sm text-slate-500">{transactionToView.store || "N/A"}</p>
+                        {transactionToView.transactionType === "expense" && (
+                            <div className="col-span-2">
+                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Store</p>
+                                <p className="text-sm font-medium text-foreground mt-1">{transactionToView.store || "N/A"}</p>
                             </div>
-                            {transactionToView.items && transactionToView.items.length > 0 &&
-                                <div>
-                                    <p className="text-base font-semibold text-slate-700">Items</p>
-                                    <p className="text-sm text-slate-500">{formattedItems(transactionToView.items)}</p>
-                                </div>
-                            }
-                        </>
-                    )}
+                        )}
 
-                    <div>
-                        <p className="text-sm font-medium text-slate-700">Note</p>
-                        <p className="text-sm text-slate-500">{transactionToView.description || "N/A"}</p>
-                    </div>
+                        {transactionToView.description && (
+                            <div className="col-span-2">
+                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Note</p>
+                                <p className="text-sm font-medium text-foreground mt-1 leading-relaxed">{transactionToView.description}</p>
+                            </div>
+                        )}
 
-                    <div>
-                        <p className="text-base font-semibold text-slate-700">Date</p>
-                        <p className="text-sm text-slate-500">{formattedDate(transactionToView.date)}</p>
+                        {transactionToView.transactionType === "expense" && transactionToView.items && transactionToView.items.length > 0 && (
+                            <div className="col-span-2">
+                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Items</p>
+                                <p className="text-sm font-medium text-foreground mt-1">{formattedItems(transactionToView.items)}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
 
-                <DialogFooter className="grid grid-cols-2 gap-2">
-                    <Button variant="secondary" onClick={handleDelete}>Delete</Button>
-                    <Button onClick={onEdit}>Edit</Button>
+                <DialogFooter className="grid grid-cols-2 gap-3 pt-6 border-t border-border">
+                    <Button variant="ghost" onClick={handleDelete} className="text-destructive hover:bg-destructive/10">Delete</Button>
+                    <Button onClick={onEdit} className="rounded-xl">Edit Details</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

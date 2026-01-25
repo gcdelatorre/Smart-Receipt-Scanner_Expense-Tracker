@@ -58,7 +58,7 @@ export default function Profile({ openProfile, setOpenProfile }) {
                 {/* 1. BANNER */}
                 <div className="h-24 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 relative">
                     <DialogHeader className="absolute top-4 left-4">
-                        <DialogTitle className="text-slate-800 dark:text-slate-100 text-lg font-semibold tracking-tight">
+                        <DialogTitle className="text-foreground text-lg font-semibold tracking-tight">
                             {ifEdit ? "Edit Profile" : "Profile"}
                         </DialogTitle>
                     </DialogHeader>

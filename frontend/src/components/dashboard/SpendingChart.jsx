@@ -20,9 +20,9 @@ function SpendingTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const item = payload[0];
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm text-sm">
-      <p className="font-semibold text-slate-900">{item.payload.day}</p>
-      <p className="text-slate-600">${item.value.toLocaleString()}</p>
+    <div className="rounded-xl border border-border bg-card px-3 py-2 shadow-sm text-sm">
+      <p className="font-semibold text-foreground">{item.payload.day}</p>
+      <p className="text-muted-foreground">${item.value.toLocaleString()}</p>
     </div>
   );
 }
@@ -50,11 +50,11 @@ export default function SpendingChart() {
     <div className="w-full">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-base font-semibold text-slate-800">Spending Analytics</p>
-          <p className="text-sm text-slate-500">{period}</p>
+          <p className="text-base font-semibold text-foreground">Spending Analytics</p>
+          <p className="text-sm text-muted-foreground">{period}</p>
         </div>
         <Select value={period} onValueChange={setPeriod}>
-          <SelectTrigger className="w-[135px]">
+          <SelectTrigger className="w-[135px] bg-card">
             <SelectValue placeholder="Select Period" />
           </SelectTrigger>
           <SelectContent>
@@ -69,32 +69,32 @@ export default function SpendingChart() {
           <LineChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
             <defs>
               <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
-                <stop offset="100%" stopColor="#6366f1" stopOpacity={0.05} />
+                <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.25} />
+                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
             <XAxis
               dataKey="day"
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
               axisLine={false}
               tickLine={false}
               tickFormatter={(v) => `$${v / 1000}k`}
               width={50}
             />
-            <Tooltip content={<SpendingTooltip />} cursor={{ stroke: "#cbd5e1" }} />
+            <Tooltip content={<SpendingTooltip />} cursor={{ stroke: "hsl(var(--border))" }} />
             <Line
               type="monotone"
               dataKey="value"
-              stroke="#6366f1"
+              stroke="hsl(var(--primary))"
               strokeWidth={2.5}
-              dot={{ r: 4, fill: "#6366f1", strokeWidth: 0 }}
-              activeDot={{ r: 6, fill: "#4338ca" }}
+              dot={{ r: 4, fill: "hsl(var(--primary))", strokeWidth: 0 }}
+              activeDot={{ r: 6, fill: "hsl(var(--primary))" }}
               fill="url(#lineGradient)"
             />
           </LineChart>

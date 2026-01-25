@@ -202,30 +202,30 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
                                 variant="outline"
                                 onClick={() => setPage(prev => Math.max(prev - 1, 1))}
                                 disabled={page === 1}
-                                className="w-24"
+                                className="w-24 bg-card"
                             >
                                 Previous
                             </Button>
-                            <span className="text-sm text-slate-500">
+                            <span className="text-sm text-muted-foreground">
                                 Page {page} of {totalPages}
                             </span>
                             <Button
                                 variant="outline"
                                 onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={page === totalPages}
-                                className="w-24"
+                                className="w-24 bg-card"
                             >
                                 Next
                             </Button>
                         </div>
                     </div>
                 ) : (
-                    <Card className="border-dashed border-slate-200 bg-slate-50">
-                        <CardContent className="flex flex-col items-center gap-3 text-sm text-slate-600 py-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 mb-2">
+                    <Card className="border-dashed border-border bg-muted/50">
+                        <CardContent className="flex flex-col items-center gap-3 text-sm text-muted-foreground py-6">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-2">
                                 <Receipt className="h-6 w-6" />
                             </div>
-                            <p className="text-lg font-semibold text-slate-800 text-center">
+                            <p className="text-lg font-semibold text-foreground text-center">
                                 No recent transactions
                             </p>
                             <p className="text-center max-w-md">

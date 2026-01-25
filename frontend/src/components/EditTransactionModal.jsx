@@ -76,37 +76,37 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
 
                 <form onSubmit={handleSubmit} className="space-y-4 py-4">
 
-                    <div>
-                        <label htmlFor="amount" className="text-sm font-medium text-slate-700">Amount</label>
-                        <Input type="number" name="amount" id="amount" value={formData.amount || ''} onChange={handleChange} />
+                    <div className="space-y-1.5">
+                        <label htmlFor="amount" className="text-sm font-semibold text-foreground">Amount</label>
+                        <Input type="number" name="amount" id="amount" value={formData.amount || ''} onChange={handleChange} className="bg-background border-border h-11" />
                     </div>
 
-                    <div>
-                        <label htmlFor="category" className="text-sm font-medium text-slate-700">Category</label>
-                        <Input type="text" name="category" id="category" value={formData.category || ''} onChange={handleChange} />
+                    <div className="space-y-1.5">
+                        <label htmlFor="category" className="text-sm font-semibold text-foreground">Category</label>
+                        <Input type="text" name="category" id="category" value={formData.category || ''} onChange={handleChange} className="bg-background border-border h-11" />
                     </div>
 
                     {isExpense && (
-                        <div>
-                            <label htmlFor="store" className="text-sm font-medium text-slate-700">Store</label>
-                            <Input type="text" name="store" id="store" value={formData.store || ''} onChange={handleChange} />
+                        <div className="space-y-1.5">
+                            <label htmlFor="store" className="text-sm font-semibold text-foreground">Store</label>
+                            <Input type="text" name="store" id="store" value={formData.store || ''} onChange={handleChange} className="bg-background border-border h-11" />
                         </div>
                     )}
 
-                    <div>
-                        <label htmlFor="description" className="text-sm font-medium text-slate-700">Note</label>
-                        <textarea name="description" id="description" value={formData.description || ''} onChange={handleChange} rows="3" className="flex w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-200"></textarea>
+                    <div className="space-y-1.5">
+                        <label htmlFor="description" className="text-sm font-semibold text-foreground">Note</label>
+                        <textarea name="description" id="description" value={formData.description || ''} onChange={handleChange} rows="3" className="flex w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"></textarea>
                     </div>
 
-                    <div>
-                        <label htmlFor="date" className="text-sm font-medium text-slate-700">Date</label>
-                        <Input type="date" name="date" id="date" value={formData.date || ''} onChange={handleChange} />
+                    <div className="space-y-1.5">
+                        <label htmlFor="date" className="text-sm font-semibold text-foreground">Date</label>
+                        <Input type="date" name="date" id="date" value={formData.date || ''} onChange={handleChange} className="bg-background border-border h-11" />
                     </div>
 
 
-                    <DialogFooter className="grid grid-cols-2 gap-2">
-                        <Button variant="secondary" type="button" onClick={onClose} disabled={loading}>Cancel</Button>
-                        <Button type="submit" disabled={loading}>{loading ? "Saving..." : "Save Changes"}</Button>
+                    <DialogFooter className="grid grid-cols-2 gap-3 pt-4">
+                        <Button variant="ghost" type="button" onClick={onClose} disabled={loading} className="rounded-xl">Cancel</Button>
+                        <Button type="submit" disabled={loading} className="rounded-xl">{loading ? "Saving..." : "Save Changes"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

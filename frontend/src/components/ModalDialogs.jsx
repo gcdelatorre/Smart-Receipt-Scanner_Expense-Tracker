@@ -66,9 +66,9 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden">
-                <DialogTitle className="flex items-center gap-2">
-                    <Wallet className="h-5 w-5 text-emerald-600" />
+            <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden bg-card text-card-foreground border-border">
+                <DialogTitle className="flex items-center gap-2 text-foreground">
+                    <Wallet className="h-5 w-5 text-emerald-500" />
                     Add Income
                 </DialogTitle>
 
@@ -142,12 +142,6 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
             return;
         }
 
-        // If the form was populated from a receipt, the expense is already created.
-        if (uploaded) {
-            onOpenChange(false);
-            return;
-        }
-
         try {
             await api.post("/expenses", payload);
             activateToast("success", "Expense added successfully");
@@ -203,9 +197,9 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden">
-                <DialogTitle className="flex items-center gap-2">
-                    <DollarSign className="h-5 w-5 text-rose-600" />
+            <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden bg-card text-card-foreground border-border">
+                <DialogTitle className="flex items-center gap-2 text-foreground">
+                    <DollarSign className="h-5 w-5 text-rose-500" />
                     Add Expense
                 </DialogTitle>
 
@@ -218,13 +212,13 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
                                 {/* Upload area */}
                                 <label
                                     htmlFor="receipt"
-                                    className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center transition hover:border-slate-400 hover:bg-slate-100"
+                                    className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/50 px-4 py-6 text-center transition hover:border-primary/50 hover:bg-muted"
                                 >
-                                    <Upload className="mb-2 h-6 w-6 text-slate-500" />
-                                    <p className="text-sm font-medium text-slate-700">
+                                    <Upload className="mb-2 h-6 w-6 text-muted-foreground" />
+                                    <p className="text-sm font-medium text-foreground">
                                         Upload receipt
                                     </p>
-                                    <p className="text-xs text-slate-500">
+                                    <p className="text-xs text-muted-foreground">
                                         PNG, JPG, or JPEG
                                     </p>
                                 </label>
@@ -239,26 +233,26 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
 
                                 {receiptFile && (
                                     <div className="flex justify-between items-center">
-                                        <Button variant="outline" size="sm" className="text-slate-900 w-fit justify-center flex content-center pointer-events-none">
+                                        <Button variant="outline" size="sm" className="bg-card text-foreground w-fit justify-center flex content-center pointer-events-none">
                                             {uploading && <Spinner />}
-                                            {uploaded && <Check className="text-green-500" />}
+                                            {uploaded && <Check className="text-emerald-500" />}
 
                                             {uploading && "Processing"}
                                             {uploaded && "Process Complete"}
                                         </Button>
-                                        <p className="text-slate-800">{uploading && "Please wait..."}</p>
+                                        <p className="text-muted-foreground">{uploading && "Please wait..."}</p>
                                     </div>)
                                 }
 
                                 {/* OR separator */}
                                 <div className="flex items-center gap-3">
-                                    <div className="h-px flex-1 bg-slate-200" />
-                                    <span className="text-xs font-medium text-slate-500">OR</span>
-                                    <div className="h-px flex-1 bg-slate-200" />
+                                    <div className="h-px flex-1 bg-border" />
+                                    <span className="text-xs font-medium text-muted-foreground">OR</span>
+                                    <div className="h-px flex-1 bg-border" />
                                 </div>
 
                                 {/* Manual entry hint */}
-                                <p className="text-center text-xs text-slate-500">
+                                <p className="text-center text-xs text-muted-foreground">
                                     Skip receipt and enter expense details manually
                                 </p>
                             </div>
@@ -375,9 +369,9 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden">
-                <DialogTitle className="flex items-center gap-2">
-                    <Wallet className="h-5 w-5 text-indigo-600" />
+            <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden bg-card text-card-foreground border-border">
+                <DialogTitle className="flex items-center gap-2 text-foreground">
+                    <Wallet className="h-5 w-5 text-primary" />
                     Set Budget
                 </DialogTitle>
 
@@ -444,8 +438,8 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
 
 function Field({ label, children }) {
     return (
-        <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-700">
+        <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-foreground">
                 {label}
             </label>
             {children}

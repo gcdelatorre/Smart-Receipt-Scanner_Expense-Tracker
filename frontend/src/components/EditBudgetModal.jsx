@@ -45,56 +45,61 @@ export default function EditBudgetModal({ open, onClose, categoryBudgets, overal
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-            <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl p-6">
-                <div className="mb-4">
-                    <h2 className="text-lg font-semibold">Edit Budgets</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-3xl bg-card border border-border shadow-2xl p-6 text-card-foreground">
+                <div className="mb-6">
+                    <h2 className="text-xl font-bold text-foreground">Edit Budgets</h2>
+                    <p className="text-sm text-muted-foreground">Modify your existing budget allocations.</p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                     {/* Overall Budget Input */}
-                    <div>
-                        <label className="text-sm font-medium text-slate-700">Overall Budget</label>
+                    <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-foreground">Overall Monthly Budget</label>
                         <input
                             type="number"
                             value={editableOverallBudget}
                             onChange={(e) => setEditableOverallBudget(Number(e.target.value))}
-                            className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full rounded-xl border border-border bg-background px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                         />
                     </div>
 
-                    {/* Category Budgets */}
-                    {payload.map((budget, index) => (
-                        <div key={index} className="grid grid-cols-[1fr_1fr_auto] items-end gap-2">
-                            <div>
-                                <label className="text-sm font-medium text-slate-700">Category</label>
-                                <input
-                                    type="text"
-                                    value={budget.category}
-                                    onChange={(e) => handleCategoryChange(index, "category", e.target.value)}
-                                    className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                />
-                            </div>
+                    <div className="h-px bg-border" />
 
-                            <div>
-                                <label className="text-sm font-medium text-slate-700">Amount</label>
-                                <input
-                                    type="number"
-                                    value={budget.amount}
-                                    onChange={(e) => handleCategoryChange(index, "amount", e.target.value)}
-                                    className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                />
+                    {/* Category Budgets */}
+                    <div className="max-h-[300px] overflow-y-auto pr-1 space-y-4">
+                        {payload.map((budget, index) => (
+                            <div key={index} className="grid grid-cols-[1fr_1fr_auto] items-end gap-3 p-3 rounded-xl bg-muted/20 border border-border/50">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-foreground uppercase tracking-wider">Category</label>
+                                    <input
+                                        type="text"
+                                        value={budget.category}
+                                        onChange={(e) => handleCategoryChange(index, "category", e.target.value)}
+                                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-foreground uppercase tracking-wider">Amount</label>
+                                    <input
+                                        type="number"
+                                        value={budget.amount}
+                                        onChange={(e) => handleCategoryChange(index, "amount", e.target.value)}
+                                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                    />
+                                </div>
+                                <Button variant="ghost" size="icon" className="mb-0.5 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(index)}>
+                                    <span className="text-lg">&#x2715;</span>
+                                </Button>
                             </div>
-                            <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 w-5 " onClick={() => handleDelete(index)}>
-                                &#x2715;
-                            </Button>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
 
-                <div className="mt-6 flex justify-end gap-2">
-                    <Button variant="secondary" onClick={onClose}>Cancel</Button>
-                    <Button onClick={handleSubmit}>Save</Button>
+                <div className="mt-8 flex justify-end gap-3 border-t border-border pt-6">
+                    <Button variant="ghost" onClick={onClose} className="rounded-xl">Cancel</Button>
+                    <Button onClick={handleSubmit} className="rounded-xl px-6">Save Changes</Button>
                 </div>
             </div>
         </div>

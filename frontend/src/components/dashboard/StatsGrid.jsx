@@ -9,8 +9,8 @@ export default function StatsGrid({ stats }) {
         <Card key={stat.title}>
           <CardHeader className="flex items-start justify-between space-y-0">
             <div>
-              <CardTitle className="text-sm font-medium text-slate-500">{stat.title}</CardTitle>
-              <div className="mt-3 flex items-center gap-2 text-2xl font-semibold text-slate-900">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
+              <div className="mt-3 flex items-center gap-2 text-2xl font-semibold text-foreground">
                 {stat.value}
               </div>
               <Badge variant={stat.changeVariant} className="mt-2">

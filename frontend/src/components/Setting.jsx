@@ -18,12 +18,23 @@ import { Shield, Settings, Monitor, Trash2, Globe, Clock, Hash, Moon } from "luc
 import { useRef, useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { CURRENCIES } from "@/constants/currencies"
+import { useTheme } from "next-themes"
 
 // --- PREVIEW COMPONENTS (Using raw Tailwind for missing shadcn components) ---
-const Separator = () => <div className="h-[1px] w-full bg-slate-200 my-6" />;
-const Switch = () => (
-    <div className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent bg-slate-200 transition-colors duration-200 ease-in-out">
-        <span className="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" />
+const Separator = () => <div className="h-[1px] w-full bg-slate-200 dark:bg-slate-800 my-6" />;
+
+const Switch = ({ checked, onChange }) => (
+    <div
+        onClick={() => onChange(!checked)}
+        className={cn(
+            "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
+            checked ? "bg-indigo-600" : "bg-slate-200 dark:bg-slate-700"
+        )}
+    >
+        <span className={cn(
+            "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+            checked ? "translate-x-5" : "translate-x-0"
+        )} />
     </div>
 );
 
@@ -31,7 +42,7 @@ const Switch = () => (
 const ScrollArea = ({ children, className, containerRef }) => (
     <div
         ref={containerRef}
-        className={`overflow-y-auto h-full scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent ${className}`}
+        className={`overflow-y-auto h-full scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent ${className}`}
     >
         {children}
     </div>
@@ -39,6 +50,7 @@ const ScrollArea = ({ children, className, containerRef }) => (
 // ----------------------------------------------------------------------------
 
 export default function Setting({ openSettings, setOpenSettings }) {
+    const { theme, setTheme } = useTheme();
     const [activeSection, setActiveSection] = useState("security");
 
     // Refs for sections
@@ -67,12 +79,12 @@ export default function Setting({ openSettings, setOpenSettings }) {
 
     return (
         <Dialog open={openSettings} onOpenChange={setOpenSettings}>
-            <DialogContent className="sm:max-w-[850px] p-0 overflow-hidden border-none shadow-2xl h-[600px] flex flex-col">
+            <DialogContent className="sm:max-w-[850px] p-0 overflow-hidden border-none shadow-2xl h-[600px] flex flex-col bg-background text-foreground">
                 <div className="flex flex-1 h-full overflow-hidden">
 
                     {/* LEFT SIDEBAR - Fixed width, no scroll */}
-                    <aside className="w-64 bg-slate-50/50 border-r border-slate-100 flex flex-col p-4 gap-2">
-                        <DialogHeader className="px-2 mb-4">
+                    <aside className="w-64 bg-slate-50/50 dark:bg-slate-900/50 border-r border-slate-100 dark:border-slate-800 flex flex-col p-4 gap-2">
+                        <DialogHeader className="px-2 mb-4 text-left">
                             <DialogTitle className="text-xl font-bold flex items-center gap-2">
                                 <Settings className="w-5 h-5 text-indigo-600" />
                                 Settings
@@ -86,8 +98,8 @@ export default function Setting({ openSettings, setOpenSettings }) {
                                 className={cn(
                                     "w-full justify-start gap-3 transition-all duration-200",
                                     activeSection === "security"
-                                        ? "bg-white shadow-sm text-indigo-600 font-semibold"
-                                        : "text-slate-600 hover:bg-slate-100"
+                                        ? "bg-white dark:bg-slate-800 shadow-sm text-indigo-600 font-semibold"
+                                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                                 )}
                             >
                                 <Shield className={cn("w-4 h-4", activeSection === "security" ? "text-indigo-600" : "text-slate-400")} />
@@ -99,8 +111,8 @@ export default function Setting({ openSettings, setOpenSettings }) {
                                 className={cn(
                                     "w-full justify-start gap-3 transition-all duration-200",
                                     activeSection === "preferences"
-                                        ? "bg-white shadow-sm text-indigo-600 font-semibold"
-                                        : "text-slate-600 hover:bg-slate-100"
+                                        ? "bg-white dark:bg-slate-800 shadow-sm text-indigo-600 font-semibold"
+                                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                                 )}
                             >
                                 <Globe className={cn("w-4 h-4", activeSection === "preferences" ? "text-indigo-600" : "text-slate-400")} />
@@ -112,8 +124,8 @@ export default function Setting({ openSettings, setOpenSettings }) {
                                 className={cn(
                                     "w-full justify-start gap-3 transition-all duration-200",
                                     activeSection === "display"
-                                        ? "bg-white shadow-sm text-indigo-600 font-semibold"
-                                        : "text-slate-600 hover:bg-slate-100"
+                                        ? "bg-white dark:bg-slate-800 shadow-sm text-indigo-600 font-semibold"
+                                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                                 )}
                             >
                                 <Monitor className={cn("w-4 h-4", activeSection === "display" ? "text-indigo-600" : "text-slate-400")} />
@@ -123,15 +135,15 @@ export default function Setting({ openSettings, setOpenSettings }) {
                     </aside>
 
                     {/* RIGHT CONTENT - Only scrollable area */}
-                    <div className="flex-1 flex flex-col bg-white overflow-hidden">
+                    <div className="flex-1 flex flex-col bg-background overflow-hidden">
                         <ScrollArea containerRef={scrollAreaRef} className="p-8">
                             <div className="max-w-xl mx-auto space-y-12 pb-12">
 
                                 {/* 1. SECURITY SECTION */}
                                 <section ref={securityRef} id="security" className="space-y-6 scroll-mt-8">
                                     <div>
-                                        <h3 className="text-lg font-semibold text-slate-900">Security</h3>
-                                        <p className="text-sm text-slate-500 mt-1">Manage your password and account security.</p>
+                                        <h3 className="text-lg font-semibold text-foreground">Security</h3>
+                                        <p className="text-sm text-muted-foreground mt-1">Manage your password and account security.</p>
                                     </div>
 
                                     <div className="space-y-4">
@@ -150,8 +162,8 @@ export default function Setting({ openSettings, setOpenSettings }) {
                                         <Button className="w-full sm:w-auto">Update Password</Button>
                                     </div>
 
-                                    <div className="flex flex-col gap-3 pt-4">
-                                        <Button variant="ghost" className="justify-start gap-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 p-0 h-auto font-medium">
+                                    <div className="flex flex-col gap-3 pt-4 border-t dark:border-slate-800">
+                                        <Button variant="ghost" className="justify-start gap-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 p-0 h-auto font-medium">
                                             <Trash2 className="w-4 h-4" />
                                             Delete Account
                                         </Button>
@@ -163,8 +175,8 @@ export default function Setting({ openSettings, setOpenSettings }) {
                                 {/* 2. PREFERENCES SECTION */}
                                 <section ref={preferencesRef} id="preferences" className="space-y-6 scroll-mt-8">
                                     <div>
-                                        <h3 className="text-lg font-semibold text-slate-900">Preferences</h3>
-                                        <p className="text-sm text-slate-500 mt-1">Customize your localization and data viewing.</p>
+                                        <h3 className="text-lg font-semibold text-foreground">Preferences</h3>
+                                        <p className="text-sm text-muted-foreground mt-1">Customize your localization and data viewing.</p>
                                     </div>
 
                                     <div className="space-y-4">
@@ -227,28 +239,31 @@ export default function Setting({ openSettings, setOpenSettings }) {
                                 {/* 3. DISPLAY & UI SECTION */}
                                 <section ref={displayRef} id="display" className="space-y-6 scroll-mt-8">
                                     <div>
-                                        <h3 className="text-lg font-semibold text-slate-900">Display & UI</h3>
-                                        <p className="text-sm text-slate-500 mt-1">Adjust how the application looks on your screen.</p>
+                                        <h3 className="text-lg font-semibold text-foreground">Display & UI</h3>
+                                        <p className="text-sm text-muted-foreground mt-1">Adjust how the application looks on your screen.</p>
                                     </div>
 
                                     <div className="space-y-6">
                                         <div className="flex items-center justify-between">
                                             <div className="space-y-0.5">
                                                 <Label className="text-base">Dark Mode</Label>
-                                                <p className="text-sm text-slate-500">Switch between light and dark themes.</p>
+                                                <p className="text-sm text-muted-foreground">Switch between light and dark themes.</p>
                                             </div>
-                                            <Switch />
+                                            <Switch
+                                                checked={theme === 'dark'}
+                                                onChange={(val) => setTheme(val ? 'dark' : 'light')}
+                                            />
                                         </div>
 
-                                        <div className="flex items-center justify-between border-t pt-6">
+                                        <div className="flex items-center justify-between border-t dark:border-slate-800 pt-6">
                                             <div className="space-y-0.5">
                                                 <Label className="text-base flex items-center gap-2">
                                                     <Moon className="w-3.5 h-3.5" />
                                                     Privacy Mode
                                                 </Label>
-                                                <p className="text-sm text-slate-500">Hide sensitive amounts from the dashboard.</p>
+                                                <p className="text-sm text-muted-foreground">Hide sensitive amounts from the dashboard.</p>
                                             </div>
-                                            <Switch />
+                                            <Switch checked={false} onChange={() => { }} />
                                         </div>
                                     </div>
                                 </section>
