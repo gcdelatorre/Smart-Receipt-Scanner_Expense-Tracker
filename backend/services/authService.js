@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
+import Expense from '../models/expense.model.js';
+import Income from '../models/income.model.js';
 
 // Generate Access Token (Short lived)
 const generateAccessToken = (userId) => {
@@ -147,6 +149,31 @@ export const changeUserPassword = async (userId, oldPassword, newPassword) => {
         return {
             success: true,
             message: 'Password changed successfully'
+        };
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteUserAccount = async (userId) => {
+    try {
+        // 1. Delete all related data first (Cascade Delete)
+        await Expense.deleteMany({ userId });
+        await Income.deleteMany({ userId });
+
+        // 2. Delete the user record
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            throw {
+                status: 404,
+                message: 'User not found'
+            };
+        }
+
+        return {
+            success: true,
+            message: 'Account and all related data deleted successfully'
         };
     } catch (error) {
         throw error;

@@ -1,4 +1,4 @@
-import { registerUser, loginUser, getCurrentUser, changeUserPassword } from '../services/authService.js';
+import { registerUser, loginUser, getCurrentUser, changeUserPassword, deleteUserAccount } from '../services/authService.js';
 import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 
@@ -231,4 +231,25 @@ export const changePassword = async (req, res) => {
             message: error.message || 'Server error during password change'
         });
     }
+}
+
+export const deleteAccount = async (req, res) => {
+    const userId = req.user._id;
+
+    const result = await deleteUserAccount(userId);
+
+    res.cookie('accessToken', '', {
+        httpOnly: true,
+        expires: new Date(0)
+    });
+
+    res.cookie('refreshToken', '', {
+        httpOnly: true,
+        expires: new Date(0)
+    });
+
+    res.status(200).json({
+        success: true,
+        message: result.message
+    });
 }
