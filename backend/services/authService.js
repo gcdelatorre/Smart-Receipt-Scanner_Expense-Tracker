@@ -113,3 +113,42 @@ export const getCurrentUser = async (userId) => {
 
     return user;
 };
+
+export const changeUserPassword = async (userId, oldPassword, newPassword) => {
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw {
+                status: 404,
+                message: 'User not found'
+            };
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            throw {
+                status: 400,
+                message: 'Incorrect old password'
+            };
+        }
+
+        if (newPassword.length < 6) {
+            throw {
+                status: 400,
+                message: 'New password must be at least 6 characters long'
+            };
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        user.password = hashedPassword;
+        await user.save();
+
+        return {
+            success: true,
+            message: 'Password changed successfully'
+        };
+    } catch (error) {
+        throw error;
+    }
+}
