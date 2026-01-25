@@ -19,6 +19,7 @@ import { useRef, useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { CURRENCIES } from "@/constants/currencies"
 import { useTheme } from "next-themes"
+import SecuritySection from "./SettingsComponent/SecuritySection"
 
 // --- PREVIEW COMPONENTS (Using raw Tailwind for missing shadcn components) ---
 const Separator = () => <div className="h-[1px] w-full bg-slate-200 dark:bg-slate-800 my-6" />;
@@ -139,36 +140,7 @@ export default function Setting({ openSettings, setOpenSettings }) {
                         <ScrollArea containerRef={scrollAreaRef} className="p-8">
                             <div className="max-w-xl mx-auto space-y-12 pb-12">
 
-                                {/* 1. SECURITY SECTION */}
-                                <section ref={securityRef} id="security" className="space-y-6 scroll-mt-8">
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-foreground">Security</h3>
-                                        <p className="text-sm text-muted-foreground mt-1">Manage your password and account security.</p>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label>Current Password</Label>
-                                            <Input type="password" placeholder="••••••••" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>New Password</Label>
-                                            <Input type="password" placeholder="••••••••" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>Confirm New Password</Label>
-                                            <Input type="password" placeholder="••••••••" />
-                                        </div>
-                                        <Button className="w-full sm:w-auto">Update Password</Button>
-                                    </div>
-
-                                    <div className="flex flex-col gap-3 pt-4 border-t dark:border-slate-800">
-                                        <Button variant="ghost" className="justify-start gap-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 p-0 h-auto font-medium">
-                                            <Trash2 className="w-4 h-4" />
-                                            Delete Account
-                                        </Button>
-                                    </div>
-                                </section>
+                                <SecuritySection securityRef={securityRef} />
 
                                 <Separator />
 
