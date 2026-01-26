@@ -1,14 +1,11 @@
 import { ArrowUpRight, ArrowDownRight, PiggyBank, TrendingUp, Wallet, ArrowDown, CircleSlash, Circle } from "lucide-react";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { fetchUserBudget } from "./fetchUser";
-import { useCurrency } from "@/hooks/useCurrency";
 
 export function useStats(refreshTrigger) {
     const [incomeStats, setIncomeStats] = useState([]);
     const [expenseStats, setExpenseStats] = useState([]);
     const [overallBudget, setOverallBudget] = useState(0)
-
-    const { format } = useCurrency()
 
     const refresh = useCallback(async () => {
         try {
@@ -101,7 +98,7 @@ export function useStats(refreshTrigger) {
     const stats = useMemo(() => [
         {
             title: "Total Balance",
-            value: format(totalBalance),
+            value: `${totalBalance.toFixed(2)}`,
             changeLabel: hasData ? changeLabel : defaultLabel,
             changeVariant: hasData ? (change >= 0 ? "success" : "destructive") : defaultVariant,
             changeIcon: hasData ? (change >= 0 ? ArrowUpRight : ArrowDownRight) : CircleSlash,
@@ -112,7 +109,7 @@ export function useStats(refreshTrigger) {
         },
         {
             title: "Monthly Income",
-            value: format(totalIncomeThisMonth),
+            value: `${totalIncomeThisMonth.toFixed(2)}`,
             changeLabel: hasIncome ? (incomeProgress >= 30 ? "On track" : "Income nearly used") : defaultLabel,
             changeVariant: hasIncome ? (incomeProgress >= 30 ? "default" : "destructive") : defaultVariant,
             changeIcon: hasIncome ? (incomeProgress >= 30 ? ArrowUpRight : ArrowDownRight) : CircleSlash,
@@ -123,7 +120,7 @@ export function useStats(refreshTrigger) {
         },
         {
             title: "Monthly Expenses",
-            value: format(totalExpenseThisMonth),
+            value: `${totalExpenseThisMonth.toFixed(2)}`,
             changeLabel: overallBudget ? (hasExpense ? (`${(expensePercentage).toFixed(1)}% of budget used`) : defaultLabel) : "Please set your budget",
             changeVariant: hasExpense ? "destructive" : defaultVariant,
             changeIcon: hasExpense ? ArrowDownRight : CircleSlash,
