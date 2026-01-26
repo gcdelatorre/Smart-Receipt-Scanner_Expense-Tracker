@@ -5,8 +5,11 @@ import { fetchUserBudget } from '../utils/fetchUser'
 import { useEffect, useState, useCallback } from "react";
 import { getBudgetStatus } from "../utils/getBudgetStatus";
 import EditBudgetModal from "../EditBudgetModal";
+import { useCurrency } from "@/hooks/useCurrency";
 
 export default function BudgetsCard({ refreshTrigger }) {
+
+  const { format } = useCurrency()
 
   const [overallBudget, setOverallBudget] = useState(0)
   const [categoryBudgets, setCategoryBudgets] = useState([])
@@ -36,7 +39,7 @@ export default function BudgetsCard({ refreshTrigger }) {
           <div className="flex justify-between items-center w-full">
             <p className="text-base text-foreground">{budget.category}</p>
             <p className="text-muted-foreground">
-              ${Math.round(budget.usedAmount)} / ${Math.round(budget.amount)}
+              {format(budget.usedAmount)} / {format(budget.amount)}
             </p>
           </div>
         </div>
@@ -52,7 +55,7 @@ export default function BudgetsCard({ refreshTrigger }) {
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">Budget</CardTitle>
             <div className="mt-3 flex items-center gap-2 text-2xl font-semibold text-foreground">
-              {(overallBudget !== undefined && overallBudget !== null) ? `$${Math.round(overallBudget)}` : `Loading...`}
+              {(overallBudget !== undefined && overallBudget !== null) ? `${format(Math.round(overallBudget))}` : `Loading...`}
             </div>
             <button className="text-sm font-medium text-primary hover:text-primary/80" onClick={() => setShowModal(true)}>
               Edit

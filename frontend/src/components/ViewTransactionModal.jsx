@@ -9,8 +9,11 @@ import {
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import api from "../services/api";
 import { activateToast } from "./Toast/ActivateToast";
+import { useCurrency } from "../hooks/useCurrency";
 
 export default function ViewTransactionModal({ open, onClose, transactionToView, onRefresh, onEdit }) {
+
+    const { format } = useCurrency();
 
     const formattedDate = (dateStr) => {
         const d = new Date(dateStr);
@@ -53,7 +56,7 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
                         </div>
                         <div className="flex flex-col">
                             <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{transactionToView.transactionType === "income" ? "Income" : "Expense"}</p>
-                            <p className="text-2xl font-bold text-foreground">${transactionToView.amount.toFixed(2)}</p>
+                            <p className="text-2xl font-bold text-foreground">{format(transactionToView.amount)}</p>
                         </div>
                     </div>
 

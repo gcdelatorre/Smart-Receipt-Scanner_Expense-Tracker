@@ -15,6 +15,7 @@ import SearchTransaction from "../components/ui/SearchTransaction";
 import ViewTransactionModal from "../components/ViewTransactionModal";
 import EditTransactionModal from "../components/EditTransactionModal";
 import api from "../services/api";
+import { useCurrency } from "../hooks/useCurrency";
 
 export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
     const [page, setPage] = useState(1);
@@ -28,6 +29,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    const { format } = useCurrency();
     // Debounce search, this is best practice to prevent too many requests or API calls
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -121,7 +123,7 @@ export default function TransactionsPage({ onRefresh, refreshTrigger, onAdd }) {
 
                     <div className="flex items-center gap-3">
                         <p className={`font-semibold ${amountColor}`}>
-                            {isIncome ? "+" : "-"}${transaction.amount.toFixed(2)}
+                            {isIncome ? "+" : "-"}{format(transaction.amount)}
                         </p>
                         <button onClick={() => {
                             setShowViewModal(true)
