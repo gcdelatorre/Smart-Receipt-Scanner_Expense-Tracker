@@ -1,4 +1,18 @@
-export default function PreferencesSection() {
+import { useCurrency } from "@/hooks/useCurrency";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Globe, Clock, Hash } from "lucide-react";
+import { CURRENCIES } from "@/constants/currencies";
+import { useState } from "react";
+
+export default function PreferencesSection({ preferencesRef }) {
+    const { currency, changeCurrency } = useCurrency();
+
+
+    const handleCurrencyChange = (value) => {
+        changeCurrency(value);
+    };
+
     return (
         <section ref={preferencesRef} id="preferences" className="space-y-6 scroll-mt-8">
             <div>
@@ -12,7 +26,7 @@ export default function PreferencesSection() {
                         < Globe className="w-3.5 h-3.5" />
                         Primary Currency
                     </Label>
-                    <Select defaultValue="USD">
+                    <Select defaultValue={currency} onValueChange={handleCurrencyChange}>
                         <SelectTrigger>
                             <SelectValue placeholder="Select currency" />
                         </SelectTrigger>
