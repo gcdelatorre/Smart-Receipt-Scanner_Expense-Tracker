@@ -10,6 +10,11 @@ const userSchema = new mongoose.Schema({
     categoryBudgets: {
         type: Array,
         default: []
+    },
+    settingsPreferences: {
+        currency: { type: String, default: "USD" },
+        dateFormat: { type: String, default: "MM/DD/YYYY" },
+        numberFormat: { type: String, default: "Decimal Point System" }
     }
 }, { timestamps: true });
 
