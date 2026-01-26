@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
         default: []
     },
     settingsPreferences: {
-        currency: { type: String, default: "USD" },
+        currency: { type: String, default: "US Dollar" },
         dateFormat: { type: String, default: "MM/DD/YYYY" },
         numberFormat: { type: String, default: "Decimal Point System" }
     }

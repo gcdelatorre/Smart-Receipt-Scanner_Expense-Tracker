@@ -67,3 +67,21 @@ export const updateBudgets = async (userId, budgets) => {
     const updatedUser = await user.save();
     return updatedUser;
 }
+
+export const updateSettingsPeferences = async (userId, settingsPreferences) => {
+    const { currency, dateFormat, numberFormat } = settingsPreferences;
+
+    const user = await User.findById(userId);
+    if (!user) {
+        throw { status: 404, message: "User not found"};
+    }
+
+    user.settingsPreferences = {
+        currency: currency ?? user.settingsPreferences.currency,
+        dateFormat: dateFormat ?? user.settingsPreferences.dateFormat,
+        numberFormat: numberFormat ?? user.settingsPreferences.numberFormat
+    };
+
+    const updatedUser = await user.save();
+    return updatedUser;
+}

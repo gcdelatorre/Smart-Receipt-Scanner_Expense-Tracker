@@ -1,4 +1,4 @@
-import { findUserById, updateBudgets } from "../services/userService.js"
+import { findUserById, updateBudgets, updateUserSettingsPreferences } from "../services/userService.js"
 
 // get current user
 export const getUser = async (req, res) => {
@@ -35,3 +35,22 @@ export const updateUserBudgets = async (req, res) => {
     }
 };
 
+export const updateUserSettingsPreferences = async (req, res) => {
+    try {
+        const { currency, dateFormat, numberFormat } = req.body
+        const userId = req.user._id
+
+        const updatedUser = await updateUserSettingsPreferences(userId, { currency, dateFormat, numberFormat })
+
+        res.status(200).json({
+            success: true,
+            data: updatedUser,
+            message: "User settings preferences updated successfully"
+        })
+    } catch (err) {
+        if (err.status) {
+            return res.status(err.status).json({ success: false, message: err.message });
+        }
+        res.status(500).json({ success: false, message: "An unexpected error occurred." });
+    }
+}
