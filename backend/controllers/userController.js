@@ -35,7 +35,7 @@ export const updateUserBudgets = async (req, res) => {
     }
 };
 
-export const updateUserSettingsPreferences = async (req, res) => {
+export const updateSettings = async (req, res) => {
     try {
         const { currency, dateFormat, numberFormat } = req.body
         const userId = req.user._id

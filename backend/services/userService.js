@@ -50,7 +50,7 @@ export const updateBudgets = async (userId, budgets) => {
                 message: `Category budgets total (${newCategoryTotal}) cannot exceed overall budget of ${newOverallBudget}.`
             };
         }
-        
+
         // Preserve usedAmount for existing categories while updating
         user.categoryBudgets = validCategoryBudgets.map(newBudget => {
             const existingBudget = user.categoryBudgets.find(b => b.category === newBudget.category);
@@ -61,19 +61,19 @@ export const updateBudgets = async (userId, budgets) => {
             };
         });
     }
-    
+
     user.overallBudget = newOverallBudget;
 
     const updatedUser = await user.save();
     return updatedUser;
 }
 
-export const updateSettingsPeferences = async (userId, settingsPreferences) => {
+export const updateUserSettingsPreferences = async (userId, settingsPreferences) => {
     const { currency, dateFormat, numberFormat } = settingsPreferences;
 
     const user = await User.findById(userId);
     if (!user) {
-        throw { status: 404, message: "User not found"};
+        throw { status: 404, message: "User not found" };
     }
 
     user.settingsPreferences = {
