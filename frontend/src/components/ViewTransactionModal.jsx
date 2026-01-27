@@ -9,22 +9,16 @@ import {
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import api from "../services/api";
 import { activateToast } from "./Toast/ActivateToast";
-import { useCurrency } from "../hooks/useCurrency";
+import { usePreferences } from "../hooks/usePreferences";
 
 export default function ViewTransactionModal({ open, onClose, transactionToView, onRefresh, onEdit }) {
 
-    const { format } = useCurrency();
-
-    const formattedDate = (dateStr) => {
-        const d = new Date(dateStr);
-        const options = { month: "short", day: "numeric", year: "numeric" };
-        return d.toLocaleDateString(undefined, options);
-    }
+    const { formatCurrency, formatDate } = usePreferences();
 
     const formattedItems = (items) => {
         if (!items || items.length === 0) return "N/A";
         return items.map((item) => item.name).join(", ");
-    }
+    };
 
     if (!open || !transactionToView) return null;
 
@@ -40,7 +34,7 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
         } catch (err) {
             activateToast("error", "Failed to delete transaction. Please try again.");
         }
-    }
+    };
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -56,7 +50,7 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
                         </div>
                         <div className="flex flex-col">
                             <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{transactionToView.transactionType === "income" ? "Income" : "Expense"}</p>
-                            <p className="text-2xl font-bold text-foreground">{format(transactionToView.amount)}</p>
+                            <p className="text-2xl font-bold text-foreground">{formatCurrency(transactionToView.amount)}</p>
                         </div>
                     </div>
 
@@ -68,7 +62,7 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
 
                         <div>
                             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Date</p>
-                            <p className="text-sm font-medium text-foreground mt-1">{formattedDate(transactionToView.date)}</p>
+                            <p className="text-sm font-medium text-foreground mt-1">{formatDate(transactionToView.date)}</p>
                         </div>
 
                         {transactionToView.transactionType === "expense" && (

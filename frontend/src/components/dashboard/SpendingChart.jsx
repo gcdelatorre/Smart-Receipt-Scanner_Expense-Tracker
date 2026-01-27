@@ -11,27 +11,28 @@ import {
   Select,
   SelectValue,
   SelectTrigger,
+  SelectTrigger,
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"
 import { useState, useEffect } from "react";
-import { useCurrency } from "@/hooks/useCurrency";
+import { usePreferences } from "@/hooks/usePreferences";
 
 function SpendingTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const item = payload[0];
-  const { format } = useCurrency();
+  const { formatCurrency } = usePreferences();
   return (
     <div className="rounded-xl border border-border bg-card px-3 py-2 shadow-sm text-sm">
       <p className="font-semibold text-foreground">{item.payload.day}</p>
-      <p className="text-muted-foreground">{format(item.value)}</p>
+      <p className="text-muted-foreground">{formatCurrency(item.value)}</p>
     </div>
   );
 }
 
 export default function SpendingChart() {
 
-  const { format } = useCurrency();
+  const { formatCurrency } = usePreferences();
 
   const [period, setPeriod] = useState("This Week");
   const [chartData, setChartData] = useState([]);
@@ -88,7 +89,7 @@ export default function SpendingChart() {
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(v) => `${format(v / 1000)}k`}
+              tickFormatter={(v) => `${formatCurrency(v / 1000)}k`}
               width={50}
             />
             <Tooltip content={<SpendingTooltip />} cursor={{ stroke: "hsl(var(--border))" }} />
