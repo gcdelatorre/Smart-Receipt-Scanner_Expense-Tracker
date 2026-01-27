@@ -9,9 +9,29 @@ export const getProfile = async (userId) => {
 };
 
 export const updateProfile = async (userId, updateData) => {
-    const user = await User.findByIdAndUpdate(userId, updateData, { new: true }).select('-password');
+
+    const user = await User.findById(userId);
     if (!user) {
         throw new Error('User not found');
     }
+
+    const newUsername = updateData.username;
+    const sameUsername = user.username === newUsername;
+    const existingUser = await User.findOne({ username: newUsername });
+    if (existingUser && !sameUsername) {
+        throw new Error('Username already exists');
+    }
+
+    const newEmail = updateData.email;
+    const sameEmail = user.email === newEmail;
+    const existingEmail = await User.findOne({ email: newEmail });
+    if (existingEmail && !sameEmail) {
+        throw new Error('Email already exists');
+    }
+
+    user.username = newUsername;
+    user.email = newEmail;
+    await user.save();
+
     return user;
 };

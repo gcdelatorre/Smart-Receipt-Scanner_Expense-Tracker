@@ -51,6 +51,11 @@ export default function SecuritySection({ securityRef }) {
             return
         }
 
+        if (payload.oldPassword === payload.newPassword) {
+            activateToast('error', 'New password must be different from old password')
+            return
+        }
+
         setLoading(true)
         try {
             // 2. Await the service call

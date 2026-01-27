@@ -70,7 +70,7 @@ export default function SpendingChart() {
       </div>
       <div className="mt-4 h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+          <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
             <defs>
               <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.25} />

@@ -33,6 +33,8 @@ export default function Profile({ openProfile, setOpenProfile }) {
         setIfEdit(!ifEdit);
     };
 
+    let err;
+
     const handleSave = async (e) => {
         if (e) e.preventDefault();
         try {
@@ -42,7 +44,8 @@ export default function Profile({ openProfile, setOpenProfile }) {
             setIfEdit(false);
             activateToast("success", "Profile updated successfully");
         } catch (err) {
-            activateToast("error", "Failed to update profile. Please try again.");
+            err = err?.response?.data?.message || "Failed to update profile. Please try again.";
+            activateToast("error", err);
         }
     }
 
