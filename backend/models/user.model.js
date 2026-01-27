@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     settingsPreferences: {
         currency: { type: String, default: "USD" },
         dateFormat: { type: String, default: "MM/DD/YYYY" },
-        numberFormat: { type: String, default: "Decimal Point System" }
+        numberFormat: { type: String, default: "Standard" }
     }
 }, { timestamps: true });
 
