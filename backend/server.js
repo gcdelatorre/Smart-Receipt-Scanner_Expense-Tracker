@@ -8,6 +8,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
 import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
 
 import ExpenseRouter from './routes/expenseRoutes.js';
 import IncomeRouter from './routes/incomeRoutes.js';
@@ -30,6 +32,8 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
+app.use(mongoSanitize());
+app.use(xss());
 
 // Serve static files (uploaded images)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
