@@ -15,6 +15,13 @@ export const updateProfile = async (userId, updateData) => {
         throw new Error('User not found');
     }
 
+    const newName = updateData.name;
+    const sameName = user.name === newName;
+    const existingName = await User.findOne({ name: newName });
+    if (existingName && !sameName) {
+        throw new Error('Name already exists');
+    }
+
     const newUsername = updateData.username;
     const sameUsername = user.username === newUsername;
     const existingUser = await User.findOne({ username: newUsername });
@@ -31,6 +38,7 @@ export const updateProfile = async (userId, updateData) => {
 
     user.username = newUsername;
     user.email = newEmail;
+    user.name = newName;
     await user.save();
 
     return user;
