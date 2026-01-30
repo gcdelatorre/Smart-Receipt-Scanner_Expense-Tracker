@@ -1,6 +1,8 @@
 import express from 'express'
 import { getUser, updateUserBudgets, updateSettings } from "../controllers/userController.js";
 import { protect } from '../middleware/authMiddleware.js';
+import { validate } from '../middleware/validate.js';
+import { updateBudgetSchema } from '../schemas/user.schema.js';
 
 const router = express.Router()
 
@@ -8,7 +10,7 @@ const router = express.Router()
 router.use(protect);
 
 router.get("/me", getUser)
-router.put("/budget", updateUserBudgets)
+router.put("/budget", validate(updateBudgetSchema), updateUserBudgets)
 router.put("/settings-preferences", updateSettings)
 
 export default router
