@@ -29,3 +29,16 @@ export const changePasswordSchema = z.object({
         path: ["confirmNewPassword"], // 👈 Essential: puts the error on the correct field
     })
 });
+
+export const updateBudgetSchema = z.object({
+    body: z.object({
+        overallBudget: z.coerce.number()
+            .positive("Overall budget must be greater than 0")
+            .max(1000000, "Budget cannot exceed 1,000,000"),
+        categoryBudgets: z.array(z.object({
+            category: z.string().min(1, "Category is required"),
+            amount: z.coerce.number()
+                .positive("Category budget must be greater than 0")
+        })).optional()
+    })
+});
