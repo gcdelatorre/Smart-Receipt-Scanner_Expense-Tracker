@@ -3,11 +3,12 @@ import { register, login, getMe, logout, refreshToken, changePassword, deleteAcc
 import { protect } from '../middleware/authMiddleware.js';
 import { validate } from '../middleware/validate.js';
 import { changePasswordSchema } from '../schemas/user.schema.js';
+import { loginSchema, registerSchema } from '../schemas/auth.schema.js';
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', validate(registerSchema), register);
+router.post('/login', validate(loginSchema), login);
 router.get('/me', protect, getMe);
 router.post('/logout', protect, logout);
 router.post('/refresh-token', refreshToken);
