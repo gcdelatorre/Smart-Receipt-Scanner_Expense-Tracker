@@ -11,23 +11,37 @@ export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState({});
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
-        setLoading(true);
-
         try {
+            setError("");
+            setLoading(true);
+
             await login(emailOrUsername, password);
             activateToast("success", "Welcome back!");
             if (onLoginSuccess) {
                 onLoginSuccess();
             }
+            
             navigate("/dashboard");
+            setFieldErrors({});
         } catch (err) {
-            setError(err.response?.data?.message || "Login failed. Please try again.");
+            if (err.response?.status === 400 && err.response.data?.errors) {
+                const errors = {};
+                err.response.data.errors.forEach(e => {
+                    const fieldName = e.path[e.path.length - 1];
+                    errors[fieldName] = e.message;
+                });
+                setFieldErrors(errors);
+            }
+            else {
+                const message = err.response?.data?.message || 'Failed to login'
+                activateToast('error', message)
+            }
         } finally {
             setLoading(false);
         }
@@ -45,6 +59,7 @@ export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
                     <Label htmlFor="emailOrUsername" className="text-sm font-medium text-muted-foreground ml-1">Email or Username</Label>
                     <Input
                         id="emailOrUsername"
+                        name="emailOrUsername"
                         type="text"
                         value={emailOrUsername}
                         onChange={(e) => setEmailOrUsername(e.target.value)}
@@ -52,11 +67,13 @@ export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
                         className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
                         placeholder="john@example.com"
                     />
+                    {fieldErrors.emailOrUsername && <span className="text-xs font-medium text-destructive">{fieldErrors.emailOrUsername}</span>}
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="password" className="text-sm font-medium text-muted-foreground ml-1">Password</Label>
                     <Input
                         id="password"
+                        name="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -64,6 +81,7 @@ export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
                         className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
                         placeholder="••••••••"
                     />
+                    {fieldErrors.password && <span className="text-xs font-medium text-destructive">{fieldErrors.password}</span>}
                 </div>
                 <Button
                     type="submit"
