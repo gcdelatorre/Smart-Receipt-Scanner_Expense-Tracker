@@ -40,5 +40,12 @@ export const updateBudgetSchema = z.object({
             amount: z.coerce.number()
                 .positive("Category budget must be greater than 0")
         })).optional()
+            .refine((items) => {
+                if (!items) return true;
+                const categories = items.map(i => i.category.toLowerCase().trim());
+                return new Set(categories).size === categories.length;
+            }, {
+                message: "Duplicate categories are not allowed in budget settings"
+            })
     })
 });
