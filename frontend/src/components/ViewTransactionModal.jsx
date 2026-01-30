@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "./ui/button";
 import {
     Dialog,
@@ -6,6 +7,17 @@ import {
     DialogFooter,
     DialogTitle,
 } from "./ui/dialog";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "./ui/alert-dialog";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import api from "../services/api";
 import { activateToast } from "./Toast/ActivateToast";
@@ -14,6 +26,7 @@ import { usePreferences } from "../hooks/usePreferences";
 export default function ViewTransactionModal({ open, onClose, transactionToView, onRefresh, onEdit }) {
 
     const { formatCurrency, formatDate } = usePreferences();
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const formattedItems = (items) => {
         if (!items || items.length === 0) return "N/A";
@@ -24,6 +37,7 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
 
     const handleDelete = async () => {
         const apiEndpoint = transactionToView.transactionType === 'expense' ? `/expenses/${transactionToView._id}` : `/income/${transactionToView._id}`;
+        setIsDeleting(true);
         try {
             await api.delete(apiEndpoint);
             onClose();
@@ -33,6 +47,8 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
             activateToast("success", "Transaction deleted successfully");
         } catch (err) {
             activateToast("error", "Failed to delete transaction. Please try again.");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -89,8 +105,31 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
                 </div>
 
 
+
                 <DialogFooter className="grid grid-cols-2 gap-3 pt-6 border-t border-border">
-                    <Button variant="ghost" onClick={handleDelete} className="text-destructive hover:bg-destructive/10">Delete</Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="ghost" className="text-destructive hover:bg-destructive/10">Delete</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will delete this specific transaction.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={handleDelete}
+                                    disabled={isDeleting}
+                                    className="bg-rose-600 hover:bg-rose-700 text-white"
+                                >
+                                    {isDeleting ? "Deleting..." : "Delete"}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                     <Button onClick={onEdit} className="rounded-xl">Edit Details</Button>
                 </DialogFooter>
             </DialogContent>
