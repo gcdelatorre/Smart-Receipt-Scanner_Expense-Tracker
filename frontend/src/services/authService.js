@@ -40,8 +40,8 @@ export const authService = {
     },
 
     // Change password
-    async changePassword(oldPassword, newPassword) {
-        const response = await api.put('/auth/change-password', { oldPassword, newPassword });
+    async changePassword(oldPassword, newPassword, confirmNewPassword) {
+        const response = await api.put('/auth/change-password', { oldPassword, newPassword, confirmNewPassword });
         return response.data;
     },
 

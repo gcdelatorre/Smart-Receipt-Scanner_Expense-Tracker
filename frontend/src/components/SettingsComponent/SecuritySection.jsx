@@ -26,6 +26,11 @@ export default function SecuritySection({ securityRef }) {
         confirmNewPassword: ""
     })
     const [loading, setLoading] = useState(false)
+    const [errorFields, setErrorFields] = useState({
+        oldPassword: "",
+        newPassword: "",
+        confirmNewPassword: ""
+    })
 
     const handleChange = (e) => {
         setPayload({
@@ -59,7 +64,7 @@ export default function SecuritySection({ securityRef }) {
         setLoading(true)
         try {
             // 2. Await the service call
-            await authService.changePassword(payload.oldPassword, payload.newPassword)
+            await authService.changePassword(payload.oldPassword, payload.newPassword, payload.confirmNewPassword)
 
             activateToast('success', 'Password changed successfully')
 
@@ -69,11 +74,23 @@ export default function SecuritySection({ securityRef }) {
                 newPassword: "",
                 confirmNewPassword: ""
             })
-        } catch (error) {
-            console.error(error)
-            // 4. BEST PRACTICE: Show specific error from backend (e.g., "Incorrect old password")
-            const message = error.response?.data?.message || 'Failed to change password'
-            activateToast('error', message)
+
+            setErrorFields({})
+        } catch (err) {
+
+            if (err.response?.status === 400 && err.response.data?.errors) {
+                const errors = {};
+                err.response.data.errors.forEach(e => {
+                    const fieldName = e.path[e.path.length - 1];
+                    errors[fieldName] = e.message;
+                });
+                setErrorFields(errors);
+                activateToast("error", err.response.data.errors[0].message);
+            }
+            else {
+                const message = err.response?.data?.message || 'Failed to change password'
+                activateToast('error', message)
+            }
         } finally {
             setLoading(false)
         }
