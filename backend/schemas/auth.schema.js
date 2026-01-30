@@ -4,7 +4,9 @@ export const loginSchema = z.object({
     body: z.object({
         emailOrUsername: z.string().trim()
             .min(6, "Email or Username must be at least 6 characters")
-            .max(100, "Email or Username cannot exceed 100 characters"),
+            .max(100, "Email or Username cannot exceed 100 characters")
+            // can only contain @ and dot
+            .regex(/^[a-zA-Z0-9_@.]+$/, "No invalid characters allowed"),
         password: z.string().trim()
             .min(8, "Password must be at least 8 characters")
             .max(100, "Password cannot exceed 100 characters"),
@@ -19,7 +21,7 @@ export const registerSchema = z.object({
         username: z.string().trim()
             .min(6, "Username must be at least 6 characters")
             .max(30, "Username cannot exceed 30 characters")
-            .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+            .regex(/^[a-zA-Z0-9_]+$/, "No invalid characters allowed"),
         email: z.string().trim()
             .toLowerCase()
             .email("Invalid email format")
