@@ -377,6 +377,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
         const newCategories = [...categoryBudgets];
         newCategories[index].category = value;
         setCategoryBudgets(newCategories);
+        setFieldErrors(prev => ({ ...prev, categoryBudgets: "" })); // Clear duplicate error on change
     };
 
     const handleAmountChange = (index, value) => {
@@ -481,6 +482,12 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
                     }}>
                         Add Category
                     </Button>
+
+                    {fieldErrors.categoryBudgets && (
+                        <p className="text-sm font-medium text-destructive bg-destructive/10 p-3 rounded-lg border border-destructive/20 text-center animate-in fade-in zoom-in duration-200">
+                            {fieldErrors.categoryBudgets}
+                        </p>
+                    )}
 
                     <Actions
                         onCancel={() => {
