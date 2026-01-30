@@ -14,6 +14,7 @@ import { activateToast } from "./Toast/ActivateToast";
 export default function EditTransactionModal({ open, onClose, transactionToEdit, onRefresh }) {
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState({});
 
     useEffect(() => {
         if (transactionToEdit) {
@@ -36,6 +37,7 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        setFieldErrors(prev => ({ ...prev, [name]: "" }));
     };
 
     const handleSubmit = async (e) => {
@@ -52,14 +54,25 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
             };
 
             await api.put(apiEndpoint, submitData);
+            setFieldErrors({});
             if (onRefresh) {
                 onRefresh();
             }
             onClose();
             activateToast("success", "Transaction updated successfully");
         } catch (err) {
-            const errorMessage = err.response?.data?.message || err.message || "An error occurred while updating the transaction";
-            activateToast("error", errorMessage);
+            if (err.response?.status === 400 && err.response.data?.errors) {
+                const errors = {};
+                err.response.data.errors.forEach(e => {
+                    const path = e.path[0] === "body" ? e.path.slice(1) : e.path;
+                    const fieldName = path[path.length - 1];
+                    errors[fieldName] = e.message;
+                });
+                setFieldErrors(errors);
+            } else {
+                const errorMessage = err.response?.data?.message || err.message || "An error occurred while updating the transaction";
+                activateToast("error", errorMessage);
+            }
             console.error("Error submitting form:", err);
         } finally {
             setLoading(false);
@@ -77,8 +90,16 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
                 <form onSubmit={handleSubmit} className="space-y-4 py-4">
 
                     <div className="space-y-1.5">
-                        <label htmlFor="amount" className="text-sm font-semibold text-foreground">Amount</label>
-                        <Input type="number" name="amount" id="amount" value={formData.amount || ''} onChange={handleChange} className="bg-background border-border h-11" />
+                        <label htmlFor="amount" className={`text-sm font-semibold text-foreground ${fieldErrors.amount ? "text-destructive" : ""}`}>Amount</label>
+                        <Input
+                            type="number"
+                            name="amount"
+                            id="amount"
+                            value={formData.amount || ''}
+                            onChange={handleChange}
+                            className={`bg-background border-border h-11 ${fieldErrors.amount ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                        />
+                        {fieldErrors.amount && <p className="text-xs font-medium text-destructive mt-1">{fieldErrors.amount}</p>}
                     </div>
 
                     <div className="space-y-1.5">
@@ -99,8 +120,16 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
                     </div>
 
                     <div className="space-y-1.5">
-                        <label htmlFor="date" className="text-sm font-semibold text-foreground">Date</label>
-                        <Input type="date" name="date" id="date" value={formData.date || ''} onChange={handleChange} className="bg-background border-border h-11" />
+                        <label htmlFor="date" className={`text-sm font-semibold text-foreground ${fieldErrors.date ? "text-destructive" : ""}`}>Date</label>
+                        <Input
+                            type="date"
+                            name="date"
+                            id="date"
+                            value={formData.date || ''}
+                            onChange={handleChange}
+                            className={`bg-background border-border h-11 ${fieldErrors.date ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                        />
+                        {fieldErrors.date && <p className="text-xs font-medium text-destructive mt-1">{fieldErrors.date}</p>}
                     </div>
 
 
