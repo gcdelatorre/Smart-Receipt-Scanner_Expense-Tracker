@@ -19,16 +19,26 @@ export default function Profile({ openProfile, setOpenProfile }) {
     const { user, setUser } = useAuth();
 
     const [payload, setPayload] = useState({ name: "", username: "", email: "" });
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setPayload(prev => ({ ...prev, [name]: value }));
+        // Clear field error when user starts typing
+        if (fieldErrors[name]) {
+            setFieldErrors(prev => {
+                const updated = { ...prev };
+                delete updated[name];
+                return updated;
+            });
+        }
     }
 
     const handleIfEdit = () => {
         if (!ifEdit) {
             // Initialize payload with current user data when entering edit mode
             setPayload({ name: user?.name || "", username: user?.username || "", email: user?.email || "" });
+            setFieldErrors({}); // Reset errors when opening edit mode
         }
         setIfEdit(!ifEdit);
     };
@@ -39,13 +49,24 @@ export default function Profile({ openProfile, setOpenProfile }) {
         if (e) e.preventDefault();
         try {
             const res = await api.put('/profile/update', payload);
-            // update/setUser to update the user in the AuthContext
             setUser(res.data.data);
             setIfEdit(false);
+            setFieldErrors({}); // Clear errors on success
             activateToast("success", "Profile updated successfully");
         } catch (err) {
-            err = err?.response?.data?.message || "Failed to update profile. Please try again.";
-            activateToast("error", err);
+            // Field-level error mapping
+            if (err.response?.status === 400 && err.response.data?.errors) {
+                const errors = {};
+                err.response.data.errors.forEach(e => {
+                    const fieldName = e.path[e.path.length - 1];
+                    errors[fieldName] = e.message;
+                });
+                setFieldErrors(errors);
+                activateToast("error", err.response.data.errors[0].message);
+            } else {
+                const msg = err?.response?.data?.message || "Failed to update profile. Please try again.";
+                activateToast("error", msg);
+            }
         }
     }
 
@@ -104,15 +125,34 @@ export default function Profile({ openProfile, setOpenProfile }) {
                         <form onSubmit={handleSave} className="flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-200">
                             <div className="space-y-1.5">
                                 <Label>Full Name</Label>
-                                <Input minLength={2} required name="name" value={payload.name} onChange={handleChange} />
+                                <Input
+                                    name="name"
+                                    value={payload.name}
+                                    onChange={handleChange}
+                                    className={fieldErrors.name ? "border-destructive ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive" : ""}
+                                />
+                                {fieldErrors.name && <span className="text-xs font-medium text-destructive">{fieldErrors.name}</span>}
                             </div>
                             <div className="space-y-1.5">
                                 <Label>Username</Label>
-                                <Input minLength={6} required name="username" value={payload.username} onChange={handleChange} />
+                                <Input
+                                    name="username"
+                                    value={payload.username}
+                                    onChange={handleChange}
+                                    className={fieldErrors.username ? "border-destructive ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive" : ""}
+                                />
+                                {fieldErrors.username && <span className="text-xs font-medium text-destructive">{fieldErrors.username}</span>}
                             </div>
                             <div className="space-y-1.5">
                                 <Label>Email</Label>
-                                <Input minLength={6} required name="email" value={payload.email} onChange={handleChange} type="email" />
+                                <Input
+                                    name="email"
+                                    value={payload.email}
+                                    onChange={handleChange}
+                                    type="email"
+                                    className={fieldErrors.email ? "border-destructive ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive" : ""}
+                                />
+                                {fieldErrors.email && <span className="text-xs font-medium text-destructive">{fieldErrors.email}</span>}
                             </div>
 
                             <div className="flex justify-end gap-2 mt-2 pt-4 border-t">
