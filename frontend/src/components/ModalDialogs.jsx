@@ -28,35 +28,43 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
         description: "",
         date: ""
     })
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const handleChange = (e) => {
         setPayload(prev => ({
             ...prev,
             [e.target.name]: e.target.value
         }))
+        setFieldErrors(prev => ({ ...prev, [e.target.name]: "" }));
     }
 
     const notEmpty = !payload.amount || !payload.category || !payload.date
 
     const handleSubmit = async () => {
-
-        if (!payload.amount || !payload.category || !payload.date) {
-            activateToast("error", "Please fill in all required fields");
-            return
-        }
-
         try {
             await api.post("/income", payload);
             activateToast("success", "Income added successfully");
 
             setPayload({ amount: "", category: "", description: "", date: "" })
+            setFieldErrors({}); // Clear errors on success
             onOpenChange(false);
             if (onIncomeAdded) {
                 onIncomeAdded();
             }
 
         } catch (err) {
-            activateToast("error", "Failed to add income. Please try again.");
+            if (err.response?.status === 400 && err.response.data?.errors) {
+                const errors = {};
+                err.response.data.errors.forEach(e => {
+                    // Strip the first element if it's "body"
+                    const path = e.path[0] === "body" ? e.path.slice(1) : e.path;
+                    const fieldName = path[path.length - 1];
+                    errors[fieldName] = e.message;
+                });
+                setFieldErrors(errors);
+            } else {
+                activateToast("error", "Failed to add income. Please try again.");
+            }
         }
     }
 
@@ -74,13 +82,15 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
 
                 <DialogDescription asChild>
                     <form className="space-y-4 pt-4" onSubmit={(e) => e.preventDefault()}>
-                        <Field label="Amount">
+                        <Field label="Amount" error={fieldErrors.amount}>
                             <Input
                                 onChange={handleChange}
                                 name="amount"
                                 type="number"
                                 placeholder="0.00"
+                                className={fieldErrors.amount ? "border-destructive focus-visible:ring-destructive" : ""}
                             />
+                            {fieldErrors.amount && <p className="text-xs font-medium text-destructive mt-1">{fieldErrors.amount}</p>}
                         </Field>
 
                         <CategorySelection
@@ -134,32 +144,40 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
             ...prev,
             [e.target.name]: e.target.value
         }))
+        setFieldErrors(prev => ({ ...prev, [e.target.name]: "" }));
     }
 
     const handleSubmit = async () => {
-        if (!payload.amount || !payload.category || !payload.date) {
-            activateToast("error", "Please fill in all required fields");
-            return;
-        }
-
         try {
             await api.post("/expenses", payload);
             activateToast("success", "Expense added successfully");
 
             setPayload({ amount: "", store: "", category: "", description: "", date: "" })
+            setFieldErrors({});
             onOpenChange(false);
             if (onExpenseAdded) {
                 onExpenseAdded();
             }
 
         } catch (err) {
-            activateToast("error", "Failed to add expense. Can't exceed budget.");
+            if (err.response?.status === 400 && err.response.data?.errors) {
+                const errors = {};
+                err.response.data.errors.forEach(e => {
+                    const path = e.path[0] === "body" ? e.path.slice(1) : e.path;
+                    const fieldName = path[path.length - 1];
+                    errors[fieldName] = e.message;
+                });
+                setFieldErrors(errors);
+            } else {
+                activateToast("error", "Failed to add expense. Can't exceed budget.");
+            }
         }
     }
 
     const [receiptFile, setReceiptFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [uploaded, setUploaded] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const handleReceiptUpload = async (e) => {
         const file = e.target.files[0];
@@ -187,8 +205,20 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
             });
             setUploaded(true);
             activateToast("success", "Receipt processed successfully");
+            setFieldErrors({});
         } catch (err) {
-            activateToast("error", "Failed to process receipt. Please try again.");
+            if (err.response?.status === 400 && err.response.data?.errors) {
+                const errors = {};
+                err.response.data.errors.forEach(e => {
+                    const fieldName = e.path[e.path.length - 1];
+                    errors[fieldName] = e.message;
+                });
+                setFieldErrors(errors);
+            }
+            else {
+                const message = err.response?.data?.message || 'Failed to create expense. Please try again.'
+                activateToast('error', message)
+            }
         } finally {
             setUploading(false);
         }
@@ -228,6 +258,7 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
                                     type="file"
                                     accept="image/*"
                                     className="hidden"
+                                    disabled={uploading}
                                     onChange={handleReceiptUpload}
                                 />
 
@@ -258,9 +289,18 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
                             </div>
                         </Field>
 
-                        <Field label="Amount">
-                            <Input onChange={handleChange} name="amount" type="number" step="0.01" placeholder="0.00" value={payload.amount} />
+                        <Field label="Amount" error={fieldErrors.amount}>
+                            <Input
+                                onChange={handleChange}
+                                name="amount"
+                                type="number"
+                                step="0.01"
+                                placeholder="0.00"
+                                value={payload.amount}
+                                className={fieldErrors.amount ? "border-destructive focus-visible:ring-destructive" : ""}
+                            />
                         </Field>
+                        {fieldErrors.amount && <p className="text-xs font-medium text-destructive mt-1">{fieldErrors.amount}</p>}
 
                         <CategorySelection
                             name="category"
@@ -303,6 +343,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
     const [categoryBudgets, setCategoryBudgets] = useState([
         { category: "", amount: 0 },
     ]);
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const notEmpty = !overallBudget || !overallBudget
 
@@ -357,13 +398,28 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
 
             setOverallBudget(0)
             setCategoryBudgets([{ category: "", amount: 0 },]);
+            setFieldErrors({});
             onOpenChange(false);
             if (onBudgetAdded) {
                 onBudgetAdded();
             }
 
         } catch (err) {
-            activateToast("error", "Failed to update budget. Please try again.");
+            if (err.response?.status === 400 && err.response.data?.errors) {
+                const errors = {};
+                err.response.data.errors.forEach(e => {
+                    const path = e.path[0] === "body" ? e.path.slice(1) : e.path;
+                    const fieldName = path.join("_");
+                    errors[fieldName] = e.message;
+
+                    if (path.length === 1) {
+                        errors[path[0]] = e.message;
+                    }
+                });
+                setFieldErrors(errors);
+            } else {
+                activateToast("error", "Failed to update budget. Please try again.");
+            }
         }
     };
 
@@ -377,13 +433,18 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
 
                 <form className="space-y-4 pt-4" onSubmit={(e) => e.preventDefault()}>
                     {/* Overall Budget */}
-                    <Field label="Overall Budget">
+                    <Field label="Overall Budget" error={fieldErrors.overallBudget}>
                         <Input
                             type="number"
                             placeholder="Monthly budget"
                             value={overallBudget}
-                            onChange={(e) => handleOverallBudgetChange(e)}
+                            onChange={(e) => {
+                                handleOverallBudgetChange(e);
+                                setFieldErrors(prev => ({ ...prev, overallBudget: "" }));
+                            }}
+                            className={fieldErrors.overallBudget ? "border-destructive focus-visible:ring-destructive" : ""}
                         />
+                        {fieldErrors.overallBudget && <p className="text-xs font-medium text-destructive mt-1">{fieldErrors.overallBudget}</p>}
                     </Field>
 
                     {/* Dynamic Category + Amount rows */}
@@ -398,20 +459,26 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
                                 />
                             </Field>
 
-                            <Field label="Amount">
+                            <Field label="Amount" error={fieldErrors[`categoryBudgets_${index}_amount`]}>
                                 <Input
                                     type="number"
                                     placeholder="0.00"
                                     value={item.amount}
-                                    onChange={(e) =>
-                                        handleAmountChange(index, Number(e.target.value))
-                                    }
+                                    onChange={(e) => {
+                                        handleAmountChange(index, Number(e.target.value));
+                                        setFieldErrors(prev => ({ ...prev, [`categoryBudgets_${index}_amount`]: "" }));
+                                    }}
+                                    className={fieldErrors[`categoryBudgets_${index}_amount`] ? "border-destructive focus-visible:ring-destructive" : ""}
                                 />
+                                {fieldErrors[`categoryBudgets_${index}_amount`] && <p className="text-xs font-medium text-destructive mt-1">{fieldErrors[`categoryBudgets_${index}_amount`]}</p>}
                             </Field>
                         </div>
                     ))}
 
-                    <Button type="button" variant="default" onClick={handleAddCategory}>
+                    <Button type="button" variant="default" onClick={() => {
+                        handleAddCategory();
+                        setFieldErrors({}); // Reset error indices when structure changes
+                    }}>
                         Add Category
                     </Button>
 
@@ -436,10 +503,10 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
    REUSABLE PIECES (LOCAL)
 ===================================================== */
 
-function Field({ label, children }) {
+function Field({ label, children, error }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-foreground">
+            <label className={`text-sm font-semibold text-foreground ${error ? "text-destructive" : ""}`}>
                 {label}
             </label>
             {children}
