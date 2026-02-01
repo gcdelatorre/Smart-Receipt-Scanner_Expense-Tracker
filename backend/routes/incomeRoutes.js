@@ -3,11 +3,13 @@ import { addIncome, getAllIncome, updateIncomeById, deleteIncomeById, getSingleI
 import { protect } from '../middleware/authMiddleware.js';
 import { validate } from '../middleware/validate.js';
 import { incomeTransactionSchema } from '../schemas/transaction.schema.js';
+import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router()
 
 // All routes require authentication
 router.use(protect);
+router.use(apiLimiter)
 
 router.post("/", validate(incomeTransactionSchema), addIncome);
 router.get("/", getAllIncome);

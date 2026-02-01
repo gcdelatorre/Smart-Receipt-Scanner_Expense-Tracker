@@ -3,11 +3,13 @@ import { getUser, updateUserBudgets, updateSettings } from "../controllers/userC
 import { protect } from '../middleware/authMiddleware.js';
 import { validate } from '../middleware/validate.js';
 import { updateBudgetSchema } from '../schemas/user.schema.js';
+import { apiLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router()
 
 // All routes require authentication
 router.use(protect);
+router.use(apiLimiter)
 
 router.get("/me", getUser)
 router.put("/budget", validate(updateBudgetSchema), updateUserBudgets)

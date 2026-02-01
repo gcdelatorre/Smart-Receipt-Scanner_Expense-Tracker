@@ -4,18 +4,20 @@ import { createExpenseFromReceipt, upload } from "../controllers/uploadControlle
 import { protect } from '../middleware/authMiddleware.js';
 import { validate } from '../middleware/validate.js';
 import { expenseTransactionSchema } from '../schemas/transaction.schema.js';
+import { apiLimiter, uploadLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router()
 
 // All routes require authentication
 router.use(protect);
+router.use(apiLimiter)
 
 router.get("/", getAllExpense)
 router.get("/analytics", getSpendingAnalytics)
 router.get("/:id", getSingleExpenseById)
 
 router.post("/", validate(expenseTransactionSchema), addExpense)
-router.post("/upload", upload.single("image"), createExpenseFromReceipt)
+router.post("/upload", uploadLimiter, upload.single("image"), createExpenseFromReceipt)
 
 router.put("/:id", validate(expenseTransactionSchema), updateExpenseById)
 
