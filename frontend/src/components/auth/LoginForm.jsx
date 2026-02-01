@@ -9,7 +9,6 @@ import { activateToast } from "../Toast/ActivateToast";
 export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
     const [emailOrUsername, setEmailOrUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [fieldErrors, setFieldErrors] = useState({});
     const { login } = useAuth();
@@ -18,15 +17,13 @@ export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            setError("");
             setLoading(true);
-
             await login(emailOrUsername, password);
             activateToast("success", "Welcome back!");
             if (onLoginSuccess) {
                 onLoginSuccess();
             }
-            
+
             navigate("/dashboard");
             setFieldErrors({});
         } catch (err) {
@@ -37,9 +34,11 @@ export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
                     errors[fieldName] = e.message;
                 });
                 setFieldErrors(errors);
+                
+                activateToast('error', "Login failed. Please try again.");
             }
             else {
-                const message = err.response?.data?.message || 'Failed to login'
+                const message = err.response?.data?.message || err.response?.data?.error || 'Failed to login'
                 activateToast('error', message)
             }
         } finally {
@@ -50,11 +49,6 @@ export default function LoginForm({ onSwitchToSignup, onLoginSuccess }) {
     return (
         <div className="space-y-4 py-2">
             <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                    <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-                        {error}
-                    </div>
-                )}
                 <div className="space-y-2">
                     <Label htmlFor="emailOrUsername" className="text-sm font-medium text-muted-foreground ml-1">Email or Username</Label>
                     <Input

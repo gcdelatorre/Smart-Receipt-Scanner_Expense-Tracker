@@ -168,6 +168,8 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
                     errors[fieldName] = e.message;
                 });
                 setFieldErrors(errors);
+                
+                activateToast('error', "Failed to add expense. Please try again.")
             } else {
                 activateToast("error", "Failed to add expense. Can't exceed budget.");
             }
@@ -214,6 +216,8 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
                     errors[fieldName] = e.message;
                 });
                 setFieldErrors(errors);
+
+                activateToast('error', "Failed to create expense. Please try again.")
             }
             else {
                 const message = err.response?.data?.message || 'Failed to create expense. Please try again.'
@@ -418,6 +422,8 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
                     }
                 });
                 setFieldErrors(errors);
+
+                activateToast('error', "Failed to update budget. Please try again.")
             } else {
                 activateToast("error", "Failed to update budget. Please try again.");
             }

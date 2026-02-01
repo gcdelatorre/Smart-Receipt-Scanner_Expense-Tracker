@@ -13,8 +13,8 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
         email: "",
         password: "",
     });
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState({});
     const { register } = useAuth();
     const navigate = useNavigate();
 
@@ -27,18 +27,32 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             await register(formData);
             activateToast("success", "Account created successfully!");
             if (onSignupSuccess) {
                 onSignupSuccess();
             }
             navigate("/dashboard");
+
+            setFieldErrors({});
         } catch (err) {
-            setError(err.response?.data?.message || "Registration failed. Please try again.");
+            if (err.response?.status === 400 && err.response.data?.errors) {
+                const errors = {};
+                err.response.data.errors.forEach(e => {
+                    const fieldName = e.path[e.path.length - 1];
+                    errors[fieldName] = e.message;
+                });
+                setFieldErrors(errors);
+
+                activateToast('error', "Registration failed. Please try again.");
+            }
+            else {
+                const message = err.response?.data?.message || err.response?.data?.error || 'Registration failed. Please try again'
+                activateToast('error', message)
+            }
         } finally {
             setLoading(false);
         }
@@ -47,11 +61,6 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
     return (
         <div className="space-y-4 py-2">
             <form onSubmit={handleSubmit} className="space-y-3">
-                {error && (
-                    <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-                        {error}
-                    </div>
-                )}
                 <div className="space-y-2">
                     <Label htmlFor="name" className="text-sm font-medium text-muted-foreground ml-1">Full Name</Label>
                     <Input
@@ -62,6 +71,7 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
                         className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
                         placeholder="John Doe"
                     />
+                    {fieldErrors.name && (<p className="text-xs font-medium text-destructive">{fieldErrors.name}</p>)}
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="username" className="text-sm font-medium text-muted-foreground ml-1">Username</Label>
@@ -74,6 +84,7 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
                         className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
                         placeholder="johndoe"
                     />
+                    {fieldErrors.username && (<p className="text-xs font-medium text-destructive">{fieldErrors.username}</p>)}
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-medium text-muted-foreground ml-1">Email</Label>
@@ -86,6 +97,7 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
                         className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
                         placeholder="john@example.com"
                     />
+                    {fieldErrors.email && (<p className="text-xs font-medium text-destructive">{fieldErrors.email}</p>)}
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="password" className="text-sm font-medium text-muted-foreground ml-1">Password</Label>
@@ -99,6 +111,7 @@ export default function SignupForm({ onSwitchToLogin, onSignupSuccess }) {
                         className="h-10 border-input/50 focus:border-primary/50 focus:ring-primary/20 bg-muted/30"
                         placeholder="••••••••"
                     />
+                    {fieldErrors.password && (<p className="text-xs font-medium text-destructive">{fieldErrors.password}</p>)}
                 </div>
                 <Button
                     type="submit"

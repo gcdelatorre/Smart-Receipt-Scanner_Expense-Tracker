@@ -62,7 +62,8 @@ export default function Profile({ openProfile, setOpenProfile }) {
                     errors[fieldName] = e.message;
                 });
                 setFieldErrors(errors);
-                activateToast("error", err.response.data.errors[0].message);
+
+                activateToast('error', "Failed to update profile. Please try again.")
             } else {
                 const msg = err?.response?.data?.message || "Failed to update profile. Please try again.";
                 activateToast("error", msg);
