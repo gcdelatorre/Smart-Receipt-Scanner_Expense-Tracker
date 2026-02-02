@@ -171,7 +171,8 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
                 
                 activateToast('error', "Failed to add expense. Please try again.")
             } else {
-                activateToast("error", "Failed to add expense. Can't exceed budget.");
+                const message = err.response?.data?.message || "Failed to add expense. Can't exceed budget.";
+                activateToast("error", message);
             }
         }
     }
