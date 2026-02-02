@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
 import helmet from 'helmet';
 import { mongoSanitize } from './middleware/mongoSanitize.js';
+import { errorHandler } from './middleware/errorMiddleware.js';
 
 import ExpenseRouter from './routes/expenseRoutes.js';
 import IncomeRouter from './routes/incomeRoutes.js';
@@ -45,6 +46,8 @@ app.use("/api/income", IncomeRouter);
 app.use("/api/user", UserRouter);
 app.use("/api/transactions", TransactionRouter);
 app.use("/api/profile", ProfileRouter);
+
+app.use(errorHandler);
 
 const startServer = async () => {
     try {
