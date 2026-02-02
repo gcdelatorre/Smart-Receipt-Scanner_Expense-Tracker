@@ -37,10 +37,10 @@ export const updateUserBudgets = async (req, res) => {
 
 export const updateSettings = async (req, res) => {
     try {
-        const { currency, dateFormat, numberFormat } = req.body
+        const { currency, dateFormat, numberFormat, privacyMode } = req.body
         const userId = req.user._id
 
-        const updatedUser = await updateUserSettingsPreferences(userId, { currency, dateFormat, numberFormat })
+        const updatedUser = await updateUserSettingsPreferences(userId, { currency, dateFormat, numberFormat, privacyMode })
 
         res.status(200).json({
             success: true,

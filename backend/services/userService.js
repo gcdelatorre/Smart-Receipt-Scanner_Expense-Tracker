@@ -69,7 +69,7 @@ export const updateBudgets = async (userId, budgets) => {
 }
 
 export const updateUserSettingsPreferences = async (userId, settingsPreferences) => {
-    const { currency, dateFormat, numberFormat } = settingsPreferences;
+    const { currency, dateFormat, numberFormat, privacyMode } = settingsPreferences;
 
     const user = await User.findById(userId);
     if (!user) {
@@ -79,7 +79,8 @@ export const updateUserSettingsPreferences = async (userId, settingsPreferences)
     user.settingsPreferences = {
         currency: currency ?? user.settingsPreferences.currency,
         dateFormat: dateFormat ?? user.settingsPreferences.dateFormat,
-        numberFormat: numberFormat ?? user.settingsPreferences.numberFormat
+        numberFormat: numberFormat ?? user.settingsPreferences.numberFormat,
+        privacyMode: privacyMode ?? user.settingsPreferences.privacyMode
     };
 
     const updatedUser = await user.save();
