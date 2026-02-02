@@ -9,6 +9,7 @@ export const usePreferences = () => {
     const rawCurrency = user?.settingsPreferences?.currency;
     const rawDateFormat = user?.settingsPreferences?.dateFormat;
     const rawNumberFormat = user?.settingsPreferences?.numberFormat;
+    const privacyMode = user?.settingsPreferences?.privacyMode;
 
     // Normalize Date Format
     let dateFormat = 'mdy'; // Default
@@ -109,15 +110,19 @@ export const usePreferences = () => {
 
     const changeCurrency = (newCurrency) => updatePreferences({ currency: newCurrency });
 
+    const changePrivacyMode = (newPrivacyMode) => updatePreferences({ privacyMode: newPrivacyMode });
+
     return {
         // State
         currency,
         dateFormat,
         numberFormat,
+        privacyMode,
 
         // Actions
         updatePreferences,
         changeCurrency, // Keep for backward compat if needed, or migration
+        changePrivacyMode,
 
         // Formatters
         formatNumber,
