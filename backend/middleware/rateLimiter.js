@@ -4,7 +4,7 @@ import rateLimit from "express-rate-limit";
 
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 25,
+    max: 10,
     message: {
         status: 429,
         message: "Too many requests from this IP, please try again later."
