@@ -1,4 +1,5 @@
 import { registerUser, loginUser, getCurrentUser, changeUserPassword, deleteUserAccount } from '../services/authService.js';
+import { checkAndResetBudgets } from '../services/userService.js';
 import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 
@@ -74,6 +75,9 @@ export const login = async (req, res) => {
 
         const result = await loginUser(emailOrUsername, password);
 
+        // Check for budget reset on login
+        const wasReset = await checkAndResetBudgets(result.user);
+
         // Set Access Token (15 mins)
         res.cookie('accessToken', result.accessToken, {
             httpOnly: true,
@@ -94,7 +98,8 @@ export const login = async (req, res) => {
             data: result.user,
             accessToken: result.accessToken,
             refreshToken: result.refreshToken,
-            message: 'Login successful'
+            message: 'Login successful',
+            budgetReset: wasReset
         });
     } catch (error) {
         const statusCode = error.status || 500;
@@ -115,7 +120,8 @@ export const getMe = async (req, res) => {
         res.status(200).json({
             success: true,
             data: user,
-            message: 'User retrieved successfully'
+            message: 'User retrieved successfully',
+            budgetReset: !!req.user.wasBudgetReset
         });
     } catch (error) {
         const statusCode = error.status || 500;
