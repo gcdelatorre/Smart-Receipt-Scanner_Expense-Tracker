@@ -86,3 +86,34 @@ export const updateUserSettingsPreferences = async (userId, settingsPreferences)
     const updatedUser = await user.save();
     return updatedUser;
 }
+
+export const checkAndResetBudgets = async (user) => {
+    // If no lastBudgetReset date, set it to now (initialization case) and save
+    if (!user.lastBudgetReset) {
+        user.lastBudgetReset = new Date();
+        await user.save();
+        return false;
+    }
+
+    const lastReset = new Date(user.lastBudgetReset);
+    const now = new Date();
+
+    // Check if the current month/year is different from the last reset month/year
+    const isNewMonth = now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear();
+
+    if (isNewMonth) {
+        // Reset all category budgets usedAmount to 0
+        if (user.categoryBudgets && user.categoryBudgets.length > 0) {
+            user.categoryBudgets = user.categoryBudgets.map(budget => ({
+                ...budget,
+                usedAmount: 0
+            }));
+        }
+
+        user.lastBudgetReset = now;
+        await user.save();
+        return true; // Indicates a reset happened
+    }
+
+    return false; // No reset needed
+}
