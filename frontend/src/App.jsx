@@ -15,6 +15,11 @@ import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/sonner";
 // Login and Signup pages removed in favor of modals on Landing page
 import Landing from "./pages/Landing";
+import PrivacyPolicy from "./pages/LandingPages/PrivacyPolicy";
+import TermsOfService from "./pages/LandingPages/TermsOfService";
+import CookiePolicy from "./pages/LandingPages/CookiePolicy";
+import HelpCenter from "./pages/LandingPages/HelpCenter";
+import ContactUs from "./pages/LandingPages/ContactUs";
 
 export default function App() {
 
@@ -62,11 +67,17 @@ export default function App() {
   return (
     <>
       <Toaster />
+
       {!isAuthenticated && (
         <>
           <Routes>
             <Route path="/" element={<Landing />} />
-
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
+            <Route path="/help-center" element={<HelpCenter />} />
+            <Route path="/contact-us" element={<ContactUs />} />
+            {/* Redirect unknown routes to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </>
@@ -105,6 +116,7 @@ export default function App() {
                   />
                   <Route path="/transactions" element={<TransactionsPage key={refreshKey} refreshTrigger={refreshKey} onRefresh={triggerRefresh} />} />
                   <Route path="/analytics" element={<AnalyticsPage />} />
+                  {/* Redirect unknown authenticated routes to dashboard */}
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </main>
