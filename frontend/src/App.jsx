@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import TransactionsPage from "./pages/Transactions";
 import AnalyticsPage from "./pages/Analytics";
@@ -21,6 +21,8 @@ import CookiePolicy from "./pages/LandingPages/CookiePolicy";
 import HelpCenter from "./pages/LandingPages/HelpCenter";
 import ContactUs from "./pages/LandingPages/ContactUs";
 
+import BudgetResetDialog from "./components/dashboard/BudgetResetDialog";
+
 export default function App() {
 
   const [refreshKey, setRefreshKey] = useState(0);
@@ -28,6 +30,15 @@ export default function App() {
   const { stats } = useStats(isAuthenticated ? refreshKey : null);
   const location = useLocation();
   const pathname = location.pathname;
+  const [showResetDialog, setShowResetDialog] = useState(false);
+
+  useEffect(() => {
+    if (user?.budgetReset) {
+      setShowResetDialog(true);
+      // Optional: Clear the flag from the user object in context if we wanted to be extra safe,
+      // but since it's a one-time server response, local state handling is sufficient.
+    }
+  }, [user]);
 
   const isActive = useCallback((path) => {
     if (path === "/") {
@@ -85,6 +96,7 @@ export default function App() {
 
       {isAuthenticated && (
         <>
+          <BudgetResetDialog open={showResetDialog} onOpenChange={setShowResetDialog} />
           <div className="min-h-screen bg-[hsl(var(--background))] text-foreground">
             <div className="mx-auto flex max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:px-0">
               <Sidebar navItems={navItems} isActive={isActive} />
