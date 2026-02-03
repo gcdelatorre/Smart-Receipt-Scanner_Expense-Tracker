@@ -28,7 +28,8 @@ export const AuthProvider = ({ children }) => {
                         try {
                             const response = await authService.getCurrentUser();
                             // Access the nested 'data' field from the response
-                            setUser(response.data);
+                            // Also include budgetReset flag if present
+                            setUser({ ...response.data, budgetReset: response.budgetReset });
                         } catch (error) {
                             // Token might be invalid, clear storage
                             authService.logout();
@@ -49,7 +50,8 @@ export const AuthProvider = ({ children }) => {
         const response = await authService.login(emailOrUsername, password);
         // authService.login now returns response.data (the whole body)
         // We set the user to response.data (which is the user object because of the fix in authService)
-        setUser(response.data);
+        // Also capture budgetReset flag from response
+        setUser({ ...response.data, budgetReset: response.budgetReset });
         return response;
     }, []);
 
@@ -77,7 +79,7 @@ export const AuthProvider = ({ children }) => {
             return response;
         } catch (error) {
             console.error('Error deleting account:', error);
-            throw error; // <--- CRITICAL: Rethrow so the UI can handle the error
+            throw error; 
         }
     }, []);
 
@@ -90,7 +92,7 @@ export const AuthProvider = ({ children }) => {
         deleteAccount,
         isAuthenticated: !!user,
         loading
-    }), [user, login, register, logout, loading]);
+    }), [user, login, register, logout, loading]); 
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
