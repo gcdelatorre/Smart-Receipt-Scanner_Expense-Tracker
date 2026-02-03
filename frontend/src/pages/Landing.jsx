@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -32,6 +33,7 @@ import {
 } from "lucide-react"
 import lightLogo from "/TrackWise-Logo-removebg-preview.png"
 import darkLogo from "/logo-dark-mode.png"
+import Footer from "../components/layout/Footer"
 
 export default function Landing() {
     const { setTheme, resolvedTheme } = useTheme();
@@ -343,49 +345,7 @@ export default function Landing() {
                 </section>
             </main>
 
-            {/* Footer */}
-            <footer className="border-t bg-muted/20">
-                <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-                        <div className="space-y-4">
-                            <img
-                                src={resolvedTheme === 'dark' ? darkLogo : lightLogo}
-                                alt="TrackWise Logo"
-                                className="h-8 w-auto object-contain"
-                            />
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                A minimalist personal expense tracker built for clarity and control. Perfect for first-time budgeters.
-                            </p>
-                        </div>
-                        <div className="space-y-4">
-                            <h4 className="text-sm font-bold uppercase tracking-widest text-foreground">Product</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li><a href="#features" onClick={(e) => scrollToSection(e, 'features')} className="hover:text-primary">Features</a></li>
-                                <li><a href="#security" onClick={(e) => scrollToSection(e, 'security')} className="hover:text-primary">Security</a></li>
-                                <li><a href="#how-it-works" onClick={(e) => scrollToSection(e, 'how-it-works')} className="hover:text-primary">Pricing (Always Free)</a></li>
-                            </ul>
-                        </div>
-                        <div className="space-y-4">
-                            <h4 className="text-sm font-bold uppercase tracking-widest text-foreground">Legal</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li><a href="#" className="hover:text-primary">Privacy Policy</a></li>
-                                <li><a href="#" className="hover:text-primary">Terms of Service</a></li>
-                                <li><a href="#" className="hover:text-primary">Cookie Policy</a></li>
-                            </ul>
-                        </div>
-                        <div className="space-y-4">
-                            <h4 className="text-sm font-bold uppercase tracking-widest text-foreground">Support</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li><a href="#" className="hover:text-primary">Help Center</a></li>
-                                <li><a href="#" className="hover:text-primary">Contact Us</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div className="pt-12 mt-12 border-t text-center text-sm text-muted-foreground">
-                        © {new Date().getFullYear()} TrackWise. All rights reserved.
-                    </div>
-                </div>
-            </footer>
+            <Footer />
 
             {/* MODALS */}
             <Dialog open={loginOpen} onOpenChange={setLoginOpen}>

@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function StatsGrid({ stats }) {
 
   const { user } = useAuth();
-  const privacyModeEnabled = user?.settingsPreferences?.privacyMode;
+  const privacyModeEnabled = user?.settingsPreferences?.privacyMode === true;
 
   const { formatCurrency } = usePreferences();
   
