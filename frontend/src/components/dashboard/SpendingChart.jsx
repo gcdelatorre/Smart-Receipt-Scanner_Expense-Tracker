@@ -17,13 +17,40 @@ import {
 import { useState, useEffect } from "react";
 import { usePreferences } from "@/hooks/usePreferences";
 
-function SpendingTooltip({ active, payload }) {
+function SpendingTooltip({ active, payload, period }) {
   if (!active || !payload?.length) return null;
   const item = payload[0];
   const { formatCurrency } = usePreferences();
+
+  let dateLabel = item.payload.day;
+  // Parse date appropriately
+  const date = new Date(dateLabel);
+
+  if (period === 'Today') {
+    // Format: 2:30 PM
+    dateLabel = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  } else if (period === 'This Week') {
+    // Format: Mon 2:30 PM
+    dateLabel = date.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+  } else if (period === 'This Month') {
+    // Format: Oct 25
+    // Handle simplified date string (YYYY-MM-DD) which might parse as UTC
+    // But if backend sends YYYY-MM-DD, new Date() is typically UTC.
+    // Displaying UTC date as local might shift it.
+    // Safe approach: create from parts or assume valid local YYYY-MM-DD
+    const [y, m, d] = dateLabel.split('-');
+    const localDate = new Date(y, m - 1, d);
+    dateLabel = localDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  } else if (period === 'This Year') {
+    // Format: Oct
+    const [y, m] = dateLabel.split('-');
+    const localDate = new Date(y, m - 1);
+    dateLabel = localDate.toLocaleDateString('en-US', { month: 'long' });
+  }
+
   return (
     <div className="rounded-xl border border-border bg-card px-3 py-2 shadow-sm text-sm">
-      <p className="font-semibold text-foreground">{item.payload.day}</p>
+      <p className="font-semibold text-foreground">{dateLabel}</p>
       <p className="text-muted-foreground">{formatCurrency(item.value)}</p>
     </div>
   );
@@ -62,6 +89,7 @@ export default function SpendingChart() {
             <SelectValue placeholder="Select Period" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="Today">Today</SelectItem>
             <SelectItem value="This Week">This Week</SelectItem>
             <SelectItem value="This Month">This Month</SelectItem>
             <SelectItem value="This Year">This Year</SelectItem>
@@ -83,6 +111,25 @@ export default function SpendingChart() {
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
               axisLine={false}
               tickLine={false}
+              tickFormatter={(dateStr) => {
+                if (!dateStr) return "";
+                if (period === 'Today') {
+                  const date = new Date(dateStr);
+                  return date.toLocaleTimeString('en-US', { hour: 'numeric' });
+                } else if (period === 'This Week') {
+                  const date = new Date(dateStr);
+                  return date.toLocaleDateString('en-US', { weekday: 'short' });
+                } else if (period === 'This Month') {
+                  const [y, m, d] = dateStr.split('-');
+                  const date = new Date(y, m - 1, d);
+                  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                } else if (period === 'This Year') {
+                  const [y, m] = dateStr.split('-');
+                  const date = new Date(y, m - 1);
+                  return date.toLocaleDateString('en-US', { month: 'short' });
+                }
+                return dateStr;
+              }}
             />
             <YAxis
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
@@ -91,7 +138,7 @@ export default function SpendingChart() {
               tickFormatter={(v) => `${formatCurrency(v / 1000)}k`}
               width={50}
             />
-            <Tooltip content={<SpendingTooltip />} cursor={{ stroke: "hsl(var(--border))" }} />
+            <Tooltip content={<SpendingTooltip period={period} />} cursor={{ stroke: "hsl(var(--border))" }} />
             <Line
               type="monotone"
               dataKey="value"

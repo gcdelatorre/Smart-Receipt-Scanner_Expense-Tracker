@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    /* Base Background - Soft Cool Gray (Darkened for eye comfort) */
-    --background: 210 15% 90%;
+    /* Base Background - Soft Cool Gray */
+    --background: 210 40% 98%;
     /* Main Text - Deep Navy/Charcoal */
     --foreground: 222 47% 11%;
 

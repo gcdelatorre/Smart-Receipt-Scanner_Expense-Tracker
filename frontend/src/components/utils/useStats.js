@@ -45,33 +45,19 @@ export function useStats(refreshTrigger) {
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfThisMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // last day of this month
 
-    // Last month range
-    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0); // last day of last month
-
     // total expense this month
     const totalExpenseThisMonth = expenseStats
         .filter(exp => new Date(exp.date) >= startOfThisMonth && new Date(exp.date) <= endOfThisMonth)
         .reduce((acc, exp) => acc + exp.amount, 0);
 
-    // total expense last month
-    const totalExpenseLastMonth = expenseStats
-        .filter(exp => new Date(exp.date) >= startOfLastMonth && new Date(exp.date) <= endOfLastMonth)
-        .reduce((acc, exp) => acc + exp.amount, 0);
-
-    // compare
-    const change = totalExpenseLastMonth === 0
-        ? 100
-        : ((totalExpenseThisMonth - totalExpenseLastMonth) / totalExpenseLastMonth) * 100;
-
-    // declare label
-    const changeLabel = `${change >= 0 ? "+" : ""}${change.toFixed(1)}% from last month`;
-
-
     // total income this month
     const totalIncomeThisMonth = incomeStats
         .filter(inc => new Date(inc.date) >= startOfThisMonth && new Date(inc.date) < endOfThisMonth)
         .reduce((acc, inc) => acc + inc.amount, 0);
+
+    // Net Change This Month (Income - Expense)
+    const netMonthChange = totalIncomeThisMonth - totalExpenseThisMonth;
+    const netMonthChangeLabel = `${netMonthChange >= 0 ? "+" : ""}${netMonthChange.toFixed(2)} this month`;
 
     const incomeProgress = totalIncomeThisMonth
         ? Math.max(((totalIncomeThisMonth - totalExpenseThisMonth) / totalIncomeThisMonth) * 100, 0)
@@ -99,13 +85,14 @@ export function useStats(refreshTrigger) {
         {
             title: "Total Balance",
             value: `${totalBalance.toFixed(2)}`,
-            changeLabel: hasData ? changeLabel : defaultLabel,
-            changeVariant: hasData ? (change >= 0 ? "success" : "destructive") : defaultVariant,
-            changeIcon: hasData ? (change >= 0 ? ArrowUpRight : ArrowDownRight) : CircleSlash,
+            changeLabel: hasData ? netMonthChangeLabel : defaultLabel,
+            changeVariant: hasData ? (netMonthChange >= 0 ? "success" : "destructive") : defaultVariant,
+            changeIcon: hasData ? (netMonthChange >= 0 ? ArrowUpRight : ArrowDownRight) : CircleSlash,
             icon: PiggyBank,
             accent: "bg-indigo-50 text-indigo-700",
-            progress: change,
-            progressColor: hasData ? (change >= 30 ? "bg-indigo-500" : "bg-rose-500") : defaultProgressColor,
+            // Use Savings Rate (incomeProgress) for balance health
+            progress: hasData ? incomeProgress : 0,
+            progressColor: hasData ? (incomeProgress >= 20 ? "bg-indigo-500" : "bg-rose-500") : defaultProgressColor,
         },
         {
             title: "Monthly Income",
@@ -129,7 +116,7 @@ export function useStats(refreshTrigger) {
             progress: expenseProgress,
             progressColor: hasExpense ? "bg-rose-500" : defaultProgressColor,
         },
-    ], [totalBalance, totalIncomeThisMonth, totalExpenseThisMonth, hasData, hasIncome, hasExpense, change, changeLabel, incomeProgress, expenseProgress, expensePercentage, overallBudget]);
+    ], [totalBalance, totalIncomeThisMonth, totalExpenseThisMonth, hasData, hasIncome, hasExpense, netMonthChange, netMonthChangeLabel, incomeProgress, expenseProgress, expensePercentage, overallBudget]);
 
     return { stats, refresh }
 }

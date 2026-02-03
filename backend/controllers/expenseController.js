@@ -6,47 +6,91 @@ export const getSpendingAnalytics = async (req, res) => {
     const { period } = req.query;
 
     let startDate;
-    const endDate = new Date();
+    let endDate = new Date(); // Current time by default
 
-    if (period === 'This Week') {
+    // Logic to determine date ranges and aggregation type
+    let isGranular = false; // "Granular" means showing every single transaction
+    let formatString = "%Y-%m-%d";
+
+    if (period === 'Today') {
+        startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        isGranular = true;
+    } else if (period === 'This Week') {
         startDate = new Date();
         startDate.setDate(startDate.getDate() - 7);
+        endDate.setHours(23, 59, 59, 999);
+        isGranular = true;
     } else if (period === 'This Month') {
         startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+        endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
+        endDate.setHours(23, 59, 59, 999);
+        formatString = "%Y-%m-%d"; // Group by Day
     } else if (period === 'Last Month') {
         startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 1, 1);
         endDate.setDate(0);
+        endDate.setHours(23, 59, 59, 999);
+        formatString = "%Y-%m-%d";
     } else if (period === 'This Year') {
         startDate = new Date(endDate.getFullYear(), 0, 1);
+        endDate = new Date(endDate.getFullYear(), 11, 31);
+        endDate.setHours(23, 59, 59, 999);
+        formatString = "%Y-%m"; // Group by Month
     } else {
         return res.status(400).json({ success: false, message: 'Invalid period' });
     }
 
     try {
-        const expenses = await Expense.aggregate([
-            {
-                $match: {
-                    userId: req.user._id,
-                    date: { $gte: startDate, $lte: endDate }
+        let expenses;
+
+        if (isGranular) {
+            // For Today and This Week: Show every transaction
+            expenses = await Expense.aggregate([
+                {
+                    $match: {
+                        userId: req.user._id,
+                        date: { $gte: startDate, $lte: endDate }
+                    }
+                },
+                {
+                    $sort: { date: 1 }
+                },
+                {
+                    $project: {
+                        day: { $dateToString: { format: "%Y-%m-%dT%H:%M:%S.%LZ", date: "$date" } }, // Return full ISO-like string
+                        value: '$amount',
+                        _id: 0
+                    }
                 }
-            },
-            {
-                $group: {
-                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-                    total: { $sum: "$amount" }
+            ]);
+        } else {
+            // For This Month and This Year: Group data
+            expenses = await Expense.aggregate([
+                {
+                    $match: {
+                        userId: req.user._id,
+                        date: { $gte: startDate, $lte: endDate }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: formatString, date: "$date" } },
+                        total: { $sum: "$amount" }
+                    }
+                },
+                {
+                    $sort: { _id: 1 }
+                },
+                {
+                    $project: {
+                        day: '$_id',
+                        value: '$total',
+                        _id: 0
+                    }
                 }
-            },
-            {
-                $sort: { _id: 1 }
-            },
-            {
-                $project: {
-                    day: '$_id',
-                    value: '$total',
-                    _id: 0
-                }
-            }
-        ]);
+            ]);
+        }
 
         res.status(200).json({ success: true, data: expenses });
     } catch (err) {
