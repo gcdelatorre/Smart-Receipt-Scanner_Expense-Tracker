@@ -2,9 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Progress } from "../ui/progress";
 import { usePreferences } from "@/hooks/usePreferences";
-
+import { useAuth } from "@/contexts/AuthContext";
 export default function StatsGrid({ stats }) {
+
+  const { user } = useAuth();
+  const privacyModeEnabled = user?.settingsPreferences?.privacyMode;
+
   const { formatCurrency } = usePreferences();
+  
+  const censoredValue = "*********"
+
   return (
     <div className="grid gap-4 md:grid-cols-3">
       {stats.map((stat) => (
@@ -13,7 +20,7 @@ export default function StatsGrid({ stats }) {
             <div>
               <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
               <div className="mt-3 flex items-center gap-2 text-2xl font-semibold text-foreground">
-                {formatCurrency(stat.value)}
+                {privacyModeEnabled ? censoredValue : formatCurrency(stat.value)}
               </div>
               <Badge variant={stat.changeVariant} className="mt-2">
                 <stat.changeIcon className="mr-1 h-4 w-4" />

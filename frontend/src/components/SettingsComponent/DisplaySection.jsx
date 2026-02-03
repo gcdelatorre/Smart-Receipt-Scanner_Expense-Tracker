@@ -1,6 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Moon } from "lucide-react";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "next-themes";
 import { usePreferences } from "@/hooks/usePreferences";
 import { cn } from "@/lib/utils";
 
