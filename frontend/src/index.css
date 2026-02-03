@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    /* Base Background - Soft Cool Gray */
-    --background: 210 40% 98%;
+    /* Base Background - Soft Cool Gray (Darkened for eye comfort) */
+    --background: 210 15% 90%;
     /* Main Text - Deep Navy/Charcoal */
     --foreground: 222 47% 11%;
 
@@ -43,11 +43,16 @@
     --radius: 0.75rem;
 
     /* Charts - Harmonious Palette */
-    --chart-1: 158 64% 52%; /* Emerald */
-    --chart-2: 221 83% 53%; /* Indigo */
-    --chart-3: 197 37% 24%; /* Dark Slate */
-    --chart-4: 43 74% 66%; /* Gold/Amber */
-    --chart-5: 27 87% 67%; /* Orange/Coral */
+    --chart-1: 158 64% 52%;
+    /* Emerald */
+    --chart-2: 221 83% 53%;
+    /* Indigo */
+    --chart-3: 197 37% 24%;
+    /* Dark Slate */
+    --chart-4: 43 74% 66%;
+    /* Gold/Amber */
+    --chart-5: 27 87% 67%;
+    /* Orange/Coral */
   }
 
   .dark {
@@ -92,6 +97,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
