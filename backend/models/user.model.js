@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
+    lastBudgetReset: { type: Date, default: Date.now },
     settingsPreferences: {
         currency: { type: String, default: "USD" },
         dateFormat: { type: String, default: "MM/DD/YYYY" },
