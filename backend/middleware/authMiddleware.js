@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
+import { checkAndResetBudgets } from '../services/userService.js';
 
 export const protect = async (req, res, next) => {
     try {
@@ -22,16 +23,20 @@ export const protect = async (req, res, next) => {
         try {
             // Verify token
             const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
-            
+
             // Get user from token (exclude password)
             req.user = await User.findById(decoded.userId).select('-password');
-            
+
             if (!req.user) {
                 return res.status(401).json({
                     success: false,
                     message: 'User not found'
                 });
             }
+
+            // Check for monthly budget reset
+            const wasReset = await checkAndResetBudgets(req.user);
+            req.user.wasBudgetReset = wasReset;
 
             next();
         } catch (error) {
