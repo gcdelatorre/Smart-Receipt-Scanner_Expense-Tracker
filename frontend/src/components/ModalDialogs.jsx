@@ -21,6 +21,7 @@ import { activateToast } from "./Toast/ActivateToast";
 ===================================================== */
 export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
 
+    const [loading, setLoading] = useState(false);
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [payload, setPayload] = useState({
         amount: "",
@@ -41,6 +42,7 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
     const notEmpty = !payload.amount || !payload.category || !payload.date
 
     const handleSubmit = async () => {
+        setLoading(true);
         try {
             await api.post("/income", payload);
             activateToast("success", "Income added successfully");
@@ -65,6 +67,8 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
             } else {
                 activateToast("error", "Failed to add income. Please try again.");
             }
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -124,6 +128,7 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
 ===================================================== */
 export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) {
 
+    const [loading, setLoading] = useState(false);
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [payload, setPayload] = useState({
         amount: "",
@@ -148,6 +153,7 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
     }
 
     const handleSubmit = async () => {
+        setLoading(true);
         try {
             await api.post("/expenses", payload);
             activateToast("success", "Expense added successfully");
@@ -168,12 +174,14 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
                     errors[fieldName] = e.message;
                 });
                 setFieldErrors(errors);
-                
+
                 activateToast('error', "Failed to add expense. Please try again.")
             } else {
                 const message = err.response?.data?.message || "Failed to add expense. Can't exceed budget.";
                 activateToast("error", message);
             }
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -343,6 +351,7 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
 ===================================================== */
 export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudgetAdded, onBack }) {
 
+    const [loading, setLoading] = useState(false);
     const [categoriesSelection, setCategoriesSelection] = useState([])
     const [overallBudget, setOverallBudget] = useState(0);
     const [categoryBudgets, setCategoryBudgets] = useState([
@@ -392,7 +401,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
     };
 
     const handleSubmit = async () => {
-
+        setLoading(true);
         let payload;
         categoryBudgets.length === 0
             ? payload = { overallBudget }
@@ -428,6 +437,8 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
             } else {
                 activateToast("error", "Failed to update budget. Please try again.");
             }
+        } finally {
+            setLoading(false);
         }
     };
 

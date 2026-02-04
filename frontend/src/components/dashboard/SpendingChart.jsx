@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 import { useState, useEffect } from "react";
 import { usePreferences } from "@/hooks/usePreferences";
+import { CircleSlash } from "lucide-react";
 
 function SpendingTooltip({ active, payload, period }) {
   if (!active || !payload?.length) return null;
@@ -56,12 +57,13 @@ function SpendingTooltip({ active, payload, period }) {
   );
 }
 
-export default function SpendingChart() {
+export default function SpendingChart({ refreshTrigger }) {
 
   const { formatCurrency } = usePreferences();
 
   const [period, setPeriod] = useState("This Week");
   const [chartData, setChartData] = useState([]);
+  const [hasData, setHasData] = useState([]);
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -69,13 +71,14 @@ export default function SpendingChart() {
         const api = (await import('../../services/api')).default;
         const res = await api.get(`/expenses/analytics?period=${period}`);
         setChartData(res.data.data);
+        setHasData(res.data.data.length > 0);
       } catch (err) {
         console.log(err);
       }
     };
 
     fetchChartData();
-  }, [period]);
+  }, [period, refreshTrigger]);
 
   return (
     <div className="w-full">
@@ -96,7 +99,19 @@ export default function SpendingChart() {
           </SelectContent>
         </Select>
       </div>
-      <div className="mt-4 h-64">
+      <div className="mt-4 h-64 relative">
+
+        {!hasData && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2">
+              <CircleSlash className="h-12 w-12 text-muted-foreground" />
+              <p className="text-muted-foreground">No data yet</p>
+            </div>
+          </div>
+        )}
+
+
+
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
             <defs>

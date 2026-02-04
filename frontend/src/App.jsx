@@ -115,7 +115,7 @@ export default function App() {
                         <div className="grid gap-5 lg:grid-cols-12">
                           <Card className="lg:col-span-8">
                             <CardContent className="pt-6">
-                              <SpendingChart />
+                              <SpendingChart refreshTrigger={refreshKey} />
                             </CardContent>
                           </Card>
 
