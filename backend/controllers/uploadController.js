@@ -48,31 +48,12 @@ export const createExpenseFromReceipt = async (req, res) => {
         const text = await extractTextFromImage(filePath);
         const structured = await categorizeExpense(text);
 
-
-
         const expenseAmount = Number(structured.amount);
         const category = structured.category;
         const userId = req.user._id;
 
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
-
-        const categoryBudget = user.categoryBudgets.find(cat => cat.category === category);
-
-        if (categoryBudget) {
-            if (categoryBudget.usedAmount + expenseAmount > categoryBudget.amount) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Expense exceeds budget for category: ${category}`
-                });
-            }
-
-            await User.updateOne(
-                { _id: userId, "categoryBudgets.category": category },
-                { $inc: { "categoryBudgets.$.usedAmount": expenseAmount } }
-            );
-        }
-
 
         res.json({
             success: true,
