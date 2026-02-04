@@ -71,7 +71,7 @@ export default function SpendingChart({ refreshTrigger }) {
         const api = (await import('../../services/api')).default;
         const res = await api.get(`/expenses/analytics?period=${period}`);
         setChartData(res.data.data);
-        setHasData(res.data.data.length > 0);
+        setHasData(res.data.data.length);
       } catch (err) {
         console.log(err);
       }
