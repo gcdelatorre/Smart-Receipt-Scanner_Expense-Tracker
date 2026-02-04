@@ -101,7 +101,7 @@ export default function App() {
             <div className="mx-auto flex max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:px-0">
               <Sidebar navItems={navItems} isActive={isActive} />
 
-              <main className="flex-1 space-y-6 pb-20 lg:pb-6">
+              <main className="relative flex-1 space-y-6 pb-24 lg:pb-6 overflow-x-hidden">
 
                 <HeaderBar pageTitle={pageTitle} onRefresh={triggerRefresh} />
 

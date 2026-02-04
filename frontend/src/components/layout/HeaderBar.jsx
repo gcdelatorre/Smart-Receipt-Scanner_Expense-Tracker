@@ -38,7 +38,7 @@ export default function HeaderBar({ pageTitle, onRefresh }) {
           {/* Mobile Title */}
           <p className="block text-xl font-bold text-foreground md:hidden">{pageTitle}</p>
         </div>
-        <AddNewButton onAdd={() => setOpen(true)} />
+          <AddNewButton onAdd={() => setOpen(true)} />
       </div>
 
       {/* --- Selection Dialog --- */}
