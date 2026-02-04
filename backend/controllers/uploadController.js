@@ -48,8 +48,6 @@ export const createExpenseFromReceipt = async (req, res) => {
         const text = await extractTextFromImage(filePath);
         const structured = await categorizeExpense(text);
 
-        const expenseAmount = Number(structured.amount);
-        const category = structured.category;
         const userId = req.user._id;
 
         const user = await User.findById(userId);
