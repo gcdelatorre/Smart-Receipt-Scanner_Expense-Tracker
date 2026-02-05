@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import Profile from "../Profile";
+import Setting from "../Setting";
+import { Settings, User } from "lucide-react";
 
 export default function MobileNav({ navItems, isActive, onLogout, user }) {
   const [isOpen, setIsOpen] = useState(false);
   const username = user?.username || "User";
   const email = user?.email || "user@example.com";
+  const [openProfile, setOpenProfile] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
   const initials = username
     .split(" ")
     .map((n) => n[0])
@@ -70,6 +75,14 @@ export default function MobileNav({ navItems, isActive, onLogout, user }) {
                     </Link>
                   );
                 })}
+                <div onClick={() => setOpenProfile(true)} className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium transition text-muted-foreground hover:bg-muted hover:text-foreground" >
+                  <User className="mr-1.5 h-5 w-5" />
+                  <span>Profile</span>
+                </div>
+                <div onClick={() => setOpenSettings(true)} className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium transition text-muted-foreground hover:bg-muted hover:text-foreground" >
+                  <Settings className="mr-1.5 h-5 w-5" />
+                  <span>Settings</span>
+                </div>
               </div>
 
               {/* Logout Button */}
@@ -84,6 +97,9 @@ export default function MobileNav({ navItems, isActive, onLogout, user }) {
               </button>
             </div>
           </div>
+
+          {openProfile && <Profile openProfile={openProfile} setOpenProfile={setOpenProfile} />}
+          {openSettings && <Setting openSettings={openSettings} setOpenSettings={setOpenSettings} />}
         </>
       )}
     </>
