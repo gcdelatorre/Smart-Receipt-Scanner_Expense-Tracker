@@ -51,6 +51,7 @@ app.use(errorHandler);
 
 // health check, for keeping the server awake
 app.get("/api/health", (req, res) => {
+    console.log("Triggered")
     res.json({ message: "Server is running" });
 });
 
