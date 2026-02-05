@@ -49,6 +49,11 @@ app.use("/api/profile", ProfileRouter);
 
 app.use(errorHandler);
 
+// health check, for keeping the server awake
+app.get("/api/health", (req, res) => {
+    res.json({ message: "Server is running" });
+});
+
 const startServer = async () => {
     try {
         await connectDB();
