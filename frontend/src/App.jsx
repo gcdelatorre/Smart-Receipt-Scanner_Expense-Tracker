@@ -27,19 +27,36 @@ import Loader from "./components/kokonutui/loader";
 export default function App() {
 
   const [refreshKey, setRefreshKey] = useState(0);
-  const { isAuthenticated, user, logout, loading } = useAuth();
+  const { isAuthenticated, user, logout, loading: authLoading } = useAuth();
+  const [minLoading, setMinLoading] = useState(true);
   const { stats } = useStats(isAuthenticated ? refreshKey : null);
   const location = useLocation();
   const pathname = location.pathname;
   const [showResetDialog, setShowResetDialog] = useState(false);
 
+  // for the spinner when loading
+  useEffect(() => {
+    if (isAuthenticated) {
+      setMinLoading(true);
+      const timer = setTimeout(() => {
+        setMinLoading(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else {
+      const timer = setTimeout(() => {
+        setMinLoading(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated]);
+
   useEffect(() => {
     if (user?.budgetReset) {
       setShowResetDialog(true);
-      // Optional: Clear the flag from the user object in context if we wanted to be extra safe,
-      // but since it's a one-time server response, local state handling is sufficient.
     }
   }, [user]);
+
+  const loading = authLoading || minLoading;
 
   const isActive = useCallback((path) => {
     if (path === "/") {
@@ -76,6 +93,8 @@ export default function App() {
       </div>
     );
   }
+
+
 
   return (
     <>
