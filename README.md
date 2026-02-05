@@ -1,7 +1,6 @@
 # TrackWise - Expense Tracker & Receipt Scanner
 
-**Live Demo:**
-- **Frontend (Vercel):** [https://smart-trackwise.vercel.app](https://smart-trackwise.vercel.app)
+https://smart-trackwise.vercel.app
 
 ---
 
