@@ -22,6 +22,7 @@ import HelpCenter from "./pages/LandingPages/HelpCenter";
 import ContactUs from "./pages/LandingPages/ContactUs";
 
 import BudgetResetDialog from "./components/dashboard/BudgetResetDialog";
+import Loader from "./components/kokonutui/loader";
 
 export default function App() {
 
@@ -67,10 +68,11 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-slate-600">Loading...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
+        <Loader
+          title="Loading Trackwise..."
+          subtitle="Preparing your financial overview"
+        />
       </div>
     );
   }
