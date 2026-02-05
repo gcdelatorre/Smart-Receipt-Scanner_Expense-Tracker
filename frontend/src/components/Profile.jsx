@@ -78,7 +78,7 @@ export default function Profile({ openProfile, setOpenProfile }) {
 
     return (
         <Dialog open={openProfile} onOpenChange={handleOpenChange}>
-            <DialogContent className="sm:max-w-[400px] p-0 border-none shadow-xl bg-card overflow-hidden">
+            <DialogContent className="w-full max-w-[95vw] sm:max-w-[400px] p-0 border-none shadow-xl bg-card overflow-hidden rounded-3xl">
 
                 {/* 1. BANNER */}
                 <div className="h-24 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 relative">
