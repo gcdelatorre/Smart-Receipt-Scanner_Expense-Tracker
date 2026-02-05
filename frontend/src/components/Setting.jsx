@@ -57,24 +57,24 @@ export default function Setting({ openSettings, setOpenSettings }) {
 
     return (
         <Dialog open={openSettings} onOpenChange={setOpenSettings}>
-            <DialogContent className="sm:max-w-[850px] p-0 overflow-hidden border-none shadow-2xl h-[600px] flex flex-col bg-background text-foreground">
-                <div className="flex flex-1 h-full overflow-hidden">
+            <DialogContent className="w-full max-w-[95vw] sm:max-w-[850px] p-0 overflow-hidden border-none shadow-2xl h-[90vh] sm:h-[600px] flex flex-col bg-background text-foreground rounded-3xl">
+                <div className="flex flex-col sm:flex-row flex-1 h-full overflow-hidden">
 
-                    {/* LEFT SIDEBAR - Fixed width, no scroll */}
-                    <aside className="w-64 bg-slate-50/50 dark:bg-slate-900/50 border-r border-slate-100 dark:border-slate-800 flex flex-col p-4 gap-2">
-                        <DialogHeader className="px-2 mb-4 text-left">
+                    {/* SIDEBAR - Vertical on desktop, Horizontal scroll on mobile */}
+                    <aside className="w-full sm:w-64 bg-slate-50/50 dark:bg-slate-900/50 border-b sm:border-b-0 sm:border-r border-slate-100 dark:border-slate-800 flex flex-col p-4 gap-2 shrink-0">
+                        <DialogHeader className="px-2 mb-2 sm:mb-4 text-left">
                             <DialogTitle className="text-xl font-bold flex items-center gap-2">
                                 <Settings className="w-5 h-5 text-indigo-600" />
                                 Settings
                             </DialogTitle>
                         </DialogHeader>
 
-                        <nav className="space-y-1">
+                        <nav className="flex flex-row sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0 no-scrollbar">
                             <Button
                                 variant="ghost"
                                 onClick={() => scrollToSection("security")}
                                 className={cn(
-                                    "w-full justify-start gap-3 transition-all duration-200",
+                                    "shrink-0 sm:w-full justify-start gap-3 transition-all duration-200 whitespace-nowrap px-4 sm:px-3",
                                     activeSection === "security"
                                         ? "bg-white dark:bg-slate-800 shadow-sm text-indigo-600 font-semibold"
                                         : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -87,7 +87,7 @@ export default function Setting({ openSettings, setOpenSettings }) {
                                 variant="ghost"
                                 onClick={() => scrollToSection("preferences")}
                                 className={cn(
-                                    "w-full justify-start gap-3 transition-all duration-200",
+                                    "shrink-0 sm:w-full justify-start gap-3 transition-all duration-200 whitespace-nowrap px-4 sm:px-3",
                                     activeSection === "preferences"
                                         ? "bg-white dark:bg-slate-800 shadow-sm text-indigo-600 font-semibold"
                                         : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -100,7 +100,7 @@ export default function Setting({ openSettings, setOpenSettings }) {
                                 variant="ghost"
                                 onClick={() => scrollToSection("display")}
                                 className={cn(
-                                    "w-full justify-start gap-3 transition-all duration-200",
+                                    "shrink-0 sm:w-full justify-start gap-3 transition-all duration-200 whitespace-nowrap px-4 sm:px-3",
                                     activeSection === "display"
                                         ? "bg-white dark:bg-slate-800 shadow-sm text-indigo-600 font-semibold"
                                         : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -114,8 +114,8 @@ export default function Setting({ openSettings, setOpenSettings }) {
 
                     {/* RIGHT CONTENT - Only scrollable area */}
                     <div className="flex-1 flex flex-col bg-background overflow-hidden">
-                        <ScrollArea containerRef={scrollAreaRef} className="p-8">
-                            <div className="max-w-xl mx-auto space-y-12 pb-12">
+                        <ScrollArea containerRef={scrollAreaRef} className="p-4 sm:p-8">
+                            <div className="max-w-xl mx-auto space-y-8 sm:space-y-12 pb-12">
 
                                 <SecuritySection securityRef={securityRef} />
 

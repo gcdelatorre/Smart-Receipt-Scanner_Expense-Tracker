@@ -82,7 +82,7 @@ export default function EditTransactionModal({ open, onClose, transactionToEdit,
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="w-full max-w-[95vw] sm:max-w-[425px] rounded-3xl">
                 <DialogHeader>
                     <DialogTitle>Edit Transaction</DialogTitle>
                 </DialogHeader>

@@ -54,7 +54,7 @@ export default function ViewTransactionModal({ open, onClose, transactionToView,
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="bg-card text-card-foreground border-border">
+            <DialogContent className="bg-card text-card-foreground border-border w-full max-w-[95vw] sm:max-w-[500px] rounded-3xl">
                 <DialogHeader>
                     <DialogTitle className="text-foreground">Transaction Details</DialogTitle>
                 </DialogHeader>

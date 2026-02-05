@@ -38,7 +38,7 @@ export default function HeaderBar({ pageTitle, onRefresh }) {
           {/* Mobile Title */}
           <p className="block text-xl font-bold text-foreground md:hidden">{pageTitle}</p>
         </div>
-          <AddNewButton onAdd={() => setOpen(true)} />
+        <AddNewButton onAdd={() => setOpen(true)} />
       </div>
 
       {/* --- Selection Dialog --- */}
@@ -46,7 +46,7 @@ export default function HeaderBar({ pageTitle, onRefresh }) {
         {/* 1. sm:max-w-2xl: Makes the modal wider on desktop to fit 3 columns comfortably.
             2. overflow-hidden: Prevents scrollbars if animations go out of bounds.
         */}
-        <DialogContent className="sm:max-w-2xl overflow-hidden p-0 bg-card border-border">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-2xl overflow-hidden p-0 bg-card border-border max-h-[95vh] flex flex-col rounded-3xl">
 
           <div className="px-6 pt-6 pb-2">
             <DialogHeader>
@@ -57,7 +57,7 @@ export default function HeaderBar({ pageTitle, onRefresh }) {
             </DialogHeader>
           </div>
 
-          <div className="p-6 bg-muted/30">
+          <div className="p-4 sm:p-6 bg-muted/30 overflow-y-auto">
             {/* 1. w-full: Takes full width of the modal.
                 2. grid-cols-1: Stacked on mobile.
                 3. sm:grid-cols-3: 3 columns on tablet/desktop.
@@ -71,11 +71,11 @@ export default function HeaderBar({ pageTitle, onRefresh }) {
                     onClick={() => handleTypeSelection(type)}
                     className={`
                       relative group flex flex-col justify-between 
-                      rounded-2xl border border-border bg-card p-6 
+                      rounded-2xl border border-border bg-card p-4 sm:p-6 
                       text-left shadow-sm transition-all duration-300
                       hover:border-primary/50 hover:shadow-xl hover:-translate-y-1.5
                       active:scale-95
-                      min-h-[160px] 
+                      min-h-[140px] sm:min-h-[160px] 
                     `}
                   >
                     <div className="mb-4">

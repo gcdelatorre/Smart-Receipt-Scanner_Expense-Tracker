@@ -78,7 +78,7 @@ export function AddIncomeModal({ open, onOpenChange, onIncomeAdded, onBack }) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden bg-card text-card-foreground border-border">
+            <DialogContent className="w-full max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden bg-card text-card-foreground border-border rounded-3xl">
                 <DialogTitle className="flex items-center gap-2 text-foreground">
                     <Wallet className="h-5 w-5 text-emerald-500" />
                     Add Income
@@ -240,7 +240,7 @@ export function AddExpenseModal({ open, onOpenChange, onExpenseAdded, onBack }) 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden bg-card text-card-foreground border-border">
+            <DialogContent className="w-full max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden bg-card text-card-foreground border-border rounded-3xl">
                 <DialogTitle className="flex items-center gap-2 text-foreground">
                     <DollarSign className="h-5 w-5 text-rose-500" />
                     Add Expense
@@ -444,7 +444,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden bg-card text-card-foreground border-border">
+            <DialogContent className="w-full max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto [&>button[data-state]]:hidden bg-card text-card-foreground border-border rounded-3xl">
                 <DialogTitle className="flex items-center gap-2 text-foreground">
                     <Wallet className="h-5 w-5 text-primary" />
                     Set Budget
@@ -468,7 +468,7 @@ export function AddBudgetModal({ open, onOpenChange, expenseCategories, onBudget
 
                     {/* Dynamic Category + Amount rows */}
                     {categoryBudgets.map((item, index) => (
-                        <div key={index} className="grid grid-cols-2 gap-4">
+                        <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Field label="Category">
                                 <CategorySelection
                                     categories={categoriesSelection}

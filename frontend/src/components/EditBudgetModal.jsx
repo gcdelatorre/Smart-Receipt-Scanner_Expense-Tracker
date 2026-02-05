@@ -46,7 +46,7 @@ export default function EditBudgetModal({ open, onClose, categoryBudgets, overal
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6 backdrop-blur-sm">
-            <div className="w-full max-w-md rounded-3xl bg-card border border-border shadow-2xl p-6 text-card-foreground">
+            <div className="w-full max-w-[95vw] sm:max-w-md rounded-3xl bg-card border border-border shadow-2xl p-6 text-card-foreground">
                 <div className="mb-6">
                     <h2 className="text-xl font-bold text-foreground">Edit Budgets</h2>
                     <p className="text-sm text-muted-foreground">Modify your existing budget allocations.</p>
